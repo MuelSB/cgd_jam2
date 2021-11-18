@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
         mapCreateSettings.MapTilePrefabReference = mapTilePrefabReference;
         mapCreateSettings.MapWidthTileCount = 3;
         mapCreateSettings.MapDepthTileCount = 3;
+        mapCreateSettings.MinRandomRotationJitter = new Vector3(-5.0f, 0.0f, -5.0f);
+        mapCreateSettings.MaxRandomRotationJitter = new Vector3(5.0f, 0.0f, 5.0f);
         //mapCreateSettings.TileWidthPadding = 0;
         //mapCreateSettings.TileDepthPadding = 0;
 

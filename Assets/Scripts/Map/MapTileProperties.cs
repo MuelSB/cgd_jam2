@@ -1,8 +1,8 @@
 ﻿using System;
 
 [Serializable]
-public struct MapTileProperties
+public class MapTileProperties
 {
-    public float Integrity;
-    public bool Alive;
+    public float Integrity = 1.0f;
+    public bool Alive = true;
 }

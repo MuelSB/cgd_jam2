@@ -41,7 +41,12 @@ public class Map
 
     public MapTileProperties GetTileProperties(MapCoordinate mapCoordinate)
     {
-        return GetTileObject(mapCoordinate).GetComponent<MapTile>().GetProperties();
+        return GetTile(mapCoordinate).GetProperties();
+    }
+
+    public MapTile GetTile(MapCoordinate mapCoordinate)
+    {
+        return GetTileObject(mapCoordinate).GetComponent<MapTile>();
     }
 
     private void Instantiate(MapCreateSettings createSettings)
@@ -72,7 +77,12 @@ public class Map
                             (j * (tileWidth /*+ createSettings.TileWidthPadding*/)) - (mapWidth - 1) * 0.5f,
                             0.0f,
                             (i * (tileDepth /*+ createSettings.TileDepthPadding*/)) - (mapDepth - 1) * 0.5f),
-                        new Quaternion()));
+                        Quaternion.Euler(new Vector3(
+                            Random.Range(createSettings.MinRandomRotationJitter.x, createSettings.MaxRandomRotationJitter.x),
+                            Random.Range(createSettings.MinRandomRotationJitter.y, createSettings.MaxRandomRotationJitter.y),
+                            Random.Range(createSettings.MinRandomRotationJitter.z, createSettings.MaxRandomRotationJitter.z))
+                            )
+                        ));
             }
         }
 
