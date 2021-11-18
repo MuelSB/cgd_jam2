@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 80f6e3fb7a42ee544b16726fcdb1ada4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mapTilePrefabReference: {fileID: 2356900649719079769, guid: f4e124d88917b054cb4583735a32f7aa, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
