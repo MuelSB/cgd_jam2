@@ -954,7 +954,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7578120282548719244, guid: 4b2e007875d76d74fa47b5879194e4bb, type: 3}
       propertyPath: m_Name
-      value: SceneManagement
+      value: GameManagement
+      objectReference: {fileID: 0}
+    - target: {fileID: 7578120282548719246, guid: 4b2e007875d76d74fa47b5879194e4bb, type: 3}
+      propertyPath: battle_scene_enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7578120282548719247, guid: 4b2e007875d76d74fa47b5879194e4bb, type: 3}
       propertyPath: m_RootOrder

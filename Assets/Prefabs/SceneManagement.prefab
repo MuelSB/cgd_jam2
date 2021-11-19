@@ -45,4 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   in_menu: 0
   is_paused: 0
-  battle_scene_enabled: 0
+  battle_scene_enabled: 1
