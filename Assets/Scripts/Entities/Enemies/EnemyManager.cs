@@ -7,7 +7,8 @@ public class EnemyManager : MonoBehaviour
     public static EnemyManager Instance;
 
     private Dictionary<Enemy, Vector2> minions;
-    void Init()
+    private Boss boss;
+    void Init(int starterMinions)
     {
         if(Instance != null)
         {
@@ -16,13 +17,17 @@ public class EnemyManager : MonoBehaviour
         }
         Instance = this;
 
+        for(int i = 0; i < starterMinions; ++i)
+        {
+            minions.Add(new Enemy(), Vector2.zero);
+        }
     }
 
     public void EnemyTurn()
     {
         foreach(var enemy in minions)
         {
-            enemy.Key.Move();
+
         }
     }
 

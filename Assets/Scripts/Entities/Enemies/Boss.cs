@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class Boss : Enemy
 {
-    public void SpecialAttack()
-    {
 
-    }
 }
