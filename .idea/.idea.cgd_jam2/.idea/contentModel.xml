@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\steve\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\steve\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_cgd_jam2.89332856.00" t="ExcludeRecursive" />
+    <e p="C:\Users\steve\Desktop\CGD\cgd_jam2" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="Entities" t="Include">
+            <e p="Abilities" t="Include">
+              <e p="Ability.cs" t="Include" />
+              <e p="AttackAdjacent.cs" t="Include" />
+            </e>
+            <e p="Enemies" t="Include">
+              <e p="Boss.cs" t="Include" />
+              <e p="Enemy.cs" t="Include" />
+              <e p="EnemyManager.cs" t="Include" />
+            </e>
+            <e p="Entity.cs" t="Include" />
+          </e>
+          <e p="GameManagement.cs" t="Include" />
+          <e p="GameManager.cs" t="Include" />
+          <e p="Map" t="Include">
+            <e p="Map.cs" t="Include" />
+            <e p="MapCoordinate.cs" t="Include" />
+            <e p="MapCreateSettings.cs" t="Include" />
+            <e p="MapManager.cs" t="Include" />
+            <e p="MapTileProperties.cs" t="Include" />
+            <e p="MonoBehaviours" t="Include">
+              <e p="MapTile.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="cgd_jam2.sln" t="IncludeFlat" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\Bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
