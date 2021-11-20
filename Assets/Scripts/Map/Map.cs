@@ -31,22 +31,66 @@ public class Map
         instantiated = false;
     }
 
+    // Retrieves the tile game object at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
+    // the negative X axis
     public GameObject GetTileObject(MapCoordinate mapCoordinate)
     {
-        Assert.IsTrue(mapCoordinate.x >= 0 && mapCoordinate.y >= 0 && mapCoordinate.x < mapWidthTileCount && mapCoordinate.y < mapDepthTileCount,
-            "Attempting to access map with invalid grid coordinate.");
-
+        Assert.IsTrue(IsValidCoordinate(mapCoordinate), "Attempting to access map with invalid grid coordinate.");
         return mapTiles[mapCoordinate.y * mapDepthTileCount + mapCoordinate.x];
     }
 
+    // Retrieves the properties of the tile at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
+    // the negative X axis
     public MapTileProperties GetTileProperties(MapCoordinate mapCoordinate)
     {
+        Assert.IsTrue(IsValidCoordinate(mapCoordinate), "Attempting to access map with invalid grid coordinate.");
         return GetTile(mapCoordinate).GetProperties();
     }
 
+    // Retrieves the tile at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
+    // the negative X axis
     public MapTile GetTile(MapCoordinate mapCoordinate)
     {
+        Assert.IsTrue(IsValidCoordinate(mapCoordinate), "Attempting to access map with invalid grid coordinate.");
         return GetTileObject(mapCoordinate).GetComponent<MapTile>();
+    }
+
+    // Returns the coordinates of the neighbors of the tile at tileMapCoordinate
+    public List<MapCoordinate> GetTileNeighbors(MapCoordinate tileMapCoordinate)
+    {
+        Assert.IsTrue(IsValidCoordinate(tileMapCoordinate), "Attempting to access map with invalid grid coordinate.");
+
+        List<MapCoordinate> neighbors = new List<MapCoordinate>();
+
+        if((tileMapCoordinate.y - 1) >= 0)
+        {
+            neighbors.Add(new MapCoordinate(tileMapCoordinate.x, tileMapCoordinate.y - 1));
+        }
+
+        if ((tileMapCoordinate.x + 1) < mapDepthTileCount)
+        {
+            neighbors.Add(new MapCoordinate(tileMapCoordinate.x + 1, tileMapCoordinate.y));
+        }
+
+        if ((tileMapCoordinate.x - 1) >= 0)
+        {
+            neighbors.Add(new MapCoordinate(tileMapCoordinate.x - 1, tileMapCoordinate.y));
+        }
+
+        if (((tileMapCoordinate.y + 1) < mapDepthTileCount))
+        {
+            neighbors.Add(new MapCoordinate(tileMapCoordinate.x, tileMapCoordinate.y + 1));
+        }
+
+        return neighbors;
+    }
+
+    public bool IsValidCoordinate(MapCoordinate mapCoordinate)
+    {
+        return mapCoordinate.x >= 0 &&
+            mapCoordinate.y >= 0 &&
+            mapCoordinate.x < mapWidthTileCount &&
+            mapCoordinate.y < mapDepthTileCount;
     }
 
     private void Instantiate(MapCreateSettings createSettings)

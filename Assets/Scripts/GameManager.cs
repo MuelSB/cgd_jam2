@@ -19,5 +19,6 @@ public class GameManager : MonoBehaviour
         //mapCreateSettings.TileDepthPadding = 0;
 
         MapManager.CreateMap(mapCreateSettings);
+        var map = MapManager.GetMap();
     }
 }

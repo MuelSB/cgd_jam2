@@ -12,10 +12,12 @@ public class MapTile : MonoBehaviour
     public void SetProperties(MapTileProperties properties) 
     {
         this.properties = properties;
-        // TODO: Should integrity be tied to tile transparency? Update object renderer alpha here if so
+        // TODO: Should integrity be tied to tile transparency? Update fade here if so with SetFade()
     }
 
     public MapTileProperties GetProperties() { return properties; }
+
+    public GameObject GetObject() { return gameObject; }
 
     public void SetFade(float fade)
     {
