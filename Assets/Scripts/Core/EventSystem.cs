@@ -7,16 +7,11 @@ namespace Core
     public class EventSystem : MonoBehaviour
     {
         // map for all events
-        private static Dictionary<string, UnityEvent> _events;
+        private static Dictionary<string, UnityEvent> _events = new Dictionary<string, UnityEvent>();
         
         // delegate used as func parameter
         public delegate void Fnc();
-
-        // create list on enable
-        private void OnEnable()
-        {
-            _events = new Dictionary<string, UnityEvent>();
-        }
+        
         
         public static void Subscribe(string name, Fnc fnc)
         {
