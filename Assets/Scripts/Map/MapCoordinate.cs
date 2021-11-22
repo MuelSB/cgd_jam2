@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public struct MapCoordinate
+public class MapCoordinate
 {
     public MapCoordinate(Vector2Int _new_vec) {
         this.x = _new_vec.x;
