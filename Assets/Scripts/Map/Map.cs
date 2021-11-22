@@ -10,10 +10,21 @@ public class Map
     private List<GameObject> mapTiles = new List<GameObject>();
     private bool instantiated = false;
 
-    public Map(MapCreateSettings createSettings)
+    //class used for generation of map information
+    private MetaGenerator metaGenerator;
+
+    public Map(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig)
     {
         Destroy();
+        MakeMapMetaGenerator(metaGeneratorConfig);
         Instantiate(createSettings);
+    }
+
+    //Should only need to be made once at the start, so it only makes it if it does not exist already.
+    public void MakeMapMetaGenerator(MetaGeneratorConfig _config) {
+        if (metaGenerator == null) {
+            metaGenerator = new MetaGenerator(this,_config);
+        }
     }
 
     public void Destroy()
@@ -133,6 +144,9 @@ public class Map
         // Store map properties
         mapWidthTileCount = createSettings.MapWidthTileCount;
         mapDepthTileCount = createSettings.MapDepthTileCount;
+
+        //Applied the metadata to the maps tiles.
+        mapTiles = metaGenerator.apply(mapTiles); 
 
         instantiated = true;
     }

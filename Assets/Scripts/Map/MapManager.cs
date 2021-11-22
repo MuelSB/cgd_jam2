@@ -5,9 +5,9 @@ public static class MapManager
     // Class variables
     private static Map map;
 
-    public static void CreateMap(MapCreateSettings createSettings)
+    public static void CreateMap(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig)
     {
-        map = new Map(createSettings);
+        map = new Map(createSettings, metaGeneratorConfig);
     }
 
     public static void DestroyMap()
