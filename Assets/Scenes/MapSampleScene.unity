@@ -335,11 +335,12 @@ MonoBehaviour:
   MaxRandomRotationJitter: {x: -5, y: 0, z: -5}
   seed: 1
   maxTileIntegrity: 10
-  minTileIntegrity: 1
+  minTileIntegrity: 3
   tileXIntegrityFrequency: 3
   tileYIntegrityFrequency: 3
   baseBiome: 2
   biomeQuantityMaxMin: {x: 20, y: 15}
+  debugMode: 0
 --- !u!4 &1123521197
 Transform:
   m_ObjectHideFlags: 0

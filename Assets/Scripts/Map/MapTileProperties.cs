@@ -22,6 +22,8 @@ public class MapTileProperties
     public TileType Type = TileType.Unassigned;
     public bool ContainsEntity = false;
 
+    public Maybe<Entity> tile_enitity = new Maybe<Entity>();
+
     public bool Alive() { return Integrity <= 0.0f; }
 
     // TODO: Modular tile event types
