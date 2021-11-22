@@ -2,7 +2,7 @@ namespace Core
 {
     public static class Events 
     {
-        // this class holds const data about common events
+        // const event id's
         public const string LoadTransition = "LoadTransition";
         public const string LoadComplete = "LoadComplete";
 
@@ -10,7 +10,11 @@ namespace Core
         public const string LoadGame  = "LoadGame";
         public const string PauseGame = "PauseGame";
         
-        public const string PlaySound = "PlaySound";
-
+        // Turn Manager Events
+        public const string LevelLoaded  = "LevelLoaded"; 
+        public const string RoundStarted = "RoundStarted"; 
+        public const string RoundEnded   = "RoundEnded";
+        public const string TurnStarted  = "TurnStarted"; 
+        public const string TurnEnded    = "TurnEnded";
     }
 }

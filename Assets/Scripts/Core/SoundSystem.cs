@@ -15,15 +15,16 @@ namespace Core
             // get the audio sources
             var components = GetComponentsInChildren<AudioSource>();
             
-            // set Audio Mode
-            SetDebugAudioMode();
-            
             // set up music
             _musicSource = components[0];
             _musicSource.loop = true;
 
             // set up effects
             _effectSource = components[1];
+            
+                        
+            // set Audio Mode
+            SetDebugAudioMode();
         }
 
         public static void PlayMusic(AudioClip clip)
