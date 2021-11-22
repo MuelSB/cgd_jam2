@@ -14,7 +14,7 @@ public class Enemy : Entity
         health -= damage;
     }
 
-    public MapTile GetDesiredMove(MapTile selfTile, MapTile playerTile, MapTile[] otherTargets)
+    public MapTile GetDesiredMove(MapCoordinate selfTile, MapCoordinate playerTile, MapCoordinate[] otherTargets)
     {
         /*
          * If playerTile is close enough to move next to then move to player
@@ -37,7 +37,7 @@ public class Enemy : Entity
         return null;
     }
 
-    public void UseAbilities(MapTile currentTile)
+    public void UseAbilities(MapCoordinate currentTile)
     {
         bool usedStandardAbility = false;
         foreach(Ability ability in abilities)
@@ -54,7 +54,7 @@ public class Enemy : Entity
                 }
             }
 
-            MapTile target = ability.CanUseAbility(currentTile);
+            MapCoordinate target = ability.CanUseAbility(currentTile);
             if(target != null)
             {
                 ability.UseAbility(target);

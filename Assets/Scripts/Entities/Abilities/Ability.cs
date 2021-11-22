@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Ability
+public class Ability : ScriptableObject
 {
     public enum AbilityTarget
     {
@@ -12,7 +12,6 @@ public abstract class Ability
     }
 
     public int range;
-    protected float baseDamage;
 
     protected AbilityTarget targetType;
 
@@ -22,11 +21,18 @@ public abstract class Ability
     // Can it be used alongside other abilities? Ie. a 'Free action'
     public bool freeUse;
 
-    public abstract void UseAbility(MapTile targetTile);
+    public List<AbilityEffect> abilityEffects;
 
-    public virtual MapTile CanUseAbility(MapTile currentTile)
+    public void UseAbility(MapCoordinate targetTile)
     {
-        // Check if there is a valid tile in range
-        return null;
+        foreach(AbilityEffect effect in abilityEffects)
+        {
+            effect.ProcessEffect(targetTile);
+        }
+    }
+
+    public virtual MapCoordinate CanUseAbility(MapCoordinate currentTile)
+    {
+        return currentTile;
     }
 }
