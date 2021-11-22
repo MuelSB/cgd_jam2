@@ -1,4 +1,5 @@
 using UnityEngine.Assertions;
+using UnityEngine;
 
 public static class MapManager
 {
@@ -23,5 +24,23 @@ public static class MapManager
 
         widthCount = to.x - from.x;
         depthCount = to.y - from.y;
+    }
+
+    public static Maybe<MapCoordinate> WorldSpaceToMapCoordinate(Vector3 worldSpacePosition)
+    {
+        var tileSize = map.GetTileSize();
+        var widthTileCount = map.GetWidthTileCount();
+        var depthTileCount = map.GetDepthTileCount();
+
+        // Is the point in the graph
+        if (worldSpacePosition.x >= -((widthTileCount * tileSize) / 2) &&
+            worldSpacePosition.x <= ((widthTileCount * tileSize) / 2) &&
+            worldSpacePosition.z >= -((depthTileCount * tileSize) / 2) &&
+            worldSpacePosition.z <= ((depthTileCount * tileSize) / 2))
+        {
+            return new Maybe<MapCoordinate>(new MapCoordinate((int)Mathf.Floor(worldSpacePosition.x / tileSize), (int)Mathf.Floor(worldSpacePosition.z / tileSize)));
+        }
+
+        return new Maybe<MapCoordinate>();
     }
 }

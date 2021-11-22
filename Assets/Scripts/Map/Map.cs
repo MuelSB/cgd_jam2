@@ -7,6 +7,7 @@ public class Map
     // Class variables
     private int mapWidthTileCount;
     private int mapDepthTileCount;
+    private float mapTileSize;
     private List<GameObject> mapTiles = new List<GameObject>();
     private bool instantiated = false;
 
@@ -43,6 +44,8 @@ public class Map
     }
 
     public List<GameObject> GetTiles() => mapTiles; 
+
+    public float GetTileSize() { return mapTileSize; }
 
     // Retrieves the tile game object at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
     // the negative X axis
@@ -111,11 +114,13 @@ public class Map
         Assert.IsFalse(instantiated, "Attempting to instantiate the map without destroying existing map data.");
 
         // Compute tile properties
-        var tileWidth = createSettings.MapTilePrefabReference.transform.localScale.x;
-        var tileDepth = createSettings.MapTilePrefabReference.transform.localScale.z;
+        Assert.IsTrue(createSettings.MapTilePrefabReference.transform.localScale.x == createSettings.MapTilePrefabReference.transform.localScale.z,
+            "Only square tiles are currently supported.");
 
-        var mapWidth = tileWidth * createSettings.MapWidthTileCount;
-        var mapDepth = tileDepth * createSettings.MapDepthTileCount;
+        mapTileSize = createSettings.MapTilePrefabReference.transform.localScale.x;
+
+        var mapWidth = mapTileSize * createSettings.MapWidthTileCount;
+        var mapDepth = mapTileSize * createSettings.MapDepthTileCount;
 
         Assert.IsTrue(mapWidth > 0 && mapDepth > 0, "Attempting to instantiate a map with a 0 side. A map must have a tile width and depth of at least 1.");
 
@@ -131,9 +136,9 @@ public class Map
                     GameObject.Instantiate(
                         createSettings.MapTilePrefabReference,
                         new Vector3(
-                            (j * (tileWidth /*+ createSettings.TileWidthPadding*/)) - (mapWidth - 1) * 0.5f,
+                            (j * (mapTileSize /*+ createSettings.TileWidthPadding*/)) - (mapWidth - 1) * 0.5f,
                             0.0f,
-                            (i * (tileDepth /*+ createSettings.TileDepthPadding*/)) - (mapDepth - 1) * 0.5f),
+                            (i * (mapTileSize /*+ createSettings.TileDepthPadding*/)) - (mapDepth - 1) * 0.5f),
                         Quaternion.Euler(new Vector3(
                             Random.Range(createSettings.MinRandomRotationJitter.x, createSettings.MaxRandomRotationJitter.x),
                             Random.Range(createSettings.MinRandomRotationJitter.y, createSettings.MaxRandomRotationJitter.y),
