@@ -1,8 +1,13 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public struct MapCoordinate
 {
+    public MapCoordinate(Vector2Int _new_vec) {
+        this.x = _new_vec.x;
+        this.y = _new_vec.y;
+    }
     public MapCoordinate(int x, int y)
     {
         this.x = x;
@@ -18,6 +23,8 @@ public struct MapCoordinate
     {
         return lhs.x == rhs.x && lhs.x == rhs.x;
     }
+
+    public static MapCoordinate operator -(MapCoordinate lhs, MapCoordinate rhs) => new MapCoordinate(lhs.x-rhs.x,lhs.y-rhs.y);
 
     public override string ToString()
     {

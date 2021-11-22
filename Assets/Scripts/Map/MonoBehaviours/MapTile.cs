@@ -9,12 +9,22 @@ public class MapTile : MonoBehaviour
     private Rigidbody tileRigidbody;
     private Renderer objectRenderer;
 
+    [SerializeField] private MapCoordinate mapLocation;
+
+    public GameObject setLocation(MapCoordinate _coord) {
+        mapLocation = _coord;
+        return gameObject;
+    }
+
+    public MapCoordinate getLocation() => mapLocation;
+
     public GameObject SetProperties(MapTileProperties properties) 
     {
         this.properties = properties;
         return gameObject; 
         // TODO: Should integrity be tied to tile transparency? Update fade here if so with SetFade()
     }
+    
 
     public MapTileProperties GetProperties() { return properties; }
 

@@ -42,6 +42,8 @@ public class Map
         instantiated = false;
     }
 
+    public List<GameObject> GetTiles() => mapTiles; 
+
     // Retrieves the tile game object at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
     // the negative X axis
     public GameObject GetTileObject(MapCoordinate mapCoordinate)
@@ -137,7 +139,7 @@ public class Map
                             Random.Range(createSettings.MinRandomRotationJitter.y, createSettings.MaxRandomRotationJitter.y),
                             Random.Range(createSettings.MinRandomRotationJitter.z, createSettings.MaxRandomRotationJitter.z))
                             )
-                        ));
+                        ).GetComponent<MapTile>().setLocation(new MapCoordinate(j,i)));
             }
         }
 
