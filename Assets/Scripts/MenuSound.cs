@@ -1,7 +1,7 @@
 using UnityEngine;
 using Core;
 
-public class MenuManager : MonoBehaviour
+public class MenuSound : MonoBehaviour
 {
     [SerializeField] private AudioClip menuMusic = null;
     

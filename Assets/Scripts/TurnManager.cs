@@ -1,27 +1,23 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Core;
 
 public class TurnManager : MonoBehaviour
 {
-    // Event reg constants
-    private const string LevelLoaded  = "LevelLoaded"; 
-    private const string RoundStarted = "RoundStarted"; 
-    private const string RoundEnded   = "RoundEnded";
-    private const string TurnStarted  = "TurnStarted"; 
-    private const string TurnEnded    = "TurnEnded";
-
-
+    private const string PlayerTag = "Player";
+    private const string BossTag = "Boss";
+    
     public void OnEnable()
     {
-        EventSystem.Subscribe(LevelLoaded, OnLevelLoaded);
-        EventSystem.Subscribe(TurnEnded, OnTurnEnded);
+        EventSystem.Subscribe(Events.LevelLoaded, OnLevelLoaded);
+        EventSystem.Subscribe(Events.TurnEnded, OnTurnEnded);
     }
 
     public void OnDisable()
     {
-        EventSystem.Unsubscribe(LevelLoaded, OnLevelLoaded);
-        EventSystem.Unsubscribe(TurnEnded, OnTurnEnded);
+        EventSystem.Unsubscribe(Events.LevelLoaded, OnLevelLoaded);
+        EventSystem.Unsubscribe(Events.TurnEnded, OnTurnEnded);
     }
 
     private List<Actor> _actors = new List<Actor>();
@@ -47,19 +43,36 @@ public class TurnManager : MonoBehaviour
     private void StartRound()
     {
         // invoke event
-        EventSystem.Invoke(RoundStarted);
+        EventSystem.Invoke(Events.RoundStarted);
         
         // get actor list 
-        _actors = Actor.All;
+        _actors = GetInitiativeList();
         
         // do turn
         StartTurn();
     }
 
+    private List<Actor> GetInitiativeList()
+    {
+        // create the list
+        var initiative = new List<Actor>();
+        
+        // add the player to the first position
+        initiative.Add(Actor.All.Find(actor => actor.CompareTag(PlayerTag)));
+        
+        // add everything that is not a player or boss
+        initiative.AddRange(Actor.All.Where(actor => !actor.CompareTag(PlayerTag) && !actor.CompareTag(BossTag)));
+        
+        // add the player to the first position
+        initiative.Add(Actor.All.Find(actor => actor.CompareTag(BossTag)));
+    
+        return initiative;
+    }
+
     private void EndRound()
     {
         // invoke event
-        EventSystem.Invoke(RoundEnded);
+        EventSystem.Invoke(Events.RoundEnded);
         
         // increment and start new round
         _round++;
@@ -69,13 +82,13 @@ public class TurnManager : MonoBehaviour
     private void StartTurn()
     {
         // invoke event
-        EventSystem.Invoke(TurnStarted);
+        EventSystem.Invoke(Events.TurnStarted);
         
         // get actor
         var actor = _actors[_turn];
         
         // skips if actor cant act
-        if ( actor != null || !actor.canAct ) EventSystem.Invoke(TurnEnded);
+        if ( actor != null || !actor.canAct ) EventSystem.Invoke(Events.TurnEnded);
         
         // start the actors turn
         actor.StartTurn();
