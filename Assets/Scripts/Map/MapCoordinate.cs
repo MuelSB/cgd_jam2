@@ -41,6 +41,8 @@ public class MapCoordinate
         return base.GetHashCode();
     }
 
+    public Vector2Int toVector2Int() => new Vector2Int(x,y);
+
     public int x;
     public int y;
 }
