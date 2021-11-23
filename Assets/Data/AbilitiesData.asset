@@ -14,10 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilities:
   - abilityName: AttackAdjacent
+    abilityRange: 1
+    targetType: 0
+    abilityCooldown: 1
+    freeUse: 0
     abilityEffects:
     - damage: 0
       type: 0
   - abilityName: DestroyTile
+    abilityRange: 1
+    targetType: 2
+    abilityCooldown: 1
+    freeUse: 0
     abilityEffects:
     - damage: 0
       type: 2

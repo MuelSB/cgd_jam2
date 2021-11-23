@@ -11,6 +11,10 @@ public class AbilitiesData : ScriptableObject
     public struct AbilityData
     {
         public string abilityName;
+        public int abilityRange;
+        public Ability.AbilityTarget targetType;
+        public int abilityCooldown;
+        public bool freeUse;
         public List<AbilityEffect.AbilityEffectData> abilityEffects;
     }
 

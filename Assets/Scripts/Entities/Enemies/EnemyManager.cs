@@ -12,25 +12,13 @@ public class EnemyManager : MonoBehaviour
 
     public Dictionary<string, Ability> abilities;
 
-    private Dictionary<Enemy, Vector2> minions;
-    private Boss boss;
-
-    bool inited = false;
-
-    private void Update()
-    {
-        if (MapManager.GetMap() != null && inited == false && Input.GetKeyDown(KeyCode.Space))
-        {
-            Init(1);
-            inited = true;
-        }
-    }
+    private Dictionary<Enemy, MapCoordinate> minions;
 
     private void Start()
     {
 
     }
-    void Init(int starterMinions)
+    void Init(int minionNumber)
     {
         if(Instance != null)
         {
@@ -41,13 +29,14 @@ public class EnemyManager : MonoBehaviour
 
         SetupAbilities();
 
-        minions = new Dictionary<Enemy, Vector2>();
-        for(int i = 0; i < starterMinions; ++i)
+        minions = new Dictionary<Enemy, MapCoordinate>();
+        for(int i = 0; i < minionNumber; ++i)
         {
             Enemy enemy = Instantiate(enemyPrefab).AddComponent<Enemy>();
             enemy.abilities = new List<Ability>();
             enemy.currentTile = new MapCoordinate(1, 1);
-            enemy.transform.position = MapManager.GetMap().GetTileObject(enemy.currentTile).transform.position;
+            enemy.transform.position = MapManager.GetMap().GetTileObject(enemy.currentTile).transform.position
+                    + Vector3.up;
 
             foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
             {
@@ -60,16 +49,7 @@ public class EnemyManager : MonoBehaviour
                 }
             }
 
-            minions.Add(enemy, Vector2.zero);
-        }
-        EnemyTurn();
-    }
-
-    public void EnemyTurn()
-    {
-        foreach(var enemy in minions)
-        {
-            enemy.Key.ProcessTurn();
+            minions.Add(enemy, enemy.currentTile);
         }
     }
 
@@ -79,6 +59,10 @@ public class EnemyManager : MonoBehaviour
         foreach(AbilitiesData.AbilityData abilityData in abilitiesData.abilities)
         {
             Ability newAbility = new Ability();
+            newAbility.range = abilityData.abilityRange;
+            newAbility.targetType = abilityData.targetType;
+            newAbility.freeUse = abilityData.freeUse;
+            newAbility.turnsCooldown = abilityData.abilityCooldown;
             newAbility.abilityEffects = new List<AbilityEffect>();
             foreach(AbilityEffect.AbilityEffectData effectData in abilityData.abilityEffects)
             {

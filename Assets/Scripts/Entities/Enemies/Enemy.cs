@@ -11,14 +11,9 @@ public class Enemy : Entity
         StartCoroutine(TurnCoroutine());
     }
 
-    public void TakeDamage(int damage)
-    {
-        health -= damage;
-    }
-
     private List<MapCoordinate> GetDesiredMove()
     {
-        MapCoordinate playerTile = new MapCoordinate(5, 5);
+        MapCoordinate playerTile = new MapCoordinate(2, 2 + currentTile.x);
 
         MapCoordinate target = playerTile;
 
@@ -62,38 +57,41 @@ public class Enemy : Entity
         */
     }
 
-    private void UseAbilities(MapCoordinate currentTile)
+    private IEnumerator UseAbilities()
     {
         bool usedStandardAbility = false;
         foreach(Ability ability in abilities)
         {
-            if (ability.freeUse == false)
+            bool isFreeAbility = ability.freeUse;
+            if (usedStandardAbility && ability.freeUse == false) continue;
+
+
+            List<MapCoordinate> targets = ability.CanUseAbility(currentTile);
+            if(targets.Count > 0)
             {
-                if (usedStandardAbility == false)
-                {
-                    usedStandardAbility = true;
-                }
-                else
-                {
-                    continue;
-                }
+                ability.UseAbility(targets[0]);
+                if (isFreeAbility == false) usedStandardAbility = true;
             }
 
-            MapCoordinate target = ability.CanUseAbility(currentTile);
-            if(target != null)
-            {
-                ability.UseAbility(target);
-            }
-
+            yield return new WaitForSeconds(1.0f);
         }
     }
 
     private IEnumerator TurnCoroutine()
     {
         var path = GetDesiredMove();
-        MapCoordinate pos = currentTile;
 
-        foreach(var step in path)
+        yield return Move(path);
+
+        yield return UseAbilities();
+
+        yield break;
+    }
+
+    private IEnumerator Move(List<MapCoordinate> path)
+    {
+        MapCoordinate pos = currentTile;
+        foreach (var step in path)
         {
             float t = 0.0f;
             while (t < 1.0f)
@@ -101,16 +99,14 @@ public class Enemy : Entity
                 this.transform.position = Vector3.Slerp(
                     MapManager.GetMap().GetTileObject(pos).transform.position,
                     MapManager.GetMap().GetTileObject(step).transform.position,
-                    t += (1f * Time.deltaTime)
-                    );
+                    t += (2f * Time.deltaTime)
+                    )
+                    + Vector3.up;
                 yield return 0;
             }
             pos = step;
             currentTile = step;
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(0.2f);
         }
-
-        yield break;
-        //EnemyManager.Instance.CalculatePath()
     }
 }
