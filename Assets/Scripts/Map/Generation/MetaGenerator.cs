@@ -120,12 +120,10 @@ public static class MetaGeneratorHelper
         return new_grid;
     }
 
-    private static int get1DIndex(Vector2Int _2D_index, int _width) => _width*_2D_index.x + _2D_index.y;
-
     public static List<GameObject> applyStrengthMapToTiles(this Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _grid, List<GameObject> _tiles, int _width) {
         List<GameObject> new_list = _tiles; 
-
-        _grid.Keys.ToList().ForEach(_k => new_list[get1DIndex(_k,_width)] = new_list[get1DIndex(_k,_width)].applyBiome(_grid[_k].Item2));
+        new_list.ForEach(_e => _e.applyBiome(_grid[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item2));
+        // _grid.Keys.ToList().ForEach(_k => new_list[get1DIndex(_k,_width)] = new_list[get1DIndex(_k,_width)].applyBiome(_grid[_k].Item2));
         return new_list;
     }
 
@@ -155,7 +153,7 @@ public class MetaGenerator
     //Main function, applies Integrity to each tile based on perlin noise, then adds biomes and structures afterwards. 
     public List<GameObject> apply(List<GameObject> _tiles) => applyBiomes(_tiles.Aggregate(new List<GameObject>(),(List<GameObject> _acc, GameObject _b) => applyIntegrity(_acc, _b)));
 
-    private Vector2Int getIndex(int _1D_index) => new Vector2Int(_1D_index/map_reference.GetWidthTileCount(),_1D_index%map_reference.GetDepthTileCount());
+    private Vector2Int getIndex(int _1D_index) => new Vector2Int(_1D_index%map_reference.GetWidthTileCount(),Mathf.FloorToInt(_1D_index/map_reference.GetWidthTileCount()));
 
     //broken down for ease of debuging/reading. This takes a coord and returns a given integrity value generated from perlin noise. Amplitude is based on the max/min integrity!
     private int calculateIntegrityFromCoords(Vector2Int _coords) {
@@ -174,8 +172,11 @@ public class MetaGenerator
     private GameObject alterIntegrity(GameObject _go, Vector2Int _pos) => _go.GetComponent<MapTile>().SetProperties(new MapTileProperties().setIntegrity(calculateIntegrityFromCoords(_pos)));
 
     //inits the biomestrength map. (A way of storing the strength/weight of a tile. This will then later be used to propigate its type to nearby tiles later.)
-    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> generateBiomeStrengthMap(List<GameObject> _list, MapTileProperties.TileType _default) => 
-        _list.Aggregate(new Dictionary<Vector2Int,(int, MapTileProperties.TileType)>(),(_acc,_b) => {_acc[getIndex(_acc.Count())] = (0,_default);return _acc;});
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> generateBiomeStrengthMap(int _size, MapTileProperties.TileType _default) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> ret = new Dictionary<Vector2Int, (int, MapTileProperties.TileType)>();
+        Enumerable.Range(0,_size).ToList().ForEach(_e => ret[getIndex(_e)] = (0,_default));
+        return ret;
+    } 
 
     //this lets the starting positions spread out tiles intil the biomes strength is too low to keep spreading. Clashes with other biomes reduces the strength very quickly.
     private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> propagateBiomes(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map,  List<Vector2Int> _starting_points ) {
@@ -190,6 +191,9 @@ public class MetaGenerator
             List<Vector2Int> valid_neighbourhood = current_considered_center.getValidNeighbourCoords(map_reference.GetWidthTileCount(),map_reference.GetDepthTileCount()).Where(_n => !active_stack.Contains(_n)).ToList();
             foreach (Vector2Int position in valid_neighbourhood)
             {
+                if (!new_map.ContainsKey(position)) {
+                    throw new Exception($"Something is wrong! Position {position.x}:{position.y} is not on the biome grid!");
+                }
                 (int, MapTileProperties.TileType) possible_tile = new_map[position];
                 if (possible_tile.Item2 != current_tile_info.Item2) {
                     int strength = possible_tile.Item1 - (current_tile_info.Item1-1);
@@ -215,12 +219,22 @@ public class MetaGenerator
     //the core of biome generation.
     private List<GameObject> applyBiomes(List<GameObject> _tile_list) {
         List<GameObject> applied_list = _tile_list;
-        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> biome_strength_map = generateBiomeStrengthMap(_tile_list,config.base_biome);
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> biome_strength_map = generateBiomeStrengthMap(_tile_list.Count(),config.base_biome);
         Vector2Int[] sized_array = new Vector2Int[random.Next(config.biome_quantity_max_min.y,config.biome_quantity_max_min.x+1)];
-        List<Vector2Int> biome_spawn_location = sized_array.ToList();
-        for (int i = 0; i < biome_spawn_location.Count(); i++)
+        List<Vector2Int> biome_spawn_location = new List<Vector2Int>();
+        for (int i = 0; i < sized_array.Count(); i++)
         {
-            biome_spawn_location[i] = new Vector2Int(random.Next(0,map_reference.GetWidthTileCount()),random.Next(0,map_reference.GetDepthTileCount()));
+            if (biome_spawn_location.Count < applied_list.Count) {
+                bool locating_spawn_point = true;
+                Vector2Int spawn_point;
+                while (locating_spawn_point) {
+                    spawn_point = getIndex(random.Next(0,applied_list.Count));
+                    if (!biome_spawn_location.Contains(spawn_point)) {
+                        locating_spawn_point = false;
+                        biome_spawn_location.Add(spawn_point);
+                    }
+                }
+            }
         }
         biome_spawn_location.ForEach(_e => {
             MapTileProperties.TileType index = config.biome_max_min_strengths.ElementAt(random.Next(0,config.biome_max_min_strengths.Count())).Key; 
@@ -236,10 +250,11 @@ public class MetaGenerator
                 applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().Integrity,0));
                 break;
             } case MetaDebugHeightMode.BIOME_STRENGTH_ON: {
-                for (int i = 0; i < applied_list.Count(); i++)
-                {
-                    applied_list[i].transform.position += new Vector3(0,biome_strength_map[getIndex(i)].Item1,0);
-                }
+                applied_list.ForEach(_e => _e.transform.position += new Vector3(0,biome_strength_map[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item1,0));
+                // for (int i = 0; i < applied_list.Count(); i++)
+                // {
+                //     applied_list[i].transform.position += new Vector3(0,biome_strength_map[getIndex(i)].Item1,0);
+                // }
                 break;
             } default: {
                 break;
