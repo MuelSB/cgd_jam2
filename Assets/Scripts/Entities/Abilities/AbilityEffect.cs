@@ -29,7 +29,11 @@ public class AbilityEffect : ScriptableObject
         {
             case EffectType.DAMAGE_ENTITY:
                 {
-                    // Damage entity on tile
+                    Maybe<Entity> entity = MapManager.GetMap().GetTileProperties(targetTile).tile_enitity;
+                    if (entity.is_some)
+                    {
+                        entity.value.Damage(damage);
+                    }
                     break;
                 }
 
@@ -40,7 +44,7 @@ public class AbilityEffect : ScriptableObject
                 }
             case EffectType.DESTROY_TILE:
                 {
-                    MapManager.GetMap().GetTileProperties(targetTile).Integrity = 0;
+                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(0);
                     break;
                 }
             case EffectType.DESTROY_OCCUPANT:
