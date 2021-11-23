@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
-    private MapCoordinate currentTile;
+    public MapCoordinate currentTile;
 
     public void ProcessTurn()
     {
-        currentTile = new MapCoordinate(1, 1);
         StartCoroutine(TurnCoroutine());
     }
 
@@ -42,7 +41,7 @@ public class Enemy : Entity
             }
         }
 
-        List<MapCoordinate> path = Pathfinding.FindRoute(currentTile, target);
+        List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile);
 
         return path;
         /*
@@ -91,7 +90,25 @@ public class Enemy : Entity
 
     private IEnumerator TurnCoroutine()
     {
-        GetDesiredMove();
+        var path = GetDesiredMove();
+        MapCoordinate pos = currentTile;
+
+        foreach(var step in path)
+        {
+            float t = 0.0f;
+            while (t < 1.0f)
+            {
+                this.transform.position = Vector3.Slerp(
+                    MapManager.GetMap().GetTileObject(pos).transform.position,
+                    MapManager.GetMap().GetTileObject(step).transform.position,
+                    t += (1f * Time.deltaTime)
+                    );
+                yield return 0;
+            }
+            pos = step;
+            currentTile = step;
+            yield return new WaitForSeconds(1.0f);
+        }
 
         yield break;
         //EnemyManager.Instance.CalculatePath()

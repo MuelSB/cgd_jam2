@@ -40,8 +40,11 @@ public static class Pathfinding
         int bestScore = openList[0].score;
         bool foundPath = false;
 
-        while(openList.Count > 0)
+        int DEBUG_CHECKED = 0;
+
+        while(openList.Count > 0 && DEBUG_CHECKED < 2000)
         {
+            DEBUG_CHECKED++;
             bool foundBetter = false;
             openList.Remove(currentBest);
             closedList.Add(currentBest);
@@ -51,6 +54,7 @@ public static class Pathfinding
                 if(newCoord == origin)
                 {
                     foundPath = true;
+                    break;
                 }
 
                 bool inOpen = openList.Any(node => node.coordinates == newCoord);
@@ -66,16 +70,25 @@ public static class Pathfinding
 
                 Node newNode = new Node(newCoord, distance, cost, new Maybe<Node>(currentBest));
 
-                if(newNode.score > bestScore)
+                if(newNode.score < bestScore)
                 {
                     currentBest = newNode;
                     foundBetter = true;
                 }
                 openList.Add(newNode);
             }
-            if(!foundBetter)
+            if (foundPath) break;
+            if (!foundBetter)
             {
-                currentBest = openList.Find(node => node.score == bestScore);
+                int nextBest = int.MaxValue;
+                foreach(Node node in openList)
+                {
+                    if(node.score < nextBest)
+                    {
+                        currentBest = node;
+                        nextBest = node.score;
+                    }
+                }
             }
         }
 
@@ -94,6 +107,7 @@ public static class Pathfinding
                     throw new System.Exception("There was a null cameFrom in the path back from the pathfinding target! THIS SHOULD NOT HAPPEN");
                 }
             }
+            result.Add(target);
         }
 
         return result;

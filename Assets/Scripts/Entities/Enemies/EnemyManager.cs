@@ -8,6 +8,8 @@ public class EnemyManager : MonoBehaviour
     public AbilitiesData abilitiesData;
     public EnemiesData enemiesData;
 
+    public GameObject enemyPrefab;
+
     public Dictionary<string, Ability> abilities;
 
     private Dictionary<Enemy, Vector2> minions;
@@ -17,7 +19,7 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
-        if(MapManager.GetMap() != null && inited == false)
+        if (MapManager.GetMap() != null && inited == false && Input.GetKeyDown(KeyCode.Space))
         {
             Init(1);
             inited = true;
@@ -42,8 +44,10 @@ public class EnemyManager : MonoBehaviour
         minions = new Dictionary<Enemy, Vector2>();
         for(int i = 0; i < starterMinions; ++i)
         {
-            Enemy enemy = new GameObject().AddComponent<Enemy>();
+            Enemy enemy = Instantiate(enemyPrefab).AddComponent<Enemy>();
             enemy.abilities = new List<Ability>();
+            enemy.currentTile = new MapCoordinate(1, 1);
+            enemy.transform.position = MapManager.GetMap().GetTileObject(enemy.currentTile).transform.position;
 
             foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
             {
