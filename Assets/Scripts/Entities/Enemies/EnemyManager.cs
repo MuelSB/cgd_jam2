@@ -8,14 +8,27 @@ public class EnemyManager : MonoBehaviour
     public AbilitiesData abilitiesData;
     public EnemiesData enemiesData;
 
+    public GameObject enemyPrefab;
+
     public Dictionary<string, Ability> abilities;
 
     private Dictionary<Enemy, Vector2> minions;
     private Boss boss;
 
+    bool inited = false;
+
+    private void Update()
+    {
+        if (MapManager.GetMap() != null && inited == false && Input.GetKeyDown(KeyCode.Space))
+        {
+            Init(1);
+            inited = true;
+        }
+    }
+
     private void Start()
     {
-        Init(5);
+
     }
     void Init(int starterMinions)
     {
@@ -31,8 +44,10 @@ public class EnemyManager : MonoBehaviour
         minions = new Dictionary<Enemy, Vector2>();
         for(int i = 0; i < starterMinions; ++i)
         {
-            Enemy enemy = new GameObject().AddComponent<Enemy>();
+            Enemy enemy = Instantiate(enemyPrefab).AddComponent<Enemy>();
             enemy.abilities = new List<Ability>();
+            enemy.currentTile = new MapCoordinate(1, 1);
+            enemy.transform.position = MapManager.GetMap().GetTileObject(enemy.currentTile).transform.position;
 
             foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
             {
@@ -47,19 +62,15 @@ public class EnemyManager : MonoBehaviour
 
             minions.Add(enemy, Vector2.zero);
         }
+        EnemyTurn();
     }
 
     public void EnemyTurn()
     {
         foreach(var enemy in minions)
         {
-
+            enemy.Key.ProcessTurn();
         }
-    }
-
-    private void CalculateEnemyPath(Enemy enemy)
-    {
-
     }
 
     void SetupAbilities()

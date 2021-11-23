@@ -15,7 +15,7 @@ MonoBehaviour:
   enemiesData:
   - type: 0
     abilityNames:
-    - DestroyTile
+    - AttackAdjacent
   - type: 1
     abilityNames:
     - DestroyTile

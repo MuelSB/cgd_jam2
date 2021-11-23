@@ -45,3 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilitiesData: {fileID: 11400000, guid: d98183ee3ba99b941a0bfc8918b0ebe1, type: 2}
   enemiesData: {fileID: 11400000, guid: 4a4de7f3b5d31524091f9da1f17297ed, type: 2}
+  enemyPrefab: {fileID: 6916787507629632387, guid: 175b0bfd0609ec24c9a1147cb23cf098, type: 3}

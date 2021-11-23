@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    public MapCoordinate currentTile;
+
     public void ProcessTurn()
     {
-
+        StartCoroutine(TurnCoroutine());
     }
 
     public void TakeDamage(int damage)
@@ -14,13 +16,35 @@ public class Enemy : Entity
         health -= damage;
     }
 
-    public MapTile GetDesiredMove(MapCoordinate selfTile, MapCoordinate playerTile, MapCoordinate[] otherTargets)
+    private List<MapCoordinate> GetDesiredMove()
     {
+        MapCoordinate playerTile = new MapCoordinate(5, 5);
+
+        MapCoordinate target = playerTile;
+
+        int widthTo, heightTo;
+
+        MapManager.GetTileCountTo(currentTile, playerTile, out widthTo, out heightTo);
         /*
          * If playerTile is close enough to move next to then move to player
          * If not move to nearest point of interest in otherTargets
          */
 
+        if(widthTo + heightTo > movementRange)
+        {
+            foreach(Ability ability in abilities)
+            {
+                if(ability.targetType == Ability.AbilityTarget.BUILDING)
+                {
+                    // Find nearest building, that is your target
+                }
+            }
+        }
+
+        List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile);
+
+        return path;
+        /*
         KeyValuePair<int, Ability> bestMoveToAttack = new KeyValuePair<int, Ability>(-1, null);
 
         foreach(Ability ability in abilities)
@@ -35,9 +59,10 @@ public class Enemy : Entity
             }
         }
         return null;
+        */
     }
 
-    public void UseAbilities(MapCoordinate currentTile)
+    private void UseAbilities(MapCoordinate currentTile)
     {
         bool usedStandardAbility = false;
         foreach(Ability ability in abilities)
@@ -61,5 +86,31 @@ public class Enemy : Entity
             }
 
         }
+    }
+
+    private IEnumerator TurnCoroutine()
+    {
+        var path = GetDesiredMove();
+        MapCoordinate pos = currentTile;
+
+        foreach(var step in path)
+        {
+            float t = 0.0f;
+            while (t < 1.0f)
+            {
+                this.transform.position = Vector3.Slerp(
+                    MapManager.GetMap().GetTileObject(pos).transform.position,
+                    MapManager.GetMap().GetTileObject(step).transform.position,
+                    t += (1f * Time.deltaTime)
+                    );
+                yield return 0;
+            }
+            pos = step;
+            currentTile = step;
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        yield break;
+        //EnemyManager.Instance.CalculatePath()
     }
 }
