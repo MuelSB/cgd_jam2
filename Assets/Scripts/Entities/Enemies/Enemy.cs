@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    private MapCoordinate currentTile;
+
     public void ProcessTurn()
     {
-
+        currentTile = new MapCoordinate(1, 1);
+        StartCoroutine(TurnCoroutine());
     }
 
     public void TakeDamage(int damage)
@@ -14,13 +17,35 @@ public class Enemy : Entity
         health -= damage;
     }
 
-    public MapTile GetDesiredMove(MapCoordinate selfTile, MapCoordinate playerTile, MapCoordinate[] otherTargets)
+    private List<MapCoordinate> GetDesiredMove()
     {
+        MapCoordinate playerTile = new MapCoordinate(5, 5);
+
+        MapCoordinate target = playerTile;
+
+        int widthTo, heightTo;
+
+        MapManager.GetTileCountTo(currentTile, playerTile, out widthTo, out heightTo);
         /*
          * If playerTile is close enough to move next to then move to player
          * If not move to nearest point of interest in otherTargets
          */
 
+        if(widthTo + heightTo > movementRange)
+        {
+            foreach(Ability ability in abilities)
+            {
+                if(ability.targetType == Ability.AbilityTarget.BUILDING)
+                {
+                    // Find nearest building, that is your target
+                }
+            }
+        }
+
+        List<MapCoordinate> path = Pathfinding.FindRoute(currentTile, target);
+
+        return path;
+        /*
         KeyValuePair<int, Ability> bestMoveToAttack = new KeyValuePair<int, Ability>(-1, null);
 
         foreach(Ability ability in abilities)
@@ -35,9 +60,10 @@ public class Enemy : Entity
             }
         }
         return null;
+        */
     }
 
-    public void UseAbilities(MapCoordinate currentTile)
+    private void UseAbilities(MapCoordinate currentTile)
     {
         bool usedStandardAbility = false;
         foreach(Ability ability in abilities)
@@ -61,5 +87,13 @@ public class Enemy : Entity
             }
 
         }
+    }
+
+    private IEnumerator TurnCoroutine()
+    {
+        GetDesiredMove();
+
+        yield break;
+        //EnemyManager.Instance.CalculatePath()
     }
 }
