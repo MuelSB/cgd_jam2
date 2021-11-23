@@ -95,7 +95,7 @@ public class Map
     public GameObject GetTileObject(MapCoordinate mapCoordinate)
     {
         Assert.IsTrue(IsValidCoordinate(mapCoordinate), "Attempting to access map with invalid grid coordinate.");
-        return mapTiles[mapCoordinate.y * mapDepthTileCount + mapCoordinate.x];
+        return mapTiles[mapCoordinate.y * mapWidthTileCount + mapCoordinate.x];
     }
 
     // Retrieves the properties of the tile at map coordinate. Map coordinates map to 0, 0 being the top left tile when looking at the grid along
