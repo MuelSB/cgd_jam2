@@ -21,7 +21,7 @@ public class MapCoordinate
 
     public static bool operator ==(MapCoordinate lhs, MapCoordinate rhs)
     {
-        return lhs.x == rhs.x && lhs.x == rhs.x;
+        return lhs.x == rhs.x && lhs.y == rhs.y;
     }
 
     public static MapCoordinate operator -(MapCoordinate lhs, MapCoordinate rhs) => new MapCoordinate(lhs.x-rhs.x,lhs.y-rhs.y);
