@@ -47,5 +47,9 @@ public class LevelManager : MonoBehaviour
 
         MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
         var map = MapManager.GetMap();
+
+        var id = map.AddEventToTile(new TestMapTileEvent(), new MapCoordinate(0, 0));
+        map.ActivateTile(new MapCoordinate(0, 0));
+        map.RemoveEventFromTile(id, new MapCoordinate(0,0));
     }
 }

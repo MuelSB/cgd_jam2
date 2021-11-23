@@ -11,6 +11,11 @@ public class MapTile : MonoBehaviour
 
     [SerializeField] private MapCoordinate mapLocation;
 
+    public MapTile()
+    {
+        properties.tile = this;
+    }
+
     public GameObject setLocation(MapCoordinate _coord) {
         mapLocation = _coord;
         return gameObject;
@@ -25,7 +30,6 @@ public class MapTile : MonoBehaviour
         // TODO: Should integrity be tied to tile transparency? Update fade here if so with SetFade()
     }
     
-
     public MapTileProperties GetProperties() { return properties; }
 
     public GameObject GetObject() { return gameObject; }

@@ -43,6 +43,49 @@ public class Map
         instantiated = false;
     }
 
+    public ulong AddEventToTile(MapTileEvent ev, MapCoordinate coordinate)
+    {
+        return GetTileProperties(coordinate).AddEvent(ev);
+    }
+
+    public List<ulong> AddEventToAllTiles(MapTileEvent ev)
+    {
+        List<ulong> ids = new List<ulong>();
+
+        foreach(GameObject tileObject in mapTiles)
+        {
+            ids.Add(tileObject.GetComponent<MapTile>().GetProperties().AddEvent(ev));
+        }
+
+        return ids;
+    }
+
+    public void RemoveEventFromTile(ulong eventID, MapCoordinate coordinate)
+    {
+        GetTileProperties(coordinate).RemoveEvent(eventID);
+    }
+
+    public void ActivateTile(MapCoordinate coordinate)
+    {
+        GetTileProperties(coordinate).ActivateEvents();
+    }
+
+    public void ActivateAllTiles()
+    {
+        foreach (GameObject tileObject in mapTiles)
+        {
+            tileObject.GetComponent<MapTile>().GetProperties().ActivateEvents();
+        }
+    }
+
+    public void RemoveAllTileEvents()
+    {
+        foreach (GameObject tileObject in mapTiles)
+        {
+            tileObject.GetComponent<MapTile>().GetProperties().ClearEvents();
+        }
+    }
+
     public List<GameObject> GetTiles() => mapTiles; 
 
     public float GetTileSize() { return mapTileSize; }

@@ -329,10 +329,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapTilePrefabReference: {fileID: 2356900649719079769, guid: f4e124d88917b054cb4583735a32f7aa, type: 3}
-  MapWidthTileCount: 40
-  MapDepthTileCount: 40
+  MapWidthTileCount: 10
+  MapDepthTileCount: 10
   MinRandomRotationJitter: {x: -5, y: 0, z: -5}
-  MaxRandomRotationJitter: {x: -5, y: 0, z: -5}
+  MaxRandomRotationJitter: {x: 5, y: 0, z: 5}
   seed: 1
   maxTileIntegrity: 10
   minTileIntegrity: 3
