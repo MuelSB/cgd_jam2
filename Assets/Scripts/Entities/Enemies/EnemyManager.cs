@@ -13,9 +13,20 @@ public class EnemyManager : MonoBehaviour
     private Dictionary<Enemy, Vector2> minions;
     private Boss boss;
 
+    bool inited = false;
+
+    private void Update()
+    {
+        if(MapManager.GetMap() != null && inited == false)
+        {
+            Init(1);
+            inited = true;
+        }
+    }
+
     private void Start()
     {
-        Init(5);
+
     }
     void Init(int starterMinions)
     {
@@ -47,19 +58,15 @@ public class EnemyManager : MonoBehaviour
 
             minions.Add(enemy, Vector2.zero);
         }
+        EnemyTurn();
     }
 
     public void EnemyTurn()
     {
         foreach(var enemy in minions)
         {
-
+            enemy.Key.ProcessTurn();
         }
-    }
-
-    private void CalculateEnemyPath(Enemy enemy)
-    {
-
     }
 
     void SetupAbilities()

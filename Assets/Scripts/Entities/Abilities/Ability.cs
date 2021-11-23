@@ -8,12 +8,13 @@ public class Ability : ScriptableObject
     {
         ENEMY,
         ALLY,
-        TILE
+        TILE,
+        BUILDING
     }
 
     public int range;
 
-    protected AbilityTarget targetType;
+    public AbilityTarget targetType;
 
     // 0 turns cooldown means it's only usable once per session
     protected int turnsCooldown;
