@@ -11,10 +11,9 @@ public class Player : Entity
         health -= damage;
     }
 
-    public MapTile Move(MapTile mapTile)
+    public void Move(MapCoordinate mapCoordinate)
     {
 
-        return null;
     }
 
     public void UseAbilities()
