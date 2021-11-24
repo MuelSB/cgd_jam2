@@ -6,8 +6,7 @@ public class Ability : ScriptableObject
 {
     public enum AbilityTarget
     {
-        ENEMY,
-        ALLY,
+        ENTITY,
         TILE,
         BUILDING
     }
@@ -19,36 +18,62 @@ public class Ability : ScriptableObject
     // 0 turns cooldown means it's only usable once per session
     public int turnsCooldown;
 
-    // Can it be used alongside other abilities? Ie. a 'Free action'
-    public bool freeUse;
+    // AP cost of ability - this only applies to the player
+    public int cost;
 
     public List<AbilityEffect> abilityEffects;
 
-    public void UseAbility(MapCoordinate targetTile)
-    {
-        foreach(AbilityEffect effect in abilityEffects)
-        {
-            effect.ProcessEffect(targetTile);
-        }
-    }
-
-    public virtual List<MapCoordinate> CanUseAbility(MapCoordinate currentTile)
+    public List<MapCoordinate> GetTilesInRange(MapCoordinate currentTile)
     {
         List<MapCoordinate> potentialTargets = new List<MapCoordinate>();
-        if(targetType == AbilityTarget.TILE)
+
+        for (var i = range; i >= -range; --i)
         {
-            potentialTargets = MapManager.GetMap().GetTileNeighbors(currentTile);
-        }
-        else if(targetType == AbilityTarget.ENEMY)
-        {
-            foreach(MapCoordinate tile in MapManager.GetMap().GetTileNeighbors(currentTile))
+            var yMax = range - Mathf.Abs(i);
+            for (var j = yMax; j >= -yMax; --j)
             {
-                if(MapManager.GetMap().GetTileProperties(tile).ContainsEntity)
-                {
-                    potentialTargets.Add(tile);
-                }
+                potentialTargets.Add(new MapCoordinate(currentTile.x + i, currentTile.y + j));
             }
         }
+
         return potentialTargets;
+    }
+
+    public List<MapCoordinate> GetTargetableTiles(MapCoordinate currentTile)
+    {
+        List<MapCoordinate> tiles = GetTilesInRange(currentTile);
+        List<MapCoordinate> targets = new List<MapCoordinate>();
+
+        foreach(MapCoordinate coord in tiles)
+        {
+            MapTileProperties properties = MapManager.GetMap().GetTileProperties(coord);
+
+            switch(targetType)
+            {
+                case AbilityTarget.ENTITY:
+                    {
+                        if(properties.ContainsEntity && coord != currentTile)
+                        {
+                            targets.Add(coord);
+                        }
+                        break;
+                    }
+                case AbilityTarget.TILE:
+                    {
+                        if(properties.Integrity > 0)
+                        {
+                            targets.Add(coord);
+                        }
+                        break;
+                    }
+                case AbilityTarget.BUILDING:
+                    {
+                        // check if type is a building
+                        break;
+                    }
+            }
+        }
+
+        return targets;
     }
 }

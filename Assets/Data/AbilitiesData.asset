@@ -17,15 +17,39 @@ MonoBehaviour:
     abilityRange: 1
     targetType: 0
     abilityCooldown: 1
-    freeUse: 0
+    cost: 1
     abilityEffects:
-    - damage: 0
+    - damage: 2
       type: 0
   - abilityName: DestroyTile
-    abilityRange: 1
-    targetType: 2
+    abilityRange: 0
+    targetType: 1
     abilityCooldown: 1
-    freeUse: 0
+    cost: 1
     abilityEffects:
     - damage: 0
+      type: 3
+  - abilityName: AttackRanged
+    abilityRange: 5
+    targetType: 0
+    abilityCooldown: 1
+    cost: 1
+    abilityEffects:
+    - damage: 1
+      type: 0
+  - abilityName: SpawnClone
+    abilityRange: 1
+    targetType: 1
+    abilityCooldown: 3
+    cost: 1
+    abilityEffects:
+    - damage: 1
+      type: 9
+  - abilityName: DamageTile
+    abilityRange: 1
+    targetType: 1
+    abilityCooldown: 1
+    cost: 1
+    abilityEffects:
+    - damage: 1
       type: 2
