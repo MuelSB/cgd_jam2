@@ -6,7 +6,8 @@ using System.Linq;
 public enum MetaDebugHeightMode {
     OFF,
     INTEGRITY_HEIGHT_ON,
-    BIOME_STRENGTH_ON
+    BIOME_STRENGTH_ON,
+    INTEGRITY_HEIGHT_WITH_DIVIDER_ON,
 }
 public struct MetaGeneratorConfig {
     //general
@@ -18,19 +19,24 @@ public struct MetaGeneratorConfig {
     public int tile_x_integrity_frequency {get; private set;}
     public int tile_y_integrity_frequency {get; private set;}
 
+    public int tile_integrity_divider {get; private set;}
+    public Vector2Int tile_decrement_range_max_min {get; private set;}
+
     //Biome Specific
     public MapTileProperties.TileType base_biome {get; private set;}
     public Dictionary<MapTileProperties.TileType, Vector2Int> biome_max_min_strengths {get; private set;}
     public Vector2Int biome_quantity_max_min {get; private set;}
     public MetaDebugHeightMode debug_mode {get; private set;}
 
-    public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, 
+    public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, int _tile_integrity_divider, Vector2Int _tile_decrement_range_max_min,
                                MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode) {
         seed = _seed;
         max_tile_integrity = _max_tile_integrity;
         min_tile_integrity = _min_tile_integrity;
         tile_x_integrity_frequency = _tile_x_integrity_frequency;
         tile_y_integrity_frequency = _tile_y_integrity_frequency;
+        tile_integrity_divider = _tile_integrity_divider;
+        tile_decrement_range_max_min = _tile_decrement_range_max_min;
         base_biome = _base_biome;
         biome_max_min_strengths = _biome_max_min_strengths;
         biome_quantity_max_min = _biome_quantity_max_min;
@@ -214,7 +220,8 @@ public class MetaGenerator
     private List<GameObject> applyIntegrity(List<GameObject> _c, GameObject _e) => _c.Concat(new[] {alterIntegrity(_e,getIndex(_c.Count()))}).ToList();
 
     //sets the integrity of a gameobject.
-    private GameObject alterIntegrity(GameObject _go, Vector2Int _pos) => _go.GetComponent<MapTile>().SetProperties(new MapTileProperties().setIntegrity(calculateIntegrityFromCoords(_pos)));
+    private GameObject alterIntegrity(GameObject _go, Vector2Int _pos) => _go.GetComponent<MapTile>().SetProperties(new MapTileProperties().setIntegrity(calculateIntegrityFromCoords(_pos), 
+        config.tile_integrity_divider, config.tile_decrement_range_max_min));
 
     //inits the biomestrength map. (A way of storing the strength/weight of a tile. This will then later be used to propigate its type to nearby tiles later.)
     private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> generateBiomeStrengthMap(int _size, MapTileProperties.TileType _default) {
@@ -291,22 +298,22 @@ public class MetaGenerator
         applied_list = biome_strength_map.applyStrengthMapToTiles(applied_list,map_reference.GetWidthTileCount());
 
         switch(config.debug_mode) {
+            case MetaDebugHeightMode.INTEGRITY_HEIGHT_WITH_DIVIDER_ON: {
+                applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().getHeightFromIntegrity(),0));
+                break;
+            }
             case MetaDebugHeightMode.INTEGRITY_HEIGHT_ON: {
                 applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().Integrity/2,0));
                 break;
             } case MetaDebugHeightMode.BIOME_STRENGTH_ON: {
                 applied_list.ForEach(_e => _e.transform.position += new Vector3(0,biome_strength_map[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item1,0));
-                // for (int i = 0; i < applied_list.Count(); i++)
-                // {
-                //     applied_list[i].transform.position += new Vector3(0,biome_strength_map[getIndex(i)].Item1,0);
-                // }
                 break;
             } default: {
                 break;
             }
         }
 
-        // Maybe<List<MapCoordinate>> closest_forest_town = applied_list.getClosestTilesOfType(new MapCoordinate(0,0), MapTileProperties.TileType.Plains_Village);
+        // Maybe<List<MapCoordinate>> closest_forest_town = applied_list.getClosestSpecialTiles(new MapCoordinate(0,0));
         // if (closest_forest_town.is_some) {
         //     MapCoordinate town = closest_forest_town.value[0];
         // }

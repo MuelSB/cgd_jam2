@@ -16,10 +16,13 @@ public class LevelManager : MonoBehaviour
 
     [Header("Meta Generation Data")]
     [SerializeField] private int seed = 1;
-    [SerializeField]private int maxTileIntegrity = 10;
-    [SerializeField]private int minTileIntegrity = 1;
+    [SerializeField]private int maxTileIntegrity = 100;
+    [SerializeField]private int minTileIntegrity = 20;
     [SerializeField]private int tileXIntegrityFrequency = 3;
     [SerializeField]private int tileYIntegrityFrequency = 3;
+    [SerializeField]private int tileIntegrityDivider = 10;
+    [SerializeField]private Vector2Int tileDecrementRangeMaxMin = new Vector2Int(5,3);
+
     [SerializeField]private MapTileProperties.TileType baseBiome = MapTileProperties.TileType.Rock;
     
     //todo, serialize this!
@@ -39,6 +42,10 @@ public class LevelManager : MonoBehaviour
 
         // needs to be last in start
         EventSystem.Invoke(Events.LevelLoaded);
+
+        // uncomment below to burn the world! (spooky!)
+        // System.Random rand = new System.Random(seed);
+        // StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
     }
 
     private void CreateMap()
@@ -53,9 +60,18 @@ public class LevelManager : MonoBehaviour
             MaxRandomRotationJitter = MaxRandomRotationJitter
         };
 
+        if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
+
         var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
-            tileYIntegrityFrequency, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
+            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
 
         MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
+    }
+
+    public IEnumerator burnTheWorld(List<GameObject> _l, System.Random _r) {
+        while (true) {
+            _l.ForEach(_e => _e.GetComponent<MapTile>().Decay(_r));
+            yield return new WaitForSeconds(5);
+        }
     }
 }
