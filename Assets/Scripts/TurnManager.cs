@@ -26,7 +26,6 @@ public class TurnManager : MonoBehaviour
     {
         // reset tracked values
         Reset();
-        Debug.Log(Entity.All.Count);
 
         // error check 
         if (Entity.All.Count < 1)
