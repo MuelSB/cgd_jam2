@@ -26,6 +26,13 @@ public static class MapManager
         depthCount = to.y - from.y;
     }
 
+    public static void GetAbsoluteTileCountTo(MapCoordinate from, MapCoordinate to, out int widthCount, out int depthCount)
+    {
+        GetTileCountTo(from, to, out widthCount, out depthCount);
+        widthCount = Mathf.Abs(widthCount);
+        depthCount = Mathf.Abs(depthCount);
+    }
+
     public static Maybe<MapCoordinate> WorldSpaceToMapCoordinate(Vector3 worldSpacePosition)
     {
         var tileSize = map.GetTileSize();
