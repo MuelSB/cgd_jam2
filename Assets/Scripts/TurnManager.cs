@@ -26,6 +26,13 @@ public class TurnManager : MonoBehaviour
     {
         // reset tracked values
         Reset();
+        Debug.Log(Entity.All.Count);
+
+        // error check 
+        if (Entity.All.Count < 1)
+        {
+            Debug.LogWarning("There are no valid Entities", this);
+        }
         
         // start the first round
         StartRound();
@@ -44,6 +51,9 @@ public class TurnManager : MonoBehaviour
         
         // get actor list 
         _actors = GetInitiativeList();
+        
+        // reset the turn
+        _turn = 0;
         
         // do turn
         StartTurn();
@@ -82,17 +92,18 @@ public class TurnManager : MonoBehaviour
         EventSystem.Invoke(Events.TurnStarted);
         
         // get actor
-        var entity = new Maybe<Entity>(_actors[_turn]);
-
+        var entity = _actors[_turn];
+        
         // skips if actor cant act
-        if (!entity.is_some)
+        if (entity == null)
         {
+            Debug.Log("not a valid entity");
             EventSystem.Invoke(Events.TurnEnded);
             return;
         }
 
         // start the actors turn
-        entity.value.ProcessTurn();
+        entity.ProcessTurn();
     }
 
     private void OnTurnEnded()

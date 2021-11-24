@@ -5,8 +5,6 @@ using Core;
 
 public class LevelManager : MonoBehaviour
 {
-
-
     //Exposed Configs for in-editor value tweaking.
     [Header("Map Data")]
     [SerializeField] private GameObject mapTilePrefabReference;
@@ -36,26 +34,28 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        // Create the game map
-        MapCreateSettings mapCreateSettings = new MapCreateSettings();
-        mapCreateSettings.MapTilePrefabReference = mapTilePrefabReference;
-        mapCreateSettings.MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000);
-        mapCreateSettings.MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000);
-        mapCreateSettings.MinRandomRotationJitter = MinRandomRotationJitter;
-        mapCreateSettings.MaxRandomRotationJitter = MaxRandomRotationJitter;
-        //mapCreateSettings.TileWidthPadding = 0;
-        //mapCreateSettings.TileDepthPadding = 0;
-
-        MetaGeneratorConfig metaGeneratorConfig = new MetaGeneratorConfig(seed,maxTileIntegrity,minTileIntegrity,tileXIntegrityFrequency,tileYIntegrityFrequency,baseBiome,biomeMaxMinStrengths,biomeQuantityMaxMin,debugMode);
-
-        MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
-        var map = MapManager.GetMap();
-
-/*        var id = map.AddEventToTile(new TestMapTileEvent(), new MapCoordinate(0, 0));
-        map.ActivateTile(new MapCoordinate(0, 0));
-        map.RemoveEventFromTile(id, new MapCoordinate(0,0));*/
+        // create the map
+        CreateMap();
 
         // needs to be last in start
         EventSystem.Invoke(Events.LevelLoaded);
+    }
+
+    private void CreateMap()
+    {
+        // Create the game map
+        var mapCreateSettings = new MapCreateSettings
+        {
+            MapTilePrefabReference = mapTilePrefabReference,
+            MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000),
+            MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000),
+            MinRandomRotationJitter = MinRandomRotationJitter,
+            MaxRandomRotationJitter = MaxRandomRotationJitter
+        };
+
+        var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
+            tileYIntegrityFrequency, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
+
+        MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
     }
 }

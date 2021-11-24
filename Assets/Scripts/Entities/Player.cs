@@ -29,6 +29,12 @@ public class Player : Entity
 
     public override void ProcessTurn()
     {
-        EventSystem.Invoke(Events.TurnEnded);
+        
+    }
+
+    [ContextMenu("End Turn")]
+    public void TestEndTurn()
+    {
+        EndTurn();
     }
 }
