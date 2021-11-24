@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class LevelManager : MonoBehaviour
 {
@@ -33,23 +34,28 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        // create the map
+        CreateMap();
+
+        // needs to be last in start
+        EventSystem.Invoke(Events.LevelLoaded);
+    }
+
+    private void CreateMap()
+    {
         // Create the game map
-        MapCreateSettings mapCreateSettings = new MapCreateSettings();
-        mapCreateSettings.MapTilePrefabReference = mapTilePrefabReference;
-        mapCreateSettings.MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000);
-        mapCreateSettings.MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000);
-        mapCreateSettings.MinRandomRotationJitter = MinRandomRotationJitter;
-        mapCreateSettings.MaxRandomRotationJitter = MaxRandomRotationJitter;
-        //mapCreateSettings.TileWidthPadding = 0;
-        //mapCreateSettings.TileDepthPadding = 0;
+        var mapCreateSettings = new MapCreateSettings
+        {
+            MapTilePrefabReference = mapTilePrefabReference,
+            MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000),
+            MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000),
+            MinRandomRotationJitter = MinRandomRotationJitter,
+            MaxRandomRotationJitter = MaxRandomRotationJitter
+        };
 
-        MetaGeneratorConfig metaGeneratorConfig = new MetaGeneratorConfig(seed,maxTileIntegrity,minTileIntegrity,tileXIntegrityFrequency,tileYIntegrityFrequency,baseBiome,biomeMaxMinStrengths,biomeQuantityMaxMin,debugMode);
+        var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
+            tileYIntegrityFrequency, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
 
-        MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
-        var map = MapManager.GetMap();
-
-        var id = map.AddEventToTile(new TestMapTileEvent(), new MapCoordinate(0, 0));
-        map.ActivateTile(new MapCoordinate(0, 0));
-        map.RemoveEventFromTile(id, new MapCoordinate(0,0));
+        MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
     }
 }
