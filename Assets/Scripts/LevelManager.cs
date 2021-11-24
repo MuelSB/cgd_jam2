@@ -56,11 +56,21 @@ public class LevelManager : MonoBehaviour
         MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
         var map = MapManager.GetMap();
 
+        var playerStartCoordinate = new MapCoordinate(0, 0);
+        var playerStartTile = map.GetTileObject(playerStartCoordinate);
+
         // Initialize player systems
         if(playerPrefabReference != null)
         {
             // Spawn player
             playerObject = Instantiate(playerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+
+            // Move player onto starting tile
+            var playerCollision = playerObject.GetComponent<CapsuleCollider>();
+            var tileCollision = playerStartTile.GetComponent<BoxCollider>();
+            var newPosition = playerStartTile.transform.position;
+            newPosition.y += (playerCollision.height * 0.5f) + (tileCollision.size.y * 0.5f);
+            playerObject.transform.position = newPosition;
 
             // Spawn player controller
             var playerControllerObject = new GameObject();
