@@ -13,7 +13,18 @@ public class MapTileProperties
         Forest_Village,
         Plains,
         Plains_Village,
-        Lake
+        Lake,
+        Mountain,
+        Forest_Village_Destroyed,
+        Plains_Village_Destroyed,
+        Tower,
+        Blood_Bog,
+        Lighthouse,
+        Travelling_Merchant,
+        Shrine,
+        Supplies,
+        Ritual_Circle
+
         // TODO: Decide tile types
     }
 
