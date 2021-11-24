@@ -33,4 +33,13 @@ public class Player : Entity
         
     }
 
+    public void OnControlled()
+    {
+        Debug.Log("Player controlled.");
+    }
+
+    public void OnUnControlled()
+    {
+
+    }
 }

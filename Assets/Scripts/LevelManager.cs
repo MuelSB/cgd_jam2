@@ -31,6 +31,14 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Vector2Int biomeQuantityMaxMin = new Vector2Int(20,15);
     [SerializeField] private MetaDebugHeightMode debugMode = MetaDebugHeightMode.OFF;
 
+    [Header("Player")]
+    [SerializeField] private GameObject PlayerPrefabReference;
+
+    // Class variables
+    private GameObject playerObject; // Only one player currently implemented
+    private GameObject playerControllerObject; // Only one player controller currently implemented
+    private PlayerController playerController; 
+
     private void Start()
     {
         // Create the game map
@@ -47,5 +55,23 @@ public class LevelManager : MonoBehaviour
 
         MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
         var map = MapManager.GetMap();
+
+        // Initialize player systems
+        if(PlayerPrefabReference != null)
+        {
+            // Spawn player
+            playerObject = Instantiate(PlayerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+
+            // Spawn player controller
+            var playerControllerObject = new GameObject();
+            playerController = playerControllerObject.AddComponent<PlayerController>();
+
+            // Control player with player controller
+            playerController.ControlPlayer(playerObject.GetComponent<Player>());
+        }
+        else
+        {
+            Debug.LogWarning("Player not initialized as PlayerPrefabReference was not set in the level manager.");
+        }        
     }
 }
