@@ -20,14 +20,11 @@ public class Enemy : Entity
 
         int widthTo, heightTo;
 
-        MapManager.GetTileCountTo(currentTile, playerTile, out widthTo, out heightTo);
-        /*
-         * If playerTile is close enough to move next to then move to player
-         * If not move to nearest point of interest in otherTargets
-         */
-
+        MapManager.GetAbsoluteTileCountTo(currentTile, playerTile, out widthTo, out heightTo);
+        
         if(widthTo + heightTo > movementRange)
         {
+            List<MapCoordinate> potentialTargets = new List<MapCoordinate>();
             foreach(Ability ability in abilities)
             {
                 if(ability.targetType == Ability.AbilityTarget.BUILDING)
@@ -40,38 +37,23 @@ public class Enemy : Entity
         List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile);
 
         return path;
-        /*
-        KeyValuePair<int, Ability> bestMoveToAttack = new KeyValuePair<int, Ability>(-1, null);
-
-        foreach(Ability ability in abilities)
-        {
-            int range = ability.range;
-            // If there is a tile in range to attack already then do so
-            int distanceToTargetable = 0;
-            // Else find nearest targetable tile and store its distance
-            if (distanceToTargetable < bestMoveToAttack.Key || bestMoveToAttack.Key == -1)
-            {
-                bestMoveToAttack = new KeyValuePair<int, Ability>(distanceToTargetable, ability);
-            }
-        }
-        return null;
-        */
     }
 
     private IEnumerator UseAbilities()
     {
-        bool usedStandardAbility = false;
+        int apUsed = 0;
         foreach(Ability ability in abilities)
         {
-            bool isFreeAbility = ability.freeUse;
-            if (usedStandardAbility && ability.freeUse == false) continue;
+            int cost = ability.cost;
+            if (cost > 0 && apUsed > 0) continue;
 
 
-            List<MapCoordinate> targets = ability.CanUseAbility(currentTile);
+            List<MapCoordinate> targets = ability.GetTargetableTiles(currentTile);
             if(targets.Count > 0)
             {
-                ability.UseAbility(targets[0]);
-                if (isFreeAbility == false) usedStandardAbility = true;
+                MapCoordinate target = targets[0];
+                yield return AbilityManager.Instance.ExecuteAbility(ability, target);
+                apUsed += cost;
             }
 
             yield return new WaitForSeconds(1.0f);
@@ -82,8 +64,10 @@ public class Enemy : Entity
     {
         var path = GetDesiredMove();
 
-        yield return Move(path);
-
+        if (path.Count > 0)
+        {
+            yield return Move(path);
+        }
         yield return UseAbilities();
 
         EndTurn();

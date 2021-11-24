@@ -5,12 +5,9 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance;
-    public AbilitiesData abilitiesData;
     public EnemiesData enemiesData;
 
     public GameObject enemyPrefab;
-
-    public Dictionary<string, Ability> abilities;
 
     private Dictionary<Enemy, MapCoordinate> minions;
 
@@ -24,10 +21,9 @@ public class EnemyManager : MonoBehaviour
         {
             Debug.LogError("More than one EnemyManager instance in scene!");
             Destroy(gameObject);
+            return;
         }
         Instance = this;
-
-        SetupAbilities();
 
         minions = new Dictionary<Enemy, MapCoordinate>();
         for(int i = 0; i < minionNumber; ++i)
@@ -40,12 +36,9 @@ public class EnemyManager : MonoBehaviour
 
             foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
             {
-                if(enemyData.type == EnemiesData.EnemyType.MINION)
+                foreach (string abilityName in enemyData.abilityNames)
                 {
-                    foreach (string abilityName in enemyData.abilityNames)
-                    {
-                        enemy.abilities.Add(abilities[abilityName]);
-                    }
+                    enemy.abilities.Add(AbilityManager.abilities[abilityName]);
                 }
             }
 
@@ -53,25 +46,5 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    void SetupAbilities()
-    {
-        abilities = new Dictionary<string, Ability>();
-        foreach(AbilitiesData.AbilityData abilityData in abilitiesData.abilities)
-        {
-            Ability newAbility = new Ability();
-            newAbility.range = abilityData.abilityRange;
-            newAbility.targetType = abilityData.targetType;
-            newAbility.freeUse = abilityData.freeUse;
-            newAbility.turnsCooldown = abilityData.abilityCooldown;
-            newAbility.abilityEffects = new List<AbilityEffect>();
-            foreach(AbilityEffect.AbilityEffectData effectData in abilityData.abilityEffects)
-            {
-                AbilityEffect effect = new AbilityEffect();
-                effect.effect = effectData.type;
-                effect.damage = effectData.damage;
-                newAbility.abilityEffects.Add(effect);
-            }
-            abilities.Add(abilityData.abilityName, newAbility);
-        }
-    }
+
 }
