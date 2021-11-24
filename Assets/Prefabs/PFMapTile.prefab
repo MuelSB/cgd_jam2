@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3912939811055574664}
   - component: {fileID: 4436557871722024305}
   - component: {fileID: 4651228358196940231}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PFMapTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   properties:
+    tile: {fileID: 4436557871722024305}
     Integrity: 1
     Type: 0
     ContainsEntity: 0
