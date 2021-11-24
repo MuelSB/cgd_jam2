@@ -16,5 +16,10 @@ namespace Core
         public const string RoundEnded   = "RoundEnded";
         public const string TurnStarted  = "TurnStarted"; 
         public const string TurnEnded    = "TurnEnded";
+        
+        // Values
+        public const string BroadcastPlayer = "BroadcastPlayer";
+
+        // Gameplay
     }
 }

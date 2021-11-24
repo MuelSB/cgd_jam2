@@ -31,6 +31,7 @@ public class TurnManager : MonoBehaviour
         if (Entity.All.Count < 1)
         {
             Debug.LogWarning("There are no valid Entities", this);
+            return;
         }
         
         // start the first round
@@ -96,7 +97,6 @@ public class TurnManager : MonoBehaviour
         // skips if actor cant act
         if (entity == null)
         {
-            Debug.Log("not a valid entity");
             EventSystem.Invoke(Events.TurnEnded);
             return;
         }

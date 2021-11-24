@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,13 @@ using Core;
 
 public class Player : Entity
 {
+    private void Start()
+    {
+        // broadcasts the player
+        EventSystem.Invoke(Events.BroadcastPlayer, this);
+        base.OnEnable();
+    }
+
     public List<Items> items;
 
     public void TakeDamage(int damage)
@@ -31,10 +39,5 @@ public class Player : Entity
     {
         
     }
-
-    [ContextMenu("End Turn")]
-    public void TestEndTurn()
-    {
-        EndTurn();
-    }
+    
 }

@@ -5,6 +5,11 @@ using Core;
 
 public abstract class Entity : MonoBehaviour
 {
+    // adds and removes entities to list on creation and destruction
+    public static List<Entity> All = new List<Entity>();
+    protected void OnEnable() => All.Add(this);
+    protected void OnDisable() => All.Remove(this);
+    
     public enum EntityType
     {
         PLAYER,
@@ -31,11 +36,7 @@ public abstract class Entity : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // adds and removes entities to list on creation and destruction
-    public static List<Entity> All = new List<Entity>();
-    private void OnEnable() => All.Add(this);
-    private void OnDisable() => All.Remove(this);
-
+    
     // pure virtuals
     public abstract void ProcessTurn();
     protected virtual void EndTurn()

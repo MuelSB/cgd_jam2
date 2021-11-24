@@ -22,13 +22,20 @@ namespace Core
             // set up effects
             _effectSource = components[1];
             
-                        
             // set Audio Mode
             SetDebugAudioMode();
         }
 
+        private static bool IsInvalid()
+        {
+            if (_effectSource != null && _effectSource != null) return false;
+            Debug.LogWarning("The SoundSystem does not exist");
+            return true;
+        }
+        
         public static void PlayMusic(AudioClip clip)
         {
+            if (IsInvalid()) return;
             if (_musicSource.isPlaying)
             {
                 _musicSource.Stop();
@@ -38,11 +45,13 @@ namespace Core
         
         public static void PlayEffect(AudioClip clip)
         {
+            if (IsInvalid()) return;
             _effectSource.PlayOneShot(clip);
         }
 
         private void SetDebugAudioMode()
         {
+            if (IsInvalid()) return;
             if (_audioMode == AudioMode.PlayAudio || !Application.isEditor) return;
             
             _musicSource.mute = true;
