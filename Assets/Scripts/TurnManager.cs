@@ -4,10 +4,7 @@ using UnityEngine;
 using Core;
 
 public class TurnManager : MonoBehaviour
-{
-    private const string PlayerTag = "Player";
-    private const string BossTag = "Boss";
-    
+{   
     public void OnEnable()
     {
         EventSystem.Subscribe(Events.LevelLoaded, OnLevelLoaded);
@@ -20,7 +17,7 @@ public class TurnManager : MonoBehaviour
         EventSystem.Unsubscribe(Events.TurnEnded, OnTurnEnded);
     }
 
-    private List<Actor> _actors = new List<Actor>();
+    private List<Entity> _actors = new List<Entity>();
 
     private int _round = 0;
     private int _turn = 0;
@@ -52,19 +49,19 @@ public class TurnManager : MonoBehaviour
         StartTurn();
     }
 
-    private List<Actor> GetInitiativeList()
+    private List<Entity> GetInitiativeList()
     {
         // create the list
-        var initiative = new List<Actor>();
+        var initiative = new List<Entity>();
         
         // add the player to the first position
-        initiative.Add(Actor.All.Find(actor => actor.CompareTag(PlayerTag)));
+        initiative.Add(Entity.All.Find(entity => entity.type == Entity.EntityType.PLAYER));
         
         // add everything that is not a player or boss
-        initiative.AddRange(Actor.All.Where(actor => !actor.CompareTag(PlayerTag) && !actor.CompareTag(BossTag)));
+        initiative.AddRange(Entity.All.Where(entity => entity.type != Entity.EntityType.PLAYER && entity.type != Entity.EntityType.BOSS));
         
         // add the player to the first position
-        initiative.Add(Actor.All.Find(actor => actor.CompareTag(BossTag)));
+        initiative.Add(Entity.All.Find(entity => entity.type == Entity.EntityType.BOSS));
     
         return initiative;
     }
@@ -85,13 +82,17 @@ public class TurnManager : MonoBehaviour
         EventSystem.Invoke(Events.TurnStarted);
         
         // get actor
-        var actor = _actors[_turn];
-        
+        var entity = new Maybe<Entity>(_actors[_turn]);
+
         // skips if actor cant act
-        if ( actor != null || !actor.canAct ) EventSystem.Invoke(Events.TurnEnded);
-        
+        if (!entity.is_some)
+        {
+            EventSystem.Invoke(Events.TurnEnded);
+            return;
+        }
+
         // start the actors turn
-        actor.StartTurn();
+        entity.value.ProcessTurn();
     }
 
     private void OnTurnEnded()

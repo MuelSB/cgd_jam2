@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class LevelManager : MonoBehaviour
 {
+
+
     //Exposed Configs for in-editor value tweaking.
     [Header("Map Data")]
     [SerializeField] private GameObject mapTilePrefabReference;
@@ -48,8 +51,11 @@ public class LevelManager : MonoBehaviour
         MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
         var map = MapManager.GetMap();
 
-        var id = map.AddEventToTile(new TestMapTileEvent(), new MapCoordinate(0, 0));
+/*        var id = map.AddEventToTile(new TestMapTileEvent(), new MapCoordinate(0, 0));
         map.ActivateTile(new MapCoordinate(0, 0));
-        map.RemoveEventFromTile(id, new MapCoordinate(0,0));
+        map.RemoveEventFromTile(id, new MapCoordinate(0,0));*/
+
+        // needs to be last in start
+        EventSystem.Invoke(Events.LevelLoaded);
     }
 }
