@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    // Class variables
+    PlayerInputActions playerInputActions;
     private Maybe<Player> ControlledPlayer = new Maybe<Player>();
 
     public void ControlPlayer(Player targetPlayer)
@@ -22,6 +25,24 @@ public class PlayerController : MonoBehaviour
 
         // Call the controlled player's on uncontrolled event
         ControlledPlayer.value.OnUnControlled();
+    }
+
+    private void Awake()
+    {
+        SetupInputActions();
+    }
+
+    private void SetupInputActions()
+    {
+        playerInputActions = new PlayerInputActions();
+        playerInputActions.Player.Enable();
+
+        playerInputActions.Player.Select.performed += Select;
+    }
+
+    private void Select(InputAction.CallbackContext context)
+    {
+
     }
 
     //void Update()

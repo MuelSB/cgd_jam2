@@ -341,7 +341,7 @@ MonoBehaviour:
   baseBiome: 2
   biomeQuantityMaxMin: {x: 20, y: 15}
   debugMode: 1
-  PlayerPrefabReference: {fileID: 1866463362989073637, guid: 3bb8b8d4fc2e823438c77b5282fd9a83, type: 3}
+  playerPrefabReference: {fileID: 1866463362989073637, guid: 3bb8b8d4fc2e823438c77b5282fd9a83, type: 3}
 --- !u!4 &1123521197
 Transform:
   m_ObjectHideFlags: 0

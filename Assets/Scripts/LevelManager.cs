@@ -32,7 +32,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private MetaDebugHeightMode debugMode = MetaDebugHeightMode.OFF;
 
     [Header("Player")]
-    [SerializeField] private GameObject PlayerPrefabReference;
+    [SerializeField] private GameObject playerPrefabReference;
 
     // Class variables
     private GameObject playerObject; // Only one player currently implemented
@@ -57,10 +57,10 @@ public class LevelManager : MonoBehaviour
         var map = MapManager.GetMap();
 
         // Initialize player systems
-        if(PlayerPrefabReference != null)
+        if(playerPrefabReference != null)
         {
             // Spawn player
-            playerObject = Instantiate(PlayerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+            playerObject = Instantiate(playerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
 
             // Spawn player controller
             var playerControllerObject = new GameObject();
