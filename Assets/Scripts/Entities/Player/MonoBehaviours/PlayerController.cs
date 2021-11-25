@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     PlayerInputActions playerInputActions;
     private Maybe<Player> controlledPlayer = new Maybe<Player>();
     private float selectRayLength = 10000.0f;
-    private float playerMovementSmoothing = 0.01f;
+    private float playerMovementSpeed = 0.01f;
     private int tileLayerMask = 1 << 6;
 
     public void ControlPlayer(Player targetPlayer)
@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
 
     private void Select(InputAction.CallbackContext context)
     {
+        // Check a player is controlled
+        if (!controlledPlayer.is_some) return;
+
         // Raycast from the cursor world position down into the scene
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(
                 Mouse.current.position.x.ReadValue(),
@@ -56,7 +59,32 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, selectRayLength, tileLayerMask))
         {
-            StartCoroutine(MovePlayerToTile(hit.collider.gameObject));
+            // Get the player's current tile coordinate
+            var playerHeight = controlledPlayer.value.GetComponent<CapsuleCollider>().height;
+            RaycastHit playerTileRaycastHit;
+            Ray playerTileRay = new Ray(controlledPlayer.value.transform.position, -Vector3.up);
+            var playerTileCoord = new MapCoordinate(0, 0);
+            if(Physics.Raycast(playerTileRay, out playerTileRaycastHit, (playerHeight / 2.0f) + 1.0f, tileLayerMask))
+            {
+                playerTileCoord = playerTileRaycastHit.collider.gameObject.GetComponent<MapTile>().getLocation();
+            }
+
+            // Get the hit tile's map coordinate
+            var hitCoordinate = hit.collider.gameObject.GetComponent<MapTile>().getLocation();
+
+            // Do nothing if the selected tile is the tile the player is currently on
+            if (hitCoordinate == playerTileCoord) return;
+
+            // Get the distance between the hit tile and the controlled player's current tile
+            int widthCount, depthCount;
+            MapManager.GetTileCountTo(playerTileCoord, hitCoordinate, out widthCount, out depthCount);
+
+            // If the tile is within the controlled player's movement range
+            if (Mathf.Abs(widthCount) <= controlledPlayer.value.movementRange &&
+                Mathf.Abs(depthCount) <= controlledPlayer.value.movementRange)
+            {
+                StartCoroutine(MovePlayerToTile(hit.collider.gameObject));
+            }
         }
     }
 
@@ -73,9 +101,9 @@ public class PlayerController : MonoBehaviour
         targetPosition.y += playerCollisionHalfHeight + tileCollisionHalfHeight;
 
         // Move the player towards the target position
-        while(Vector3.Distance(controlledPlayer.value.transform.position, targetPosition) > 0.005f)
+        while(Vector3.Distance(controlledPlayer.value.transform.position, targetPosition) > 0.1f)
         {
-            controlledPlayer.value.transform.position = Vector3.Lerp(controlledPlayer.value.transform.position, targetPosition, playerMovementSmoothing * Time.time);
+            controlledPlayer.value.transform.position = Vector3.Slerp(controlledPlayer.value.transform.position, targetPosition, playerMovementSpeed * Time.time);
 
             yield return null;
         }

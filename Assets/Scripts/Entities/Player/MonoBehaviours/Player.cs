@@ -18,11 +18,6 @@ public class Player : Entity
         health -= damage;
     }
 
-    public void Move(MapCoordinate mapCoordinate)
-    {
-
-    }
-
     public void UseAbilities()
     {
 
