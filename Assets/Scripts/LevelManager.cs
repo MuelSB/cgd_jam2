@@ -69,7 +69,7 @@ public class LevelManager : MonoBehaviour
             var playerCollision = playerObject.GetComponent<CapsuleCollider>();
             var tileCollision = playerStartTile.GetComponent<BoxCollider>();
             var newPosition = playerStartTile.transform.position;
-            newPosition.y += (playerCollision.height * 0.5f) + (tileCollision.size.y * 0.5f);
+            newPosition.y += ((playerCollision.height * 0.5f) * playerObject.transform.localScale.y) + (tileCollision.size.y * 0.5f);
             playerObject.transform.position = newPosition;
 
             // Spawn player controller

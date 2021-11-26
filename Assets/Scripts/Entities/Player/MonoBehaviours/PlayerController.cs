@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         var tileCollisionHalfHeight = tileObject.GetComponent<BoxCollider>().size.y * 0.5f;
 
         var targetPosition = tileObject.transform.position;
-        targetPosition.y += playerCollisionHalfHeight + tileCollisionHalfHeight;
+        targetPosition.y += (playerCollisionHalfHeight * controlledPlayer.value.transform.localScale.y) + tileCollisionHalfHeight;
 
         // Move the player towards the target position
         while(Vector3.Distance(controlledPlayer.value.transform.position, targetPosition) > 0.1f)
