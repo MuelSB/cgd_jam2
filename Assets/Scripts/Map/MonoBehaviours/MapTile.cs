@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class MapTile : MonoBehaviour
 {
@@ -56,5 +57,56 @@ public class MapTile : MonoBehaviour
     {
         tileRigidbody = GetComponent<Rigidbody>();
         objectRenderer = GetComponent<Renderer>();
+    }
+
+    IEnumerator updatePostionFromInegrity() {
+        float target_y = GetProperties().getHeightFromIntegrity();
+        float current_y = gameObject.transform.position.y;
+        if (current_y == target_y) {yield break;}
+        float e_time = 0f;
+        float duration = 3f;
+        while (e_time < duration) {
+            float new_y = Mathf.Lerp(current_y,target_y,(e_time/duration));
+            gameObject.transform.position = new Vector3(gameObject.transform.position.x,new_y,gameObject.transform.position.z);
+            e_time+=Time.deltaTime;
+            yield return null;
+        }
+        gameObject.transform.position = new Vector3(gameObject.transform.position.x,target_y,gameObject.transform.position.z);
+        yield return null;
+    }
+
+    public IEnumerator TileDeath() {
+        Color grey = MetaGeneratorHelper.makeColour(40,40,40);
+        Color currentColor = objectRenderer.material.color;
+        float e_time = 0f;
+        float duration = 1f;
+        while (e_time < duration) {
+            Color new_c = Color.Lerp(currentColor,grey,(e_time/duration));
+            objectRenderer.material.color = new_c;
+            e_time+=Time.deltaTime;
+            yield return null;
+        }
+        objectRenderer.material.color = grey;
+        UseGravity(true);
+        yield return new WaitForSeconds(10);
+        // objectRenderer.material.color = new Color(0,0,0,0);
+        gameObject.SetActive(false);
+        yield return null;
+    }
+
+    //will erode the tiles integrity rate by its internal integrity erosion rate and return true if it dies.
+    public bool Decay(System.Random _random) {
+        if (GetProperties().Alive()) {
+            MapTileProperties properties = GetProperties();
+            properties.Integrity -= _random.Next(properties.IntegrityErosionRange.y,properties.IntegrityErosionRange.x+1);
+            SetProperties(properties);
+            if (properties.Integrity <= 0) {
+                StartCoroutine(TileDeath());
+                return true;
+            }
+            StartCoroutine(updatePostionFromInegrity());
+            return false;
+        }
+        return false;
     }
 }

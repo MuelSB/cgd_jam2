@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class Enemy : Entity
 {
     public MapCoordinate currentTile;
 
-    public void ProcessTurn()
+    public override void ProcessTurn() 
     {
         StartCoroutine(TurnCoroutine());
     }
@@ -85,6 +86,7 @@ public class Enemy : Entity
 
         yield return UseAbilities();
 
+        EndTurn();
         yield break;
     }
 

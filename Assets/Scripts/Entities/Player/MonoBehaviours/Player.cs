@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class Player : Entity
 {
@@ -36,5 +37,16 @@ public class Player : Entity
     public void OnUnControlled()
     {
 
+    }
+
+    public override void ProcessTurn()
+    {
+        
+    }
+
+    [ContextMenu("End Turn")]
+    public void TestEndTurn()
+    {
+        EndTurn();
     }
 }

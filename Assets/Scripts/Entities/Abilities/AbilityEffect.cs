@@ -44,7 +44,7 @@ public class AbilityEffect : ScriptableObject
                 }
             case EffectType.DESTROY_TILE:
                 {
-                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(0);
+                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(0,MapManager.GetMap().GetTileProperties(targetTile).IntegrityDivider,MapManager.GetMap().GetTileProperties(targetTile).IntegrityErosionRange);
                     break;
                 }
             case EffectType.DESTROY_OCCUPANT:

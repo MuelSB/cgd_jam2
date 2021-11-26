@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class LevelManager : MonoBehaviour
 {
@@ -15,10 +16,13 @@ public class LevelManager : MonoBehaviour
 
     [Header("Meta Generation Data")]
     [SerializeField] private int seed = 1;
-    [SerializeField]private int maxTileIntegrity = 10;
-    [SerializeField]private int minTileIntegrity = 1;
+    [SerializeField]private int maxTileIntegrity = 100;
+    [SerializeField]private int minTileIntegrity = 20;
     [SerializeField]private int tileXIntegrityFrequency = 3;
     [SerializeField]private int tileYIntegrityFrequency = 3;
+    [SerializeField]private int tileIntegrityDivider = 10;
+    [SerializeField]private Vector2Int tileDecrementRangeMaxMin = new Vector2Int(5,3);
+
     [SerializeField]private MapTileProperties.TileType baseBiome = MapTileProperties.TileType.Rock;
     
     //todo, serialize this!
@@ -41,19 +45,35 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        // create the map
+        CreateMap();
+
+        // needs to be last in start
+        EventSystem.Invoke(Events.LevelLoaded);
+
+        // uncomment below to burn the world! (spooky!)
+        // System.Random rand = new System.Random(seed);
+        // StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
+    }
+
+    private void CreateMap()
+    {
         // Create the game map
-        MapCreateSettings mapCreateSettings = new MapCreateSettings();
-        mapCreateSettings.MapTilePrefabReference = mapTilePrefabReference;
-        mapCreateSettings.MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000);
-        mapCreateSettings.MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000);
-        mapCreateSettings.MinRandomRotationJitter = MinRandomRotationJitter;
-        mapCreateSettings.MaxRandomRotationJitter = MaxRandomRotationJitter;
-        //mapCreateSettings.TileWidthPadding = 0;
-        //mapCreateSettings.TileDepthPadding = 0;
+        var mapCreateSettings = new MapCreateSettings
+        {
+            MapTilePrefabReference = mapTilePrefabReference,
+            MapWidthTileCount = Mathf.Clamp(MapWidthTileCount, 3, 10000),
+            MapDepthTileCount = Mathf.Clamp(MapDepthTileCount, 3, 10000),
+            MinRandomRotationJitter = MinRandomRotationJitter,
+            MaxRandomRotationJitter = MaxRandomRotationJitter
+        };
 
-        MetaGeneratorConfig metaGeneratorConfig = new MetaGeneratorConfig(seed,maxTileIntegrity,minTileIntegrity,tileXIntegrityFrequency,tileYIntegrityFrequency,baseBiome,biomeMaxMinStrengths,biomeQuantityMaxMin,debugMode);
+        if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
 
-        MapManager.CreateMap(mapCreateSettings,metaGeneratorConfig);
+        var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
+            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
+
+        MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
         var map = MapManager.GetMap();
 
         var playerStartCoordinate = new MapCoordinate(0, 0);
@@ -83,5 +103,14 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogWarning("Player not initialized as PlayerPrefabReference was not set in the level manager.");
         }        
+    }
+
+    public IEnumerator burnTheWorld(List<GameObject> _l, System.Random _r)
+    {
+        while (true)
+        {
+            _l.ForEach(_e => _e.GetComponent<MapTile>().Decay(_r));
+            yield return new WaitForSeconds(5);
+        }
     }
 }

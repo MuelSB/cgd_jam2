@@ -6,7 +6,8 @@ using System.Linq;
 public enum MetaDebugHeightMode {
     OFF,
     INTEGRITY_HEIGHT_ON,
-    BIOME_STRENGTH_ON
+    BIOME_STRENGTH_ON,
+    INTEGRITY_HEIGHT_WITH_DIVIDER_ON,
 }
 public struct MetaGeneratorConfig {
     //general
@@ -18,19 +19,24 @@ public struct MetaGeneratorConfig {
     public int tile_x_integrity_frequency {get; private set;}
     public int tile_y_integrity_frequency {get; private set;}
 
+    public int tile_integrity_divider {get; private set;}
+    public Vector2Int tile_decrement_range_max_min {get; private set;}
+
     //Biome Specific
     public MapTileProperties.TileType base_biome {get; private set;}
     public Dictionary<MapTileProperties.TileType, Vector2Int> biome_max_min_strengths {get; private set;}
     public Vector2Int biome_quantity_max_min {get; private set;}
     public MetaDebugHeightMode debug_mode {get; private set;}
 
-    public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, 
+    public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, int _tile_integrity_divider, Vector2Int _tile_decrement_range_max_min,
                                MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode) {
         seed = _seed;
         max_tile_integrity = _max_tile_integrity;
         min_tile_integrity = _min_tile_integrity;
         tile_x_integrity_frequency = _tile_x_integrity_frequency;
         tile_y_integrity_frequency = _tile_y_integrity_frequency;
+        tile_integrity_divider = _tile_integrity_divider;
+        tile_decrement_range_max_min = _tile_decrement_range_max_min;
         base_biome = _base_biome;
         biome_max_min_strengths = _biome_max_min_strengths;
         biome_quantity_max_min = _biome_quantity_max_min;
@@ -70,6 +76,51 @@ public static class MetaGeneratorHelper
         }).Select(_p => _p.GetComponent<MapTile>().getLocation()).ToList());
     }
     public static MapTileProperties.TileType getTileType(this GameObject _g) => _g.GetComponent<MapTile>().GetProperties().Type;
+
+    public static bool typeIsSpecial(this GameObject _g) => _g.getTileType().typeIsSpecial();
+    public static bool typeIsSpecial(this MapTileProperties.TileType _t) => _t switch {
+        MapTileProperties.TileType.Unassigned => false,
+        MapTileProperties.TileType.Forest => false,
+        MapTileProperties.TileType.Rock => false,
+        MapTileProperties.TileType.Forest_Village => true,
+        MapTileProperties.TileType.Plains => false,
+        MapTileProperties.TileType.Plains_Village => true,
+        MapTileProperties.TileType.Lake => false,
+        MapTileProperties.TileType.Mountain => true,
+        MapTileProperties.TileType.Forest_Village_Destroyed => true,
+        MapTileProperties.TileType.Plains_Village_Destroyed => true,
+        MapTileProperties.TileType.Tower => true,
+        MapTileProperties.TileType.Blood_Bog => true,
+        MapTileProperties.TileType.Lighthouse => true,
+        MapTileProperties.TileType.Travelling_Merchant => true,
+        MapTileProperties.TileType.Shrine => true,
+        MapTileProperties.TileType.Supplies => true,
+        MapTileProperties.TileType.Ritual_Circle => true,
+        _ => throw new ArgumentException($"The type '{_t}' is not registered in typeIsSpecial function!")
+    };
+
+    //getClosestSpecialTiles: Returns the closest tile to the center that has a type that counts as special. Can return multiple tiles if multiple special tiles are equadistant to the center.
+    //can also return isNone if no tiles of that type are found. Can also be optionally passed a type filter that will only look for tiles that have types that are in the filter. 
+    //(Sidenote: if you use a filter, you can search for any tile type, not just special tile types!)
+    public static Maybe<List<MapCoordinate>> getClosestSpecialTiles(this List<GameObject> _tiles, MapCoordinate _center) {
+        List<MapTileProperties.TileType> filter = new List<MapTileProperties.TileType>();
+        Enumerable.Range(0,Enum.GetNames(typeof(MapTileProperties.TileType)).Length).ToList().ForEach(_e => {if (MetaGeneratorHelper.typeIsSpecial((MapTileProperties.TileType)_e)) 
+            {filter.Add((MapTileProperties.TileType)_e);}});
+        return _tiles.getClosestTiles(_center,filter);
+    }
+    public static Maybe<List<MapCoordinate>> getClosestTiles(this List<GameObject> _tiles, MapCoordinate _center, List<MapTileProperties.TileType> _filter) {
+        List<GameObject> targets = _tiles.Where(_e => _filter.Contains(_e.getTileType())).ToList();
+        if (targets.Count < 1) { return new Maybe<List<MapCoordinate>>();}
+        int smallest_length = 100000;
+        Dictionary<int,List<GameObject>> length_to_gameobjects = new Dictionary<int, List<GameObject>>();
+        targets.ForEach(_e => { Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,(_e.GetComponent<MapTile>().getLocation()-_center).y);
+            int current_length = loc.x+loc.y; if (current_length < smallest_length) {smallest_length = current_length;} 
+            if (!length_to_gameobjects.Keys.ToList().Contains(current_length)) {length_to_gameobjects[current_length] = new List<GameObject>();} length_to_gameobjects[current_length].Add(_e);
+        });
+        return new Maybe<List<MapCoordinate>>(targets.Where(_e => {Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,(_e.GetComponent<MapTile>().getLocation()-_center).y);
+            return loc.x+loc.y == smallest_length;
+        }).Select(_p => _p.GetComponent<MapTile>().getLocation()).ToList());
+    }
 
     //typeHasVillage: returns if the type of the provided tile has a village variant.
     public static bool typeHasVillage(this GameObject _g) => _g.getTileType().typeHasVillage();
@@ -169,7 +220,8 @@ public class MetaGenerator
     private List<GameObject> applyIntegrity(List<GameObject> _c, GameObject _e) => _c.Concat(new[] {alterIntegrity(_e,getIndex(_c.Count()))}).ToList();
 
     //sets the integrity of a gameobject.
-    private GameObject alterIntegrity(GameObject _go, Vector2Int _pos) => _go.GetComponent<MapTile>().SetProperties(new MapTileProperties().setIntegrity(calculateIntegrityFromCoords(_pos)));
+    private GameObject alterIntegrity(GameObject _go, Vector2Int _pos) => _go.GetComponent<MapTile>().SetProperties(new MapTileProperties().setIntegrity(calculateIntegrityFromCoords(_pos), 
+        config.tile_integrity_divider, config.tile_decrement_range_max_min));
 
     //inits the biomestrength map. (A way of storing the strength/weight of a tile. This will then later be used to propigate its type to nearby tiles later.)
     private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> generateBiomeStrengthMap(int _size, MapTileProperties.TileType _default) {
@@ -246,22 +298,22 @@ public class MetaGenerator
         applied_list = biome_strength_map.applyStrengthMapToTiles(applied_list,map_reference.GetWidthTileCount());
 
         switch(config.debug_mode) {
+            case MetaDebugHeightMode.INTEGRITY_HEIGHT_WITH_DIVIDER_ON: {
+                applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().getHeightFromIntegrity(),0));
+                break;
+            }
             case MetaDebugHeightMode.INTEGRITY_HEIGHT_ON: {
-                applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().Integrity,0));
+                applied_list.ForEach(_e => _e.transform.position += new Vector3(0,_e.GetComponent<MapTile>().GetProperties().Integrity/2,0));
                 break;
             } case MetaDebugHeightMode.BIOME_STRENGTH_ON: {
                 applied_list.ForEach(_e => _e.transform.position += new Vector3(0,biome_strength_map[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item1,0));
-                // for (int i = 0; i < applied_list.Count(); i++)
-                // {
-                //     applied_list[i].transform.position += new Vector3(0,biome_strength_map[getIndex(i)].Item1,0);
-                // }
                 break;
             } default: {
                 break;
             }
         }
 
-        // Maybe<List<MapCoordinate>> closest_forest_town = applied_list.getClosestTilesOfType(new MapCoordinate(0,0), MapTileProperties.TileType.Plains_Village);
+        // Maybe<List<MapCoordinate>> closest_forest_town = applied_list.getClosestSpecialTiles(new MapCoordinate(0,0));
         // if (closest_forest_town.is_some) {
         //     MapCoordinate town = closest_forest_town.value[0];
         // }

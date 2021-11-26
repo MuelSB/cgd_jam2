@@ -13,15 +13,35 @@ public class MapTileProperties
         Forest_Village,
         Plains,
         Plains_Village,
-        Lake
+        Lake,
+        Mountain,
+        Forest_Village_Destroyed,
+        Plains_Village_Destroyed,
+        Tower,
+        Blood_Bog,
+        Lighthouse,
+        Travelling_Merchant,
+        Shrine,
+        Supplies,
+        Ritual_Circle
+
         // TODO: Decide tile types
     }
 
     // overrides integrity value and returns self, used in metaGenerator.cs
-    public MapTileProperties setIntegrity(float _new_integrity) { Integrity = _new_integrity; return this;} 
+    public MapTileProperties setIntegrity(float _new_integrity, float _divider, Vector2Int _erosion_range) { 
+        Integrity = _new_integrity; 
+        IntegrityDivider = _divider; 
+        IntegrityErosionRange = _erosion_range; 
+        return this;
+    } 
+
+    public float getHeightFromIntegrity() => Mathf.Floor(Integrity/IntegrityDivider);
 
     public MapTile tile;
     public float Integrity = 1.0f;
+    public float IntegrityDivider = 10.0f;
+    public Vector2Int IntegrityErosionRange = new Vector2Int();
     public TileType Type = TileType.Unassigned;
     public bool ContainsEntity = false;
 
@@ -31,7 +51,7 @@ public class MapTileProperties
 
     private ulong availableEventID = 0;
 
-    public bool Alive() { return Integrity <= 0.0f; }
+    public bool Alive() { return Integrity > 0.0f; }
 
     public ulong AddEvent(MapTileEvent ev)
     {
