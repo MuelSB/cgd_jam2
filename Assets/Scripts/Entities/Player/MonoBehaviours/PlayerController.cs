@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     PlayerInputActions playerInputActions;
     private Maybe<Player> controlledPlayer = new Maybe<Player>();
     private float selectRayLength = 10000.0f;
-    private float playerMovementSpeed = 0.01f;
+    private float playerNoveInterpSpeed = 0.5f;
     private int tileLayerMask = 1 << 6;
 
     public void ControlPlayer(Player targetPlayer)
@@ -93,6 +93,8 @@ public class PlayerController : MonoBehaviour
         // Do nothing if the controller is not controlling a player
         if (!controlledPlayer.is_some) yield return null;
 
+        float t = 0f;
+
         // Compute target position
         var playerCollisionHalfHeight = controlledPlayer.value.GetComponent<CapsuleCollider>().height * 0.5f;
         var tileCollisionHalfHeight = tileObject.GetComponent<BoxCollider>().size.y * 0.5f;
@@ -103,7 +105,8 @@ public class PlayerController : MonoBehaviour
         // Move the player towards the target position
         while(Vector3.Distance(controlledPlayer.value.transform.position, targetPosition) > 0.1f)
         {
-            controlledPlayer.value.transform.position = Vector3.Slerp(controlledPlayer.value.transform.position, targetPosition, playerMovementSpeed * Time.time);
+            controlledPlayer.value.transform.position = Vector3.Slerp(controlledPlayer.value.transform.position, targetPosition, t);
+            t += playerNoveInterpSpeed * Time.deltaTime;
 
             yield return null;
         }
