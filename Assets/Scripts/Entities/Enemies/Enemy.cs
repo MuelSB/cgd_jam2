@@ -5,7 +5,6 @@ using Core;
 
 public class Enemy : Entity
 {
-    public MapCoordinate currentTile;
 
     public override void ProcessTurn() 
     {
@@ -14,7 +13,7 @@ public class Enemy : Entity
 
     private List<MapCoordinate> GetDesiredMove()
     {
-        MapCoordinate playerTile = new MapCoordinate(2, 2 + currentTile.x);
+        MapCoordinate playerTile = new MapCoordinate(1, 0);
 
         MapCoordinate target = playerTile;
 
@@ -91,8 +90,8 @@ public class Enemy : Entity
                 yield return 0;
             }
             pos = step;
-            currentTile = step;
             yield return new WaitForSeconds(0.2f);
         }
+        ChangeCurrentTile(pos);
     }
 }

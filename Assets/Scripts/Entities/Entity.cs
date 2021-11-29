@@ -12,6 +12,7 @@ public abstract class Entity : MonoBehaviour
         BOSS,
     }
 
+    public MapCoordinate currentTile;
     public float health;
     public List<Ability> abilities;
     public EntityType type;
@@ -43,5 +44,17 @@ public abstract class Entity : MonoBehaviour
         EventSystem.Invoke(Events.TurnEnded);
     }
    
+    public void SetCurrentTile(MapCoordinate newCoord)
+    {
+        currentTile = newCoord;
+        var mtp = MapManager.GetMap().GetTileProperties(newCoord);
+        mtp.tile_enitity = new Maybe<Entity>(this);
+    }
 
+    public void ChangeCurrentTile(MapCoordinate newCoord)
+    {
+        var mtp = MapManager.GetMap().GetTileProperties(currentTile);
+        mtp.tile_enitity = new Maybe<Entity>();
+        SetCurrentTile(newCoord);
+    }
 }

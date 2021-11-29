@@ -31,6 +31,7 @@ public class TurnManager : MonoBehaviour
         if (Entity.All.Count < 1)
         {
             Debug.LogWarning("There are no valid Entities", this);
+            return;
         }
         
         // start the first round
@@ -73,6 +74,12 @@ public class TurnManager : MonoBehaviour
         initiative.Add(Entity.All.Find(entity => entity.type == Entity.EntityType.BOSS));
     
         return initiative;
+    }
+
+    [ContextMenu("Skip turn")]
+    private void DebugSkipTurn()
+    {
+        EventSystem.Invoke(Events.TurnEnded);
     }
 
     private void EndRound()

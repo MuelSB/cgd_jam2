@@ -9,13 +9,10 @@ public class EnemyManager : MonoBehaviour
 
     public GameObject enemyPrefab;
 
-    private Dictionary<Enemy, MapCoordinate> minions;
+    private List<Enemy> minions;
+    private Enemy boss;
 
-    private void Start()
-    {
-
-    }
-    void Init(int minionNumber)
+    public void Init()
     {
         if(Instance != null)
         {
@@ -24,27 +21,40 @@ public class EnemyManager : MonoBehaviour
             return;
         }
         Instance = this;
+        minions = new List<Enemy>();
+    }
 
-        minions = new Dictionary<Enemy, MapCoordinate>();
-        for(int i = 0; i < minionNumber; ++i)
+    public bool CreateMinionEnemy(MapCoordinate location, EnemiesData.EnemyType type)
+    {
+        GameObject newMinion = Instantiate(enemyPrefab, transform);
+        Enemy newEnemy = newMinion.GetComponent<Enemy>();
+        newEnemy.abilities = new List<Ability>();
+        newEnemy.type = Entity.EntityType.MINION;
+        newEnemy.SetCurrentTile(location);
+        newEnemy.transform.position = MapManager.GetMap().GetTileObject(newEnemy.currentTile).transform.position
+                + Vector3.up;
+        minions.Add(newMinion.GetComponent<Enemy>());
+
+
+        foreach (EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
         {
-            Enemy enemy = Instantiate(enemyPrefab).AddComponent<Enemy>();
-            enemy.abilities = new List<Ability>();
-            enemy.currentTile = new MapCoordinate(1, 1);
-            enemy.transform.position = MapManager.GetMap().GetTileObject(enemy.currentTile).transform.position
-                    + Vector3.up;
-
-            foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
+            if (enemyData.type == type)
             {
                 foreach (string abilityName in enemyData.abilityNames)
                 {
-                    enemy.abilities.Add(AbilityManager.abilities[abilityName]);
+                    newEnemy.abilities.Add(AbilityManager.abilities[abilityName]);
                 }
+                newEnemy.movementRange = enemyData.movement;
+                newEnemy.health = enemyData.health;
             }
-
-            minions.Add(enemy, enemy.currentTile);
         }
+
+        return true;
     }
 
+    public bool CreateBoss(MapCoordinate location)
+    {
 
+        return false;
+    }
 }

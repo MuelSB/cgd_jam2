@@ -41,16 +41,38 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private Vector2Int TowerRangeMaxMin = new Vector2Int(5,3);
 
+
+    [Header("Turn Manager")]
+    [SerializeField] private GameObject turnManagerPrefabReference;
+
     [Header("Player")]
     [SerializeField] private GameObject playerPrefabReference;
 
+    [Header("Enemy Manager")]
+    [SerializeField] private GameObject enemyManagerPrefabReference;
+
+    [Header("Ability Manager")]
+    [SerializeField] private GameObject abilityManagerPrefabReference;
+
     // Class variables
+
+    private GameObject turnManagerObject;
+    private TurnManager turnManager;
+
     private GameObject playerObject; // Only one player currently implemented
     private GameObject playerControllerObject; // Only one player controller currently implemented
-    private PlayerController playerController; 
+    private PlayerController playerController;
+
+    private GameObject enemyManagerObject;
+    private EnemyManager enemyManager;
+
+    private GameObject abilityManagerObject;
+    private AbilityManager abilityManager;
 
     private void Start()
     {
+        CreateManagers();
+
         // create the map
         CreateMap();
 
@@ -61,6 +83,61 @@ public class LevelManager : MonoBehaviour
         // System.Random rand = new System.Random(seed);
         // StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
     }
+
+    private void CreateManagers()
+    {
+        if(turnManagerPrefabReference != null)
+        {
+            turnManagerObject = Instantiate(turnManagerPrefabReference, transform);
+            turnManager = turnManagerObject.GetComponent<TurnManager>();
+            if(turnManager == null)
+            {
+                Debug.LogError("Could not find Turn Manager component attached to the prefab object");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Turn manager not initialized as turnManagerPrefabReference was not set in the level manager.");
+        }
+
+        if(abilityManagerPrefabReference != null)
+        {
+            abilityManagerObject = Instantiate(abilityManagerPrefabReference, transform);
+            abilityManager = abilityManagerObject.GetComponent<AbilityManager>();
+            if (abilityManager != null)
+            {
+                abilityManager.Init();
+            }
+            else
+            {
+                Debug.LogError("Could not find Ability Manager component attached to the prefab object");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Ability manager not initialized as abilityManagerPrefabReference was not set in the level manager.");
+        }
+
+
+        if (enemyManagerPrefabReference != null)
+        {
+            enemyManagerObject = Instantiate(enemyManagerPrefabReference, transform);
+            enemyManager = enemyManagerObject.GetComponent<EnemyManager>();
+            if (enemyManager != null)
+            {
+                enemyManager.Init();
+            }
+            else
+            {
+                Debug.LogError("Could not find Enemy Manager component attached to the prefab object");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Enemy manager not initialized as enemyManagerPrefabReference was not set in the level manager.");
+        }
+    }
+
 
     private void CreateMap()
     {
@@ -105,11 +182,14 @@ public class LevelManager : MonoBehaviour
 
             // Control player with player controller
             playerController.ControlPlayer(playerObject.GetComponent<Player>());
+            playerObject.GetComponent<Player>().SetCurrentTile(playerStartCoordinate);
         }
         else
         {
             Debug.LogWarning("Player not initialized as PlayerPrefabReference was not set in the level manager.");
-        }        
+        }
+
+        enemyManager.CreateMinionEnemy(new MapCoordinate(3, 1), EnemiesData.EnemyType.BANDIT);
     }
 
     public IEnumerator burnTheWorld(List<GameObject> _l, System.Random _r)
