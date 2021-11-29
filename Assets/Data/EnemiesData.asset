@@ -14,8 +14,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemiesData:
   - type: 0
+    health: 4
+    movement: 0
     abilityNames:
     - AttackAdjacent
   - type: 1
+    health: 2
+    movement: 0
     abilityNames:
-    - DestroyTile
+    - AttackRanged
+  - type: 2
+    health: 8
+    movement: 1
+    abilityNames:
+    - AttackAdjacent
+    - DamageTile
+  - type: 3
+    health: 1
+    movement: 5
+    abilityNames:
+    - AttackAdjacent
+  - type: 4
+    health: 1
+    movement: 3
+    abilityNames:
+    - AttackAdjacent
+  - type: 5
+    health: 3
+    movement: 3
+    abilityNames:
+    - SpawnClone
+    - AttackAdjacent
