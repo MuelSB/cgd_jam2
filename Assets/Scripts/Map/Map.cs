@@ -160,7 +160,7 @@ public class Map
         Assert.IsTrue(createSettings.MapTilePrefabReference.transform.localScale.x == createSettings.MapTilePrefabReference.transform.localScale.z,
             "Only square tiles are currently supported.");
 
-        mapTileSize = createSettings.MapTilePrefabReference.transform.localScale.x;
+        mapTileSize = createSettings.MapTilePrefabReference.transform.localScale.x*5;
 
         var mapWidth = mapTileSize * createSettings.MapWidthTileCount;
         var mapDepth = mapTileSize * createSettings.MapDepthTileCount;
