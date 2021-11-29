@@ -39,6 +39,8 @@ public class LevelManager : MonoBehaviour
         MapTileProperties.TileType.Tower, MapTileProperties.TileType.Blood_Bog, MapTileProperties.TileType.Lighthouse, MapTileProperties.TileType.Travelling_Merchant, MapTileProperties.TileType.Shrine, MapTileProperties.TileType.Supplies,
         MapTileProperties.TileType.Ritual_Circle };
 
+    [SerializeField] private Vector2Int TowerRangeMaxMin = new Vector2Int(5,3);
+
     [Header("Player")]
     [SerializeField] private GameObject playerPrefabReference;
 
@@ -75,7 +77,8 @@ public class LevelManager : MonoBehaviour
         if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
 
         var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
-            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode, includedStructures);
+            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode, 
+            includedStructures,TowerRangeMaxMin);
 
         MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
         var map = MapManager.GetMap();

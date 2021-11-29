@@ -9,6 +9,14 @@ public enum MetaDebugHeightMode {
     BIOME_STRENGTH_ON,
     INTEGRITY_HEIGHT_WITH_DIVIDER_ON,
 }
+
+public enum BiomeTypes {
+    PLAINS,
+    FOREST,
+    WATER,
+    ROCKY
+}
+
 public struct MetaGeneratorConfig {
     //general
     public int seed {get; private set;}
@@ -31,9 +39,11 @@ public struct MetaGeneratorConfig {
 
     //Structure Specific
     public List<MapTileProperties.TileType> included_structures {get; private set;}
+    public Vector2Int tower_range_max_min {get; private set;}
 
     public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, int _tile_integrity_divider, Vector2Int _tile_decrement_range_max_min,
-                               MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode, List<MapTileProperties.TileType> _included_struct) {
+                               MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode, 
+                               List<MapTileProperties.TileType> _included_struct, Vector2Int _tower_range_max_min) {
         seed = _seed;
         max_tile_integrity = _max_tile_integrity;
         min_tile_integrity = _min_tile_integrity;
@@ -46,6 +56,7 @@ public struct MetaGeneratorConfig {
         biome_quantity_max_min = _biome_quantity_max_min;
         debug_mode = _debug_mode;
         included_structures = _included_struct;
+        tower_range_max_min = _tower_range_max_min;
     }
 }
 
@@ -70,6 +81,28 @@ public static class MetaGeneratorHelper
             return true;
         } return false;
     }
+
+    //GetBiomeTypes: returns a given tiles biome type. 
+    public static BiomeTypes GetBiomeTypes(this GameObject _g) => _g.getTileType().GetBiomeTypes();
+
+    public static BiomeTypes GetBiomeTypes(this MapTileProperties.TileType _tile_type) => _tile_type switch {
+        MapTileProperties.TileType.Forest => BiomeTypes.FOREST,
+        MapTileProperties.TileType.Rock => BiomeTypes.ROCKY,
+        MapTileProperties.TileType.Forest_Village => BiomeTypes.FOREST,
+        MapTileProperties.TileType.Plains => BiomeTypes.PLAINS,
+        MapTileProperties.TileType.Plains_Village => BiomeTypes.PLAINS,
+        MapTileProperties.TileType.Lake => BiomeTypes.WATER,
+        MapTileProperties.TileType.Mountain => BiomeTypes.ROCKY,
+        MapTileProperties.TileType.Forest_Village_Destroyed => BiomeTypes.FOREST,
+        MapTileProperties.TileType.Plains_Village_Destroyed => BiomeTypes.PLAINS,
+        MapTileProperties.TileType.Blood_Bog => BiomeTypes.FOREST,
+        MapTileProperties.TileType.Lighthouse => BiomeTypes.WATER,
+        MapTileProperties.TileType.Travelling_Merchant => BiomeTypes.PLAINS,
+        MapTileProperties.TileType.Shrine => BiomeTypes.FOREST,
+        MapTileProperties.TileType.Supplies => BiomeTypes.PLAINS,
+        MapTileProperties.TileType.Ritual_Circle => BiomeTypes.FOREST,
+        _ => throw new ArgumentException($"The type '{_tile_type}' is not registered in GetBiomeTypes function!")
+    };
     
     //getPlayerFromGrid: returns the position of the player if it exists, otherwise it returns an empty maybe.
     public static Maybe<MapCoordinate> getPlayerFromGrid(this List<GameObject> _grid) => _grid.doesEntityOfTypeExistOnGrid(Entity.EntityType.PLAYER) ? 
@@ -90,8 +123,10 @@ public static class MetaGeneratorHelper
             return loc.x+loc.y == smallest_length;
         }).Select(_p => _p.GetComponent<MapTile>().getLocation()).ToList());
     }
+
     public static MapTileProperties.TileType getTileType(this GameObject _g) => _g.GetComponent<MapTile>().GetProperties().Type;
 
+    //typeIsSpecial: returns true if the given tile is a "special" tile.
     public static bool typeIsSpecial(this GameObject _g) => _g.getTileType().typeIsSpecial();
     public static bool typeIsSpecial(this MapTileProperties.TileType _t) => _t switch {
         MapTileProperties.TileType.Unassigned => false,
@@ -152,6 +187,8 @@ public static class MetaGeneratorHelper
         MapTileProperties.TileType.Plains_Village => true,
         _ => false
     };
+
+    //getVillageTypeFromBiomeType: returns the village from a given base tile type if it exists.
     public static MapTileProperties.TileType getVillageTypeFromBiomeType(this GameObject _g) => _g.getTileType().getVillageTypeFromBiomeType();
     public static MapTileProperties.TileType getVillageTypeFromBiomeType(this MapTileProperties.TileType _t) => _t switch {
         MapTileProperties.TileType.Forest => MapTileProperties.TileType.Forest_Village,
@@ -171,7 +208,7 @@ public static class MetaGeneratorHelper
         MapTileProperties.TileType.Plains_Village_Destroyed => makeColour(85,91,20), //Grey (+Olive Green)
         MapTileProperties.TileType.Tower => makeColour(107,30,170), //Purple
         MapTileProperties.TileType.Blood_Bog => makeColour(138,7,7), //Blood red
-        MapTileProperties.TileType.Lighthouse => makeColour(68,167,170), //Cyan
+        MapTileProperties.TileType.Lighthouse => makeColour(127,225,170), //Cyan
         MapTileProperties.TileType.Travelling_Merchant => makeColour(183,104,0), //Orange
         MapTileProperties.TileType.Shrine => makeColour(181,180,173), //Light Grey (like bones :D)
         MapTileProperties.TileType.Supplies => makeColour(234,164,72), //pale orange
@@ -209,6 +246,7 @@ public static class MetaGeneratorHelper
         List<Vector2Int> check_points = new List<Vector2Int>() {new Vector2Int(_center.x,_center.y-1), new Vector2Int(_center.x,_center.y+1), new Vector2Int(_center.x-1,_center.y), new Vector2Int(_center.x+1,_center.y)};
         return check_points.Where(_e => {if (_center == _e) {return false;} if (_e.x > -1 && _e.x < _max_width) {if (_e.y > -1 && _e.y < _max_height) {return true;}}return false;}).ToList();
     }
+
 
     public static List<Vector2Int> getValidMountainNeighbourCoords(this Vector2Int _center, int _max_width, int _max_height) { 
         List<Vector2Int> check_points = new List<Vector2Int>() {
@@ -301,14 +339,16 @@ public class MetaGenerator
         return new_map;
     }
 
-    //for now just adds towns to the heighest biome strength areas that would make sense to have a town.
-    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> applyStructures(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map, List<Vector2Int> _starting_points, List<MapTileProperties.TileType> _allowed_structures) {
-        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _biome_map;
-
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddVillages(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map, List<Vector2Int> _starting_points, List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
         //Add villages to biome spawn locations, if villages are allowed on the tile and that tiles village is allowed to spawn.
         _starting_points.Where(_e => new_map[_e].Item2.typeHasVillage()).ToList().ForEach
             (_t => new_map[_t] = (new_map[_t].Item1, _allowed_structures.Contains(new_map[_t].Item2.getVillageTypeFromBiomeType()) ? new_map[_t].Item2.getVillageTypeFromBiomeType() : new_map[_t].Item2 ));
+        return new_map;
+    }
 
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddMountains(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
         //Add mountains to rock tiles if the surrounding tiles are also rock or mountain if allowed to spawn. Moore Neighbour with R=2
         if (_allowed_structures.Contains(MapTileProperties.TileType.Mountain)) {
             new_map.Keys.ToList().ForEach(_k => {
@@ -323,8 +363,154 @@ public class MetaGenerator
                 }
             });
         }
-        
-        return _biome_map;
+        return new_map;
+    }
+
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddTowers(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+         //Add towers randomly in forests or rock biomes if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Tower)) {
+            List<KeyValuePair<Vector2Int,(int,MapTileProperties.TileType)>> valid_spawn_tiles = new_map.Where(_e => _e.Value.Item2 == MapTileProperties.TileType.Forest || _e.Value.Item2 == MapTileProperties.TileType.Rock).ToList();
+            int tower_quant = random.Next(config.tower_range_max_min.y, config.tower_range_max_min.x+1);
+            if (tower_quant > valid_spawn_tiles.Count) { tower_quant = valid_spawn_tiles.Count;}
+            if (tower_quant > 0) {
+                List<KeyValuePair<Vector2Int,(int,MapTileProperties.TileType)>> spawn_points = new List<KeyValuePair<Vector2Int, (int, MapTileProperties.TileType)>>();
+                while (spawn_points.Count != tower_quant) {
+                    KeyValuePair<Vector2Int,(int,MapTileProperties.TileType)> selected = valid_spawn_tiles[random.Next(0,valid_spawn_tiles.Count)];
+                    if (!spawn_points.Contains(selected)) {
+                        spawn_points.Add(selected);
+                    }
+                }
+                spawn_points.ForEach(_kvp => new_map[_kvp.Key] = (_kvp.Value.Item1,MapTileProperties.TileType.Tower));
+            }
+        }
+        return new_map;
+    }
+
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddBloodBog(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+        //Will spawn one blood bog on water tiles cardinally adjacent to a forest if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Blood_Bog)) {
+            List<(Vector2Int,int)> valid_spawn_points = new List<(Vector2Int, int)>();
+            new_map.Keys.ToList().ForEach(_k => {
+                if (new_map[_k].Item2 == MapTileProperties.TileType.Lake) {
+                    List<Vector2Int> vn = _k.getValidNeighbourCoords(map_reference.GetWidthTileCount(),map_reference.GetDepthTileCount());
+                    List<MapTileProperties.TileType> vnt = vn.Aggregate(new List<MapTileProperties.TileType>(),(_a,_b) => _a.Concat(new[]{new_map[_b].Item2}).ToList());
+                    if (vnt.Contains(MapTileProperties.TileType.Forest)) {
+                        valid_spawn_points.Add((_k, new_map[_k].Item1));
+                    }
+                }
+            });
+            if (valid_spawn_points.Count > 0) {
+                (Vector2Int,int) selected = valid_spawn_points[random.Next(0,valid_spawn_points.Count)];
+                new_map[selected.Item1] = (selected.Item2,MapTileProperties.TileType.Blood_Bog);
+            }
+        }
+        return new_map;
+    }
+
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddLighthouse(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+        //Will spawn lighthouse on a tile cardinally adjacent to a lake if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Lighthouse)) {
+            List<(Vector2Int,int)> valid_spawn_points = new List<(Vector2Int, int)>();
+            new_map.Keys.ToList().ForEach(_k => {
+                if (new_map[_k].Item2 != MapTileProperties.TileType.Lake) {
+                    List<Vector2Int> vn = _k.getValidNeighbourCoords(map_reference.GetWidthTileCount(),map_reference.GetDepthTileCount());
+                    List<MapTileProperties.TileType> vnt = vn.Aggregate(new List<MapTileProperties.TileType>(),(_a,_b) => _a.Concat(new[]{new_map[_b].Item2}).ToList());
+                    if (vnt.Contains(MapTileProperties.TileType.Lake)) {
+                        valid_spawn_points.Add((_k, new_map[_k].Item1));
+                    }
+                }
+            });
+            if (valid_spawn_points.Count > 0) {
+                (Vector2Int,int) selected = valid_spawn_points[random.Next(0,valid_spawn_points.Count)];
+                new_map[selected.Item1] = (selected.Item2,MapTileProperties.TileType.Lighthouse);
+            }
+        }
+        return new_map;
+    }
+
+    
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddTravelingMerchent(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+        //Has a 1 in 100 chance to spawn a traveling merchent tile on a plain if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Travelling_Merchant)) {
+            List<(Vector2Int,int)> valid_spawn_points = new List<(Vector2Int, int)>();
+            new_map.Keys.ToList().ForEach(_k => {
+                if (new_map[_k].Item2 == MapTileProperties.TileType.Plains) {
+                    valid_spawn_points.Add((_k, new_map[_k].Item1));
+                }
+            });
+            if (valid_spawn_points.Count > 0) {
+                valid_spawn_points.ForEach(_p => {
+                    int spawn_val = random.Next(0,101);
+                    if (spawn_val == 1) {
+                        new_map[_p.Item1] = (_p.Item2,MapTileProperties.TileType.Travelling_Merchant);
+                    }
+                });
+            }
+        }
+        return new_map;
+    }
+
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddShrine(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+        //Has a 1 in 100 chance to spawn a shrine tile on a forest if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Shrine)) {
+            List<(Vector2Int,int)> valid_spawn_points = new List<(Vector2Int, int)>();
+            new_map.Keys.ToList().ForEach(_k => {
+                if (new_map[_k].Item2 == MapTileProperties.TileType.Forest) {
+                    valid_spawn_points.Add((_k, new_map[_k].Item1));
+                }
+            });
+            if (valid_spawn_points.Count > 0) {
+                valid_spawn_points.ForEach(_p => {
+                    int spawn_val = random.Next(0,101);
+                    if (spawn_val == 1) {
+                        new_map[_p.Item1] = (_p.Item2,MapTileProperties.TileType.Shrine);
+                    }
+                });
+            }
+        }
+        return new_map;
+    }
+
+        private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> AddSupplies(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _new_map,List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _new_map;
+        //Has a 1 in 80 chance to spawn a supplies tile on a plain if allowed to spawn.
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Supplies)) {
+            List<(Vector2Int,int)> valid_spawn_points = new List<(Vector2Int, int)>();
+            new_map.Keys.ToList().ForEach(_k => {
+                if (new_map[_k].Item2 == MapTileProperties.TileType.Plains) {
+                    valid_spawn_points.Add((_k, new_map[_k].Item1));
+                }
+            });
+            if (valid_spawn_points.Count > 0) {
+                valid_spawn_points.ForEach(_p => {
+                    int spawn_val = random.Next(0,81);
+                    if (spawn_val == 1) {
+                        new_map[_p.Item1] = (_p.Item2,MapTileProperties.TileType.Supplies);
+                    }
+                });
+            }
+        }
+        return new_map;
+    }
+    
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> applyStructures(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map, List<Vector2Int> _starting_points, List<MapTileProperties.TileType> _allowed_structures) {
+        Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _biome_map;
+
+        new_map = AddSupplies(
+                  AddShrine(
+                  AddTravelingMerchent(
+                  AddLighthouse(
+                  AddBloodBog(
+                  AddTowers(
+                  AddMountains(
+                  AddVillages(
+                  new_map,_starting_points,_allowed_structures),_allowed_structures),_allowed_structures),_allowed_structures),_allowed_structures),_allowed_structures),_allowed_structures),_allowed_structures);
+        return new_map;
     }
 
     //the core of biome generation.
