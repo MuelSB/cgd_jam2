@@ -94,6 +94,16 @@ public class MapTile : MonoBehaviour
         yield return null;
     }
 
+    //will set the tiles integrity to zero and kill it.
+    public void Kill() {
+        if (GetProperties().Alive()) {
+            MapTileProperties properties = GetProperties();
+            properties.Integrity = 0;
+            SetProperties(properties);
+            StartCoroutine(TileDeath());
+        }
+    }
+
     //will erode the tiles integrity rate by its internal integrity erosion rate and return true if it dies.
     public bool Decay(System.Random _random) {
         if (GetProperties().Alive()) {

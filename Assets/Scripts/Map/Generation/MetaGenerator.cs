@@ -19,17 +19,21 @@ public struct MetaGeneratorConfig {
     public int tile_x_integrity_frequency {get; private set;}
     public int tile_y_integrity_frequency {get; private set;}
 
-    public int tile_integrity_divider {get; private set;}
+    public int tile_integrity_divider {get; private set;} 
     public Vector2Int tile_decrement_range_max_min {get; private set;}
 
     //Biome Specific
     public MapTileProperties.TileType base_biome {get; private set;}
     public Dictionary<MapTileProperties.TileType, Vector2Int> biome_max_min_strengths {get; private set;}
     public Vector2Int biome_quantity_max_min {get; private set;}
+    
     public MetaDebugHeightMode debug_mode {get; private set;}
 
+    //Structure Specific
+    public List<MapTileProperties.TileType> included_structures {get; private set;}
+
     public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, int _tile_integrity_divider, Vector2Int _tile_decrement_range_max_min,
-                               MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode) {
+                               MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode, List<MapTileProperties.TileType> _included_struct) {
         seed = _seed;
         max_tile_integrity = _max_tile_integrity;
         min_tile_integrity = _min_tile_integrity;
@@ -41,6 +45,7 @@ public struct MetaGeneratorConfig {
         biome_max_min_strengths = _biome_max_min_strengths;
         biome_quantity_max_min = _biome_quantity_max_min;
         debug_mode = _debug_mode;
+        included_structures = _included_struct;
     }
 }
 
@@ -55,6 +60,16 @@ public static class MetaGeneratorHelper
 
     //doesEntityOfTypeExistOnGrid: returns if a specified entity type exists somewhere on the map.
     public static bool doesEntityOfTypeExistOnGrid(this List<GameObject> _grid, Entity.EntityType _t) => _grid.Where(_e => _e.GetComponent<MapTile>().GetProperties().tile_enitity.is_some).Where(_x => _x.isOfEntityType(_t)).ToList().Count() > 0;
+
+    //kills a tile at a specific location, returns true if the tile was found at the target position, otherwise returns false.
+    public static bool destroyTile(this Map _map, MapCoordinate _target_pos) {
+        List<GameObject> valid_tiles = _map.GetTiles().Where(_t => _t.GetComponent<MapTile>().getLocation() == _target_pos).ToList();
+        if (valid_tiles.Count > 0) {
+            GameObject vt = valid_tiles[0];
+            vt.GetComponent<MapTile>().Kill();
+            return true;
+        } return false;
+    }
     
     //getPlayerFromGrid: returns the position of the player if it exists, otherwise it returns an empty maybe.
     public static Maybe<MapCoordinate> getPlayerFromGrid(this List<GameObject> _grid) => _grid.doesEntityOfTypeExistOnGrid(Entity.EntityType.PLAYER) ? 
@@ -144,12 +159,24 @@ public static class MetaGeneratorHelper
         _ => throw new ArgumentException($"The type '{_t}' has no registered village type in getVillageTypeFromBiomeType function!")
     };
     public static Color getColorFromType(this GameObject _g) => _g.getTileType() switch {
-        MapTileProperties.TileType.Forest => makeColour(34,139,34),
-        MapTileProperties.TileType.Forest_Village => makeColour(0,100,0),
-        MapTileProperties.TileType.Plains => makeColour(76,187,23),
-        MapTileProperties.TileType.Plains_Village => makeColour(209,226,49), 
-        MapTileProperties.TileType.Lake => makeColour(8,146,208),
-        MapTileProperties.TileType.Rock => makeColour(83,75,79),
+        MapTileProperties.TileType.Forest => makeColour(34,139,34), //green
+        MapTileProperties.TileType.Forest_Village => makeColour(0,100,0), //dark green
+        MapTileProperties.TileType.Plains => makeColour(76,187,23), //light green
+        MapTileProperties.TileType.Plains_Village => makeColour(209,226,49), //olive green (yellow)
+        MapTileProperties.TileType.Lake => makeColour(8,146,208), //Blue
+        MapTileProperties.TileType.Rock => makeColour(83,75,79), //Grey (pinkish)
+
+        MapTileProperties.TileType.Mountain => makeColour(53,48,51), //Darker grey (pinkish)
+        MapTileProperties.TileType.Forest_Village_Destroyed => makeColour(70,99,70), //Grey (+Dark green)
+        MapTileProperties.TileType.Plains_Village_Destroyed => makeColour(85,91,20), //Grey (+Olive Green)
+        MapTileProperties.TileType.Tower => makeColour(107,30,170), //Purple
+        MapTileProperties.TileType.Blood_Bog => makeColour(138,7,7), //Blood red
+        MapTileProperties.TileType.Lighthouse => makeColour(68,167,170), //Cyan
+        MapTileProperties.TileType.Travelling_Merchant => makeColour(183,104,0), //Orange
+        MapTileProperties.TileType.Shrine => makeColour(181,180,173), //Light Grey (like bones :D)
+        MapTileProperties.TileType.Supplies => makeColour(234,164,72), //pale orange
+        MapTileProperties.TileType.Ritual_Circle => makeColour(191,0,142), //dark pink 
+
         MapTileProperties.TileType.Unassigned => throw new ArgumentException($"The tile you entered was of type Unassigned! This is not allowed!"),
         _ => throw new ArgumentException($"The type '{_g.getTileType()}' has no registered color in getColorFromType function!")
     };
@@ -180,6 +207,19 @@ public static class MetaGeneratorHelper
 
     public static List<Vector2Int> getValidNeighbourCoords(this Vector2Int _center, int _max_width, int _max_height) {
         List<Vector2Int> check_points = new List<Vector2Int>() {new Vector2Int(_center.x,_center.y-1), new Vector2Int(_center.x,_center.y+1), new Vector2Int(_center.x-1,_center.y), new Vector2Int(_center.x+1,_center.y)};
+        return check_points.Where(_e => {if (_center == _e) {return false;} if (_e.x > -1 && _e.x < _max_width) {if (_e.y > -1 && _e.y < _max_height) {return true;}}return false;}).ToList();
+    }
+
+    public static List<Vector2Int> getValidMountainNeighbourCoords(this Vector2Int _center, int _max_width, int _max_height) { 
+        List<Vector2Int> check_points = new List<Vector2Int>() {
+            new Vector2Int(_center.x,_center.y-1), new Vector2Int(_center.x,_center.y+1), new Vector2Int(_center.x-1,_center.y), new Vector2Int(_center.x+1,_center.y),
+            new Vector2Int(_center.x-1,_center.y-1), new Vector2Int(_center.x+1,_center.y+1), new Vector2Int(_center.x-1,_center.y+1), new Vector2Int(_center.x+1,_center.y-1),
+
+            new Vector2Int(_center.x-2,_center.y-2), new Vector2Int(_center.x-1,_center.y-2), new Vector2Int(_center.x,_center.y-2), new Vector2Int(_center.x+1,_center.y-2),
+            new Vector2Int(_center.x+2,_center.y-2), new Vector2Int(_center.x-2,_center.y-1), new Vector2Int(_center.x+2,_center.y-1), new Vector2Int(_center.x-2,_center.y),
+            new Vector2Int(_center.x+2,_center.y), new Vector2Int(_center.x-2,_center.y+1), new Vector2Int(_center.x+2,_center.y+1), new Vector2Int(_center.x-2,_center.y+2),
+            new Vector2Int(_center.x-1,_center.y+2), new Vector2Int(_center.x,_center.y+2), new Vector2Int(_center.x+1,_center.y+2), new Vector2Int(_center.x+2,_center.y+2),
+        };
         return check_points.Where(_e => {if (_center == _e) {return false;} if (_e.x > -1 && _e.x < _max_width) {if (_e.y > -1 && _e.y < _max_height) {return true;}}return false;}).ToList();
     }
 }
@@ -262,9 +302,28 @@ public class MetaGenerator
     }
 
     //for now just adds towns to the heighest biome strength areas that would make sense to have a town.
-    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> applyStructures(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map, List<Vector2Int> _starting_points) {
+    private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> applyStructures(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map, List<Vector2Int> _starting_points, List<MapTileProperties.TileType> _allowed_structures) {
         Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _biome_map;
-        _starting_points.Where(_e => new_map[_e].Item2.typeHasVillage()).ToList().ForEach(_t => new_map[_t] = (new_map[_t].Item1,new_map[_t].Item2.getVillageTypeFromBiomeType()));
+
+        //Add villages to biome spawn locations, if villages are allowed on the tile and that tiles village is allowed to spawn.
+        _starting_points.Where(_e => new_map[_e].Item2.typeHasVillage()).ToList().ForEach
+            (_t => new_map[_t] = (new_map[_t].Item1, _allowed_structures.Contains(new_map[_t].Item2.getVillageTypeFromBiomeType()) ? new_map[_t].Item2.getVillageTypeFromBiomeType() : new_map[_t].Item2 ));
+
+        //Add mountains to rock tiles if the surrounding tiles are also rock or mountain if allowed to spawn. Moore Neighbour with R=2
+        if (_allowed_structures.Contains(MapTileProperties.TileType.Mountain)) {
+            new_map.Keys.ToList().ForEach(_k => {
+                MapTileProperties.TileType current_type = new_map[_k].Item2;
+                if (current_type == MapTileProperties.TileType.Rock) {
+                    List<Vector2Int> vn = _k.getValidMountainNeighbourCoords(map_reference.GetWidthTileCount(),map_reference.GetDepthTileCount());
+                    List<MapTileProperties.TileType> vnt = vn.Aggregate(new List<MapTileProperties.TileType>(),(_a, _b) => _a.Concat(new[] {new_map[_b].Item2}).ToList());
+                    int vnt_length = vnt.Count;
+                    if (vnt.Where(_e => _e == MapTileProperties.TileType.Rock || _e == MapTileProperties.TileType.Mountain).ToList().Count == vnt_length) {
+                        new_map[_k] = (new_map[_k].Item1,MapTileProperties.TileType.Mountain);
+                    }
+                }
+            });
+        }
+        
         return _biome_map;
     }
 
@@ -293,7 +352,7 @@ public class MetaGenerator
             biome_strength_map = biome_strength_map.setTileTypeAndStrength(_e,index,random.Next(config.biome_max_min_strengths[index].y,config.biome_max_min_strengths[index].x+1));
         });
 
-        biome_strength_map = applyStructures(propagateBiomes(biome_strength_map,biome_spawn_location),biome_spawn_location);
+        biome_strength_map = applyStructures(propagateBiomes(biome_strength_map,biome_spawn_location),biome_spawn_location,config.included_structures);
 
         applied_list = biome_strength_map.applyStrengthMapToTiles(applied_list,map_reference.GetWidthTileCount());
 

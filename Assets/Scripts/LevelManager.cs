@@ -34,6 +34,10 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private Vector2Int biomeQuantityMaxMin = new Vector2Int(20,15);
     [SerializeField] private MetaDebugHeightMode debugMode = MetaDebugHeightMode.OFF;
+    [SerializeField] private List<MapTileProperties.TileType> includedStructures = new List<MapTileProperties.TileType>() { 
+        MapTileProperties.TileType.Forest_Village, MapTileProperties.TileType.Plains_Village, MapTileProperties.TileType.Mountain, MapTileProperties.TileType.Forest_Village_Destroyed, MapTileProperties.TileType.Plains_Village_Destroyed,
+        MapTileProperties.TileType.Tower, MapTileProperties.TileType.Blood_Bog, MapTileProperties.TileType.Lighthouse, MapTileProperties.TileType.Travelling_Merchant, MapTileProperties.TileType.Shrine, MapTileProperties.TileType.Supplies,
+        MapTileProperties.TileType.Ritual_Circle };
 
     [Header("Player")]
     [SerializeField] private GameObject playerPrefabReference;
@@ -71,7 +75,7 @@ public class LevelManager : MonoBehaviour
         if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
 
         var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
-            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode);
+            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode, includedStructures);
 
         MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
         var map = MapManager.GetMap();
