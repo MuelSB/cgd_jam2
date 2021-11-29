@@ -33,18 +33,15 @@ public static class Pathfinding
         List<Node> closedList = new List<Node>();
 
         int widthTo, heightTo;
-        MapManager.GetTileCountTo(target, origin, out widthTo, out heightTo);
+        MapManager.GetAbsoluteTileCountTo(target, origin, out widthTo, out heightTo);
 
-        openList.Add(new Node(target, Mathf.Abs(widthTo) + Mathf.Abs(heightTo), 0, new Maybe<Node>()));
+        openList.Add(new Node(target, widthTo + heightTo, 0, new Maybe<Node>()));
         Node currentBest = openList[0];
         int bestScore = openList[0].score;
         bool foundPath = false;
 
-        int DEBUG_CHECKED = 0;
-
-        while(openList.Count > 0 && DEBUG_CHECKED < 2000)
+        while(openList.Count > 0)
         {
-            DEBUG_CHECKED++;
             bool foundBetter = false;
             openList.Remove(currentBest);
             closedList.Add(currentBest);
@@ -63,10 +60,10 @@ public static class Pathfinding
                 if (inOpen || inClosed) continue;
 
                 int distance, cost;
-                MapManager.GetTileCountTo(origin, newCoord, out widthTo, out heightTo);
-                distance = Mathf.Abs(widthTo) + Mathf.Abs(heightTo);
-                MapManager.GetTileCountTo(newCoord, target, out widthTo, out heightTo);
-                cost = Mathf.Abs(widthTo) + Mathf.Abs(heightTo);
+                MapManager.GetAbsoluteTileCountTo(origin, newCoord, out widthTo, out heightTo);
+                distance = widthTo + heightTo;
+                MapManager.GetAbsoluteTileCountTo(newCoord, target, out widthTo, out heightTo);
+                cost = widthTo + heightTo;
 
                 Node newNode = new Node(newCoord, distance, cost, new Maybe<Node>(currentBest));
 

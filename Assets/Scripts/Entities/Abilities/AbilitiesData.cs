@@ -14,7 +14,7 @@ public class AbilitiesData : ScriptableObject
         public int abilityRange;
         public Ability.AbilityTarget targetType;
         public int abilityCooldown;
-        public bool freeUse;
+        public int cost;
         public List<AbilityEffect.AbilityEffectData> abilityEffects;
     }
 

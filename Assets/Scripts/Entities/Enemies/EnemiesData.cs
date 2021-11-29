@@ -10,14 +10,20 @@ public class EnemiesData : ScriptableObject
 
     public enum EnemyType
     {
-        MINION,
-        BOSS
+        BANDIT,
+        RANGER,
+        TROLL,
+        BAT,
+        RAT,
+        WOLF
     }
 
     [System.Serializable]
     public struct EnemyData
     {
         public EnemyType type;
+        public int health;
+        public int movement;
         public List<string> abilityNames;
     }
 
