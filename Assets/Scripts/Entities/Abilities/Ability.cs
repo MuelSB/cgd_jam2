@@ -32,7 +32,12 @@ public class Ability : ScriptableObject
             var yMax = range - Mathf.Abs(i);
             for (var j = yMax; j >= -yMax; --j)
             {
-                potentialTargets.Add(new MapCoordinate(currentTile.x + i, currentTile.y + j));
+                MapCoordinate newTarget = new MapCoordinate(currentTile.x + i, currentTile.y + j);
+
+                if(MapManager.GetMap().IsValidCoordinate(newTarget))
+                {
+                    potentialTargets.Add(new MapCoordinate(currentTile.x + i, currentTile.y + j));
+                }
             }
         }
 
@@ -52,7 +57,7 @@ public class Ability : ScriptableObject
             {
                 case AbilityTarget.ENTITY:
                     {
-                        if(properties.ContainsEntity && coord != currentTile)
+                        if(properties.tile_enitity.is_some && coord != currentTile)
                         {
                             targets.Add(coord);
                         }

@@ -67,6 +67,7 @@ public class PlayerController : MonoBehaviour
             if(Physics.Raycast(playerTileRay, out playerTileRaycastHit, (playerHeight / 2.0f) + 1.0f, tileLayerMask))
             {
                 playerTileCoord = playerTileRaycastHit.collider.gameObject.GetComponent<MapTile>().getLocation();
+                controlledPlayer.value.ChangeCurrentTile(playerTileCoord);
             }
 
             // Get the hit tile's map coordinate

@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7231124094532040195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7231124094532040194}
+  - component: {fileID: 7231124094532040193}
+  - component: {fileID: 7231124094532040192}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7231124094532040194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231124094532040195}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 856.5328, y: 265.77832, z: -2.1861572}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7231124094532040193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231124094532040195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1249d898e2fc73744910c302e2734d7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  music: {fileID: 8300000, guid: 38fd687a7143bf44ab5fbeb90d709685, type: 3}
+--- !u!114 &7231124094532040192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231124094532040195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80f6e3fb7a42ee544b16726fcdb1ada4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapTilePrefabReference: {fileID: 2356900649719079769, guid: f4e124d88917b054cb4583735a32f7aa, type: 3}
+  MapWidthTileCount: 40
+  MapDepthTileCount: 30
+  MinRandomRotationJitter: {x: -5, y: 0, z: -5}
+  MaxRandomRotationJitter: {x: 5, y: 0, z: 5}
+  seed: 1
+  maxTileIntegrity: 100
+  minTileIntegrity: 20
+  tileXIntegrityFrequency: 3
+  tileYIntegrityFrequency: 3
+  tileIntegrityDivider: 10
+  tileDecrementRangeMaxMin: {x: 5, y: 3}
+  baseBiome: 2
+  biomeQuantityMaxMin: {x: 20, y: 15}
+  debugMode: 3
+  includedStructures: 03000000050000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f00000010000000
+  turnManagerPrefabReference: {fileID: 7950683779407874785, guid: 8f0b7dfe13f9873478a6b37b34a4f55e, type: 3}
+  playerPrefabReference: {fileID: 1866463362989073637, guid: 3bb8b8d4fc2e823438c77b5282fd9a83, type: 3}
+  enemyManagerPrefabReference: {fileID: 8105258443489465668, guid: 929be26ca11ea624ab8d88babfb4d96c, type: 3}
+  abilityManagerPrefabReference: {fileID: 745411719129750175, guid: 40147335781427946b2970aacf15ee7b, type: 3}
