@@ -95,7 +95,8 @@ public class AbilityManager : MonoBehaviour
                 }
             case EffectType.DESTROY_TILE:
                 {
-                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(0);
+                    MapTileProperties mtp = MapManager.GetMap().GetTileProperties(targetTile);
+                    mtp.setIntegrity(0, mtp.IntegrityDivider,mtp.IntegrityErosionRange);
                     break;
                 }
             case EffectType.DAMAGE_NEIGHBOUR_TILES:
