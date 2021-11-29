@@ -41,9 +41,11 @@ public struct MetaGeneratorConfig {
     public List<MapTileProperties.TileType> included_structures {get; private set;}
     public Vector2Int tower_range_max_min {get; private set;}
 
+    public Dictionary<MapTileProperties.TileType, List<GameObject>> map_type_to_decor_list {get; private set;}
+
     public MetaGeneratorConfig(int _seed, int _max_tile_integrity, int _min_tile_integrity, int _tile_x_integrity_frequency, int _tile_y_integrity_frequency, int _tile_integrity_divider, Vector2Int _tile_decrement_range_max_min,
                                MapTileProperties.TileType _base_biome, Dictionary<MapTileProperties.TileType, Vector2Int> _biome_max_min_strengths, Vector2Int _biome_quantity_max_min, MetaDebugHeightMode _debug_mode, 
-                               List<MapTileProperties.TileType> _included_struct, Vector2Int _tower_range_max_min) {
+                               List<MapTileProperties.TileType> _included_struct, Vector2Int _tower_range_max_min, Dictionary<MapTileProperties.TileType, List<GameObject>> _map_type_to_decor_list) {
         seed = _seed;
         max_tile_integrity = _max_tile_integrity;
         min_tile_integrity = _min_tile_integrity;
@@ -57,6 +59,7 @@ public struct MetaGeneratorConfig {
         debug_mode = _debug_mode;
         included_structures = _included_struct;
         tower_range_max_min = _tower_range_max_min;
+        map_type_to_decor_list = _map_type_to_decor_list;
     }
 }
 
@@ -220,12 +223,15 @@ public static class MetaGeneratorHelper
 
     public static Color makeColour(int _r, int _g, int _b) => new Color((float)_r/(float)255,(float)_g/(float)255,(float)_b/(float)255);
 
-    public static GameObject applyBiome(this GameObject _g, MapTileProperties.TileType _type) {
+    public static GameObject applyBiome(this GameObject _g, MapTileProperties.TileType _type, Dictionary<MapTileProperties.TileType,List<GameObject>> _decor, System.Random _random) {
         MapTile map_tile = _g.GetComponent<MapTile>();
         MapTileProperties map_properties = map_tile.GetProperties();
         map_properties.Type = _type;
         map_tile.SetProperties(map_properties);
         map_tile.setColour(_g.getColorFromType());
+        if (_decor.ContainsKey(_type)) {
+            map_tile.spawnDecor(_decor[_type][_random.Next(0,_decor[_type].Count)]);
+        }
         return _g;
     }
 
@@ -235,9 +241,9 @@ public static class MetaGeneratorHelper
         return new_grid;
     }
 
-    public static List<GameObject> applyStrengthMapToTiles(this Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _grid, List<GameObject> _tiles, int _width) {
+    public static List<GameObject> applyStrengthMapToTiles(this Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _grid, List<GameObject> _tiles, int _width, Dictionary<MapTileProperties.TileType,List<GameObject>> _d, System.Random _r) {
         List<GameObject> new_list = _tiles; 
-        new_list.ForEach(_e => _e.applyBiome(_grid[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item2));
+        new_list.ForEach(_e => _e.applyBiome(_grid[_e.GetComponent<MapTile>().getLocation().toVector2Int()].Item2,_d,_r));
         // _grid.Keys.ToList().ForEach(_k => new_list[get1DIndex(_k,_width)] = new_list[get1DIndex(_k,_width)].applyBiome(_grid[_k].Item2));
         return new_list;
     }
@@ -497,7 +503,7 @@ public class MetaGenerator
         }
         return new_map;
     }
-    
+
     private Dictionary<Vector2Int,(int, MapTileProperties.TileType)> applyStructures(Dictionary<Vector2Int,(int, MapTileProperties.TileType)> _biome_map, List<Vector2Int> _starting_points, List<MapTileProperties.TileType> _allowed_structures) {
         Dictionary<Vector2Int,(int, MapTileProperties.TileType)> new_map = _biome_map;
 
@@ -540,7 +546,7 @@ public class MetaGenerator
 
         biome_strength_map = applyStructures(propagateBiomes(biome_strength_map,biome_spawn_location),biome_spawn_location,config.included_structures);
 
-        applied_list = biome_strength_map.applyStrengthMapToTiles(applied_list,map_reference.GetWidthTileCount());
+        applied_list = biome_strength_map.applyStrengthMapToTiles(applied_list,map_reference.GetWidthTileCount(),config.map_type_to_decor_list,random);
 
         switch(config.debug_mode) {
             case MetaDebugHeightMode.INTEGRITY_HEIGHT_WITH_DIVIDER_ON: {

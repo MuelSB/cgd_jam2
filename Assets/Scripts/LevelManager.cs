@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]private MapTileProperties.TileType baseBiome = MapTileProperties.TileType.Rock;
     
     //todo, serialize this!
-    [SerializeField]private Dictionary<MapTileProperties.TileType, Vector2Int> biomeMaxMinStrengths = new Dictionary<MapTileProperties.TileType, Vector2Int>() {
+    [SerializeField]private SerializableDictionary<MapTileProperties.TileType, Vector2Int> biomeMaxMinStrengths = new SerializableDictionary<MapTileProperties.TileType, Vector2Int>() {
         { MapTileProperties.TileType.Forest, new Vector2Int(20,10) },
         { MapTileProperties.TileType.Plains, new Vector2Int(25,10) },
         { MapTileProperties.TileType.Lake,   new Vector2Int(10,3)  }
@@ -40,6 +40,8 @@ public class LevelManager : MonoBehaviour
         MapTileProperties.TileType.Ritual_Circle };
 
     [SerializeField] private Vector2Int TowerRangeMaxMin = new Vector2Int(5,3);
+
+    [SerializeField] private SerializableDictionary<MapTileProperties.TileType, List<GameObject>> tileTypesToDecorPrefabs = new SerializableDictionary<MapTileProperties.TileType, List<GameObject>>();
 
 
     [Header("Turn Manager")]
@@ -152,10 +154,19 @@ public class LevelManager : MonoBehaviour
         };
 
         if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
+        
+        Dictionary<MapTileProperties.TileType, Vector2Int> biome_max_min_strengths_dict = new Dictionary<MapTileProperties.TileType, Vector2Int>();
+        foreach (MapTileProperties.TileType key in biomeMaxMinStrengths.Keys) {
+            biome_max_min_strengths_dict[key] = biomeMaxMinStrengths[key];
+        }
+        Dictionary<MapTileProperties.TileType, List<GameObject>> type_to_decor = new Dictionary<MapTileProperties.TileType, List<GameObject>>();
+        foreach (MapTileProperties.TileType key in tileTypesToDecorPrefabs.Keys) {
+            type_to_decor[key] = tileTypesToDecorPrefabs[key];
+        }
 
         var metaGeneratorConfig = new MetaGeneratorConfig(seed, maxTileIntegrity, minTileIntegrity, tileXIntegrityFrequency,
-            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biomeMaxMinStrengths, biomeQuantityMaxMin, debugMode, 
-            includedStructures,TowerRangeMaxMin);
+            tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biome_max_min_strengths_dict, biomeQuantityMaxMin, debugMode, 
+            includedStructures,TowerRangeMaxMin,type_to_decor);
 
         MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
         var map = MapManager.GetMap();

@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class MapTile : MonoBehaviour
 {
@@ -9,6 +11,9 @@ public class MapTile : MonoBehaviour
     // Component references
     private Rigidbody tileRigidbody;
     private Renderer objectRenderer;
+
+    private GameObject decorChild;
+    private List<Renderer> decorChildRenderers = new List<Renderer>();
 
     [SerializeField] private MapCoordinate mapLocation;
 
@@ -83,10 +88,14 @@ public class MapTile : MonoBehaviour
         while (e_time < duration) {
             Color new_c = Color.Lerp(currentColor,grey,(e_time/duration));
             objectRenderer.material.color = new_c;
+            if (decorChildRenderers.Count > 0) {
+                decorChildRenderers.ForEach(_r => {_r.materials.ToList().ForEach(_m => {_m.color = new_c;});}); 
+            }
             e_time+=Time.deltaTime;
             yield return null;
         }
         objectRenderer.material.color = grey;
+        decorChildRenderers.ForEach(_r => {_r.material.color = grey;});
         UseGravity(true);
         yield return new WaitForSeconds(10);
         // objectRenderer.material.color = new Color(0,0,0,0);
@@ -118,5 +127,10 @@ public class MapTile : MonoBehaviour
             return false;
         }
         return false;
+    }
+
+    public void spawnDecor(GameObject _decor) {
+        decorChild = Instantiate(_decor,gameObject.transform);
+        decorChildRenderers = decorChild.GetComponentsInChildren<Renderer>().ToList();
     }
 }
