@@ -10,6 +10,7 @@ public class AbilitiesData : ScriptableObject
     [System.Serializable]
     public struct AbilityData
     {
+        public Sprite abilityImage;
         public string abilityName;
         public int abilityRange;
         public Ability.AbilityTarget targetType;

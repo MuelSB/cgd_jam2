@@ -10,7 +10,6 @@ public class Player : Entity
     {
         // broadcasts the player
         EventSystem.Invoke(Events.BroadcastPlayer, this);
-        base.OnEnable();
     }
 
     public List<Items> items;

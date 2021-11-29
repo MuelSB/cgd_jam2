@@ -12,8 +12,10 @@ public class Ability : ScriptableObject
         BUILDING
     }
 
+    public Sprite image = null;
+    
     public int range;
-
+    
     public AbilityTarget targetType;
 
     // 0 turns cooldown means it's only usable once per session
