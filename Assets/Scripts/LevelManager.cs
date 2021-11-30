@@ -78,6 +78,8 @@ public class LevelManager : MonoBehaviour
         // create the map
         CreateMap();
 
+        enemyManager.SpawnNewEnemies(false);
+
         // needs to be last in start
         EventSystem.Invoke(Events.LevelLoaded);
 
@@ -199,8 +201,6 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogWarning("Player not initialized as PlayerPrefabReference was not set in the level manager.");
         }
-
-        enemyManager.CreateMinionEnemy(new MapCoordinate(3, 1), EnemiesData.EnemyType.BANDIT);
     }
 
     public IEnumerator burnTheWorld(List<GameObject> _l, System.Random _r)

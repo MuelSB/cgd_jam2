@@ -126,7 +126,7 @@ public class Map
             neighbors.Add(new MapCoordinate(tileMapCoordinate.x, tileMapCoordinate.y - 1));
         }
 
-        if ((tileMapCoordinate.x + 1) < mapDepthTileCount)
+        if ((tileMapCoordinate.x + 1) < mapWidthTileCount)
         {
             neighbors.Add(new MapCoordinate(tileMapCoordinate.x + 1, tileMapCoordinate.y));
         }
