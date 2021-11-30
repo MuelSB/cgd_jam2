@@ -25,6 +25,7 @@ public class EnemiesData : ScriptableObject
         public int health;
         public int movement;
         public List<string> abilityNames;
+        public List<MapTileProperties.TileType> validTileTypes;
     }
 
     public List<EnemyData> enemiesData;

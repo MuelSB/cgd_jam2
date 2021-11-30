@@ -75,6 +75,7 @@ public class Enemy : Entity
 
     private IEnumerator Move(List<MapCoordinate> path)
     {
+        int stepsTaken = 0;
         MapCoordinate pos = currentTile;
         foreach (var step in path)
         {
@@ -90,6 +91,7 @@ public class Enemy : Entity
                 yield return 0;
             }
             pos = step;
+            if (stepsTaken++ >= movementRange) break;
             yield return new WaitForSeconds(0.2f);
         }
         ChangeCurrentTile(pos);
