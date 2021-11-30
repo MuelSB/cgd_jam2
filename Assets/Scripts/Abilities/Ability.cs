@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "new Ability", menuName = "ScriptableObjects/Ability")]
 public class Ability : ScriptableObject
 {
+    public Sprite image = default;
+    
     public enum AbilityTarget
     {
         ENTITY,

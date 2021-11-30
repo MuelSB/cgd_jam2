@@ -114,6 +114,8 @@ MonoBehaviour:
     x: 0
     y: 0
   health: 100
-  abilities: []
+  abilities:
+  - {fileID: 11400000, guid: 943bbb10fcc37cd438164cd2f98d0007, type: 2}
+  - {fileID: 11400000, guid: 73ed5ee26648ae7498ba771da2fc10aa, type: 2}
   type: 0
   movementRange: 5

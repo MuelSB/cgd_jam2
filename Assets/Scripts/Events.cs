@@ -4,13 +4,13 @@ namespace Core
     {
         // const event id's
         public const string LoadTransition = "LoadTransition";
-        public const string LoadComplete = "LoadComplete";
+        public const string LoadComplete   = "LoadComplete";
 
         public const string LoadMenu  = "LoadMenu";
         public const string LoadGame  = "LoadGame";
-        public const string LoadLose = "LoadLose";
-        public const string LoadWin = "LoadWin";
-        public const string LoadBoss = "LoadBoss";
+        public const string LoadLose  = "LoadLose";
+        public const string LoadWin   = "LoadWin";
+        public const string LoadBoss  = "LoadBoss";
         public const string PauseGame = "PauseGame";
         
         // Turn Manager Events
@@ -19,5 +19,11 @@ namespace Core
         public const string RoundEnded   = "RoundEnded";
         public const string TurnStarted  = "TurnStarted"; 
         public const string TurnEnded    = "TurnEnded";
+        
+        //
+        public const string PlayerTurnStarted  = "PlayerTurnStarted";
+        public const string PlayerTurnEnded    = "PlayerTurnEnded";
+        
+        public const string AddAbility = "AddAbility";
     }
 }

@@ -1,27 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Core;
 
 public class Player : Entity
 {
-    public List<Items> items;
-
-    Player()
+    private void Start()
     {
-        health = 100.0f;
-        type = EntityType.PLAYER;
-        movementRange = 5;
+        // tell the UI about the player abilities
+        foreach (var ability in abilities)
+        {
+            OnNewAbility(ability);
+        }
     }
 
+    public void OnNewAbility(Ability ability)
+    {
+        var data = new ButtonData { Ability = ability, Callback = () => UseAbility(ability) };
+        EventSystem.Invoke<ButtonData>(Events.AddAbility, data);    
+    }
+    
     public void TakeDamage(int damage)
     {
         health -= damage;
     }
 
-    public void UseAbilities()
+    private void UseAbility(Ability ability)
     {
-
+        // we dont have a way to use abilities
     }
 
     public void UseItem()
