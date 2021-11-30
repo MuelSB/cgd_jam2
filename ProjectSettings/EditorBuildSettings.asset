@@ -14,4 +14,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BuildScenes/GameScene.unity
     guid: bfed3ed4e445b1a428927bb0a3f6e795
+  - enabled: 1
+    path: Assets/Scenes/BuildScenes/BossSelectMenu.unity
+    guid: 34620ba35820c0d46a1d70c7ca04527e
+  - enabled: 1
+    path: Assets/Scenes/BuildScenes/LoseScene.unity
+    guid: f6c6c72b313fec946b53cccee583b593
+  - enabled: 1
+    path: Assets/Scenes/BuildScenes/WinScene.unity
+    guid: bbc445a48e373cf419ef8b1282ca5480
   m_configObjects: {}

@@ -9,11 +9,14 @@ namespace Core
         public const string SystemCore = "SystemCore";
         public const string GameScene  = "GameScene";
         public const string MenuScene  = "MenuScene";
+        public const string BossScene = "BossScene";
+        public const string LoseScene = "LoseScene";
+        public const string WinScene = "WinScene";
     }
 
     public enum GameState
     {
-        None = 0, Loading, InMenu, InGame
+        None = 0, Loading, InMenu, InGame, InBossSelect, InLose, InWin
     }
     
     public class GameManager : MonoBehaviour
@@ -34,6 +37,9 @@ namespace Core
             // Register callbacks
             EventSystem.Subscribe(Events.LoadMenu,  OnLoadMenu);
             EventSystem.Subscribe(Events.LoadGame,  OnLoadGame);
+            EventSystem.Subscribe(Events.LoadLose, OnLoadLose);
+            EventSystem.Subscribe(Events.LoadWin, OnLoadWin);
+            EventSystem.Subscribe(Events.LoadBoss, OnLoadBoss);
 
             // Load the menu
             EventSystem.Invoke(Events.LoadMenu);
@@ -41,12 +47,18 @@ namespace Core
 
         private void OnDisable()
         {
-            EventSystem.Unsubscribe(Events.LoadMenu,  OnLoadMenu );
+            EventSystem.Unsubscribe(Events.LoadMenu,  OnLoadMenu);
             EventSystem.Unsubscribe(Events.LoadGame,  OnLoadGame);
+            EventSystem.Unsubscribe(Events.LoadLose, OnLoadLose);
+            EventSystem.Unsubscribe(Events.LoadWin, OnLoadWin);
+            EventSystem.Unsubscribe(Events.LoadBoss, OnLoadBoss);
         }
 
         private void OnLoadMenu() => LoadScene(Scenes.MenuScene, GameState.InMenu);
         private void OnLoadGame() => LoadScene(Scenes.GameScene, GameState.InGame);
+        private void OnLoadLose() => LoadScene(Scenes.LoseScene, GameState.InLose);
+        private void OnLoadWin() => LoadScene(Scenes.WinScene, GameState.InWin);
+        private void OnLoadBoss() => LoadScene(Scenes.BossScene, GameState.InBossSelect);
 
         private async void LoadScene(string str, GameState state)
         {

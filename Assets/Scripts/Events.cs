@@ -8,6 +8,9 @@ namespace Core
 
         public const string LoadMenu  = "LoadMenu";
         public const string LoadGame  = "LoadGame";
+        public const string LoadLose = "LoadLose";
+        public const string LoadWin = "LoadWin";
+        public const string LoadBoss = "LoadBoss";
         public const string PauseGame = "PauseGame";
         
         // Turn Manager Events
