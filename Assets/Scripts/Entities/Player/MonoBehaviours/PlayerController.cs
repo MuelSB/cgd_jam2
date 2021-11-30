@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     private float playerNoveInterpSpeed = 0.5f;
     private int tileLayerMask = 1 << 6;
 
+    Coroutine MoveCoroutine;
+    bool PlayerCanMove = true;
+
     public void ControlPlayer(Player targetPlayer)
     {
         // Set the player that this controller is controlling
@@ -84,7 +87,14 @@ public class PlayerController : MonoBehaviour
             if (Mathf.Abs(widthCount) <= controlledPlayer.value.movementRange &&
                 Mathf.Abs(depthCount) <= controlledPlayer.value.movementRange)
             {
-                StartCoroutine(MovePlayerToTile(hit.collider.gameObject));
+                if(PlayerCanMove)
+                {
+                    var currentMapTile = playerTileRaycastHit.collider.gameObject.GetComponent<MapTile>();
+                    currentMapTile.GetProperties().tile_enitity = new Maybe<Entity>();
+                    currentMapTile.GetProperties().ContainsEntity = false;
+                    if (MoveCoroutine != null) StopCoroutine(MoveCoroutine);
+                    MoveCoroutine = StartCoroutine(MovePlayerToTile(hit.collider.gameObject));
+                }
             }
         }
     }
@@ -93,6 +103,8 @@ public class PlayerController : MonoBehaviour
     {
         // Do nothing if the controller is not controlling a player
         if (!controlledPlayer.is_some) yield return null;
+
+        PlayerCanMove = false;
 
         float t = 0f;
 
@@ -112,6 +124,13 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
+        // Tile reached
+        // Set the tile's entity to player
+        var mapTile = tileObject.GetComponent<MapTile>();
+        mapTile.GetProperties().ContainsEntity = true;
+        mapTile.GetProperties().tile_enitity = new Maybe<Entity>(controlledPlayer.value);
+
+        PlayerCanMove = true;
         yield return null;
     }
 }
