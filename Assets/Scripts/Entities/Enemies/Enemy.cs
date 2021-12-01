@@ -5,9 +5,12 @@ using Core;
 
 public class Enemy : Entity
 {
+    public EnemiesData.EnemyType enemyType;
+    public bool canPassDestroyedTiles = false;
 
     public override void ProcessTurn() 
     {
+        EnemyManager.Instance.currentEnemyTurn = this;
         StartCoroutine(TurnCoroutine());
     }
 
@@ -23,17 +26,20 @@ public class Enemy : Entity
         
         if(widthTo + heightTo > movementRange)
         {
-            List<MapCoordinate> potentialTargets = new List<MapCoordinate>();
             foreach(Ability ability in abilities)
             {
                 if(ability.targetType == Ability.AbilityTarget.BUILDING)
                 {
-                    // Find nearest building, that is your target
+                    var potentialTargets = MetaGeneratorHelper.getClosestSpecialTiles(MapManager.GetMap().GetTiles(), currentTile);
+                    if(potentialTargets.is_some)
+                    {
+                        target = potentialTargets.value[Random.Range(0, potentialTargets.value.Count)];
+                    }
                 }
             }
         }
 
-        List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile);
+        List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile, canPassDestroyedTiles);
 
         return path;
     }
@@ -47,10 +53,10 @@ public class Enemy : Entity
             if (cost > 0 && apUsed > 0) continue;
 
 
-            List<MapCoordinate> targets = ability.GetTargetableTiles(currentTile);
+            List<MapCoordinate> targets = ability.GetTargetableTiles(currentTile, entityType);
             if(targets.Count > 0)
             {
-                MapCoordinate target = targets[0];
+                MapCoordinate target = targets[Random.Range(0, targets.Count)];
                 yield return AbilityManager.Instance.ExecuteAbility(ability, target);
                 apUsed += cost;
             }
@@ -77,6 +83,7 @@ public class Enemy : Entity
     {
         int stepsTaken = 0;
         MapCoordinate pos = currentTile;
+        path.Reverse();
         foreach (var step in path)
         {
             float t = 0.0f;

@@ -15,7 +15,7 @@ public abstract class Entity : MonoBehaviour
     public MapCoordinate currentTile;
     public float health;
     public List<Ability> abilities;
-    public EntityType type;
+    public EntityType entityType;
     public int movementRange;
 
     public void Damage(float dmg)

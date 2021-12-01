@@ -16,38 +16,56 @@ MonoBehaviour:
   - type: 0
     health: 4
     movement: 3
+    canPassDestroyedTiles: 0
     abilityNames:
     - AttackAdjacent
+    - DestroySpecial
     validTileTypes: 01000000
   - type: 1
     health: 2
     movement: 2
+    canPassDestroyedTiles: 0
     abilityNames:
     - AttackRanged
     validTileTypes: 01000000
   - type: 2
     health: 8
     movement: 1
+    canPassDestroyedTiles: 0
     abilityNames:
     - AttackAdjacent
     - DamageTile
+    - DestroySpecial
     validTileTypes: 02000000
   - type: 3
     health: 1
-    movement: 5
+    movement: 7
+    canPassDestroyedTiles: 1
     abilityNames:
     - AttackAdjacent
     validTileTypes: 02000000
   - type: 4
     health: 1
     movement: 3
+    canPassDestroyedTiles: 0
     abilityNames:
     - AttackAdjacent
     validTileTypes: 08000000090000000300000005000000
   - type: 5
     health: 3
     movement: 3
+    canPassDestroyedTiles: 0
     abilityNames:
     - SpawnClone
     - AttackAdjacent
     validTileTypes: 0400000002000000
+  bossData:
+    type: 6
+    health: 50
+    movement: 1
+    canPassDestroyedTiles: 1
+    abilityNames:
+    - AttackAdjacent
+    - DamageAdjacentTiles
+    - DestroyTile
+    validTileTypes: 

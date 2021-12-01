@@ -65,13 +65,13 @@ public class TurnManager : MonoBehaviour
         var initiative = new List<Entity>();
         
         // add the player to the first position
-        initiative.Add(Entity.All.Find(entity => entity.type == Entity.EntityType.PLAYER));
+        initiative.Add(Entity.All.Find(entity => entity.entityType == Entity.EntityType.PLAYER));
         
         // add everything that is not a player or boss
-        initiative.AddRange(Entity.All.Where(entity => entity.type != Entity.EntityType.PLAYER && entity.type != Entity.EntityType.BOSS));
+        initiative.AddRange(Entity.All.Where(entity => entity.entityType != Entity.EntityType.PLAYER && entity.entityType != Entity.EntityType.BOSS));
         
         // add the player to the first position
-        initiative.Add(Entity.All.Find(entity => entity.type == Entity.EntityType.BOSS));
+        initiative.Add(Entity.All.Find(entity => entity.entityType == Entity.EntityType.BOSS));
     
         return initiative;
     }

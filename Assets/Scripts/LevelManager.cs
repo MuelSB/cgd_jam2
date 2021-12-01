@@ -78,7 +78,8 @@ public class LevelManager : MonoBehaviour
         // create the map
         CreateMap();
 
-        enemyManager.SpawnNewEnemies(false);
+        enemyManager.CreateBoss();
+        //enemyManager.SpawnNewEnemies(false);
 
         // needs to be last in start
         EventSystem.Invoke(Events.LevelLoaded);
