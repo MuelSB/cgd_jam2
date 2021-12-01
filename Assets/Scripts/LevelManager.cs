@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Core;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -68,7 +70,7 @@ public class LevelManager : MonoBehaviour
 
     private GameObject abilityManagerObject;
     private AbilityManager abilityManager;
-
+    
     private void Start()
     {
         CreateManagers();

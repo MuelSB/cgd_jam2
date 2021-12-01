@@ -91,35 +91,5 @@ namespace Core
             EventSystem.Invoke(Events.LoadTransition);
             EventSystem.Invoke(Events.LoadComplete);
         }
-        
-        /*//Determines whether we're loading the battle scene.
-        [SerializeField] private bool battle_scene_enabled; 
-        
-        // Start is called before the first frame update
-        private void Start()
-        {
-            // Start Load Order
-
-            if (battle_scene_enabled)
-            {
-                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
-            }
-        }
-        
-        public void closeBattleUI()
-        {
-            if (SceneManager.GetSceneByBuildIndex(1).isLoaded)
-            {
-                SceneManager.UnloadSceneAsync(1);
-            }
-        }
-
-        public void openBattleUI()
-        {
-            if (!SceneManager.GetSceneByBuildIndex(1).isLoaded)
-            {
-                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
-            }
-        }*/
     }
 }
