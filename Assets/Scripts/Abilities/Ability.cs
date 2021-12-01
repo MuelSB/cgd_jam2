@@ -9,7 +9,8 @@ public class Ability : ScriptableObject
     
     public enum AbilityTarget
     {
-        ENTITY,
+        ALLY,
+        ENEMY,
         TILE,
         BUILDING
     }
@@ -47,7 +48,7 @@ public class Ability : ScriptableObject
         return potentialTargets;
     }
 
-    public List<MapCoordinate> GetTargetableTiles(MapCoordinate currentTile)
+    public List<MapCoordinate> GetTargetableTiles(MapCoordinate currentTile, Entity.EntityType abilityUser)
     {
         List<MapCoordinate> tiles = GetTilesInRange(currentTile);
         List<MapCoordinate> targets = new List<MapCoordinate>();
@@ -58,9 +59,22 @@ public class Ability : ScriptableObject
 
             switch(targetType)
             {
-                case AbilityTarget.ENTITY:
+                case AbilityTarget.ENEMY:
                     {
-                        if(properties.tile_enitity.is_some && coord != currentTile)
+                        if(properties.tile_enitity.is_some && coord != currentTile
+                            && ((abilityUser == Entity.EntityType.PLAYER) ? 
+                            properties.tile_enitity.value.entityType != abilityUser 
+                            : properties.tile_enitity.value.entityType == Entity.EntityType.PLAYER))
+                        {
+                            targets.Add(coord);
+                        }
+                        break;
+                    }
+                case AbilityTarget.ALLY:
+                    {
+                        if (properties.tile_enitity.is_some && coord != currentTile && ((abilityUser == Entity.EntityType.PLAYER) ?
+                            properties.tile_enitity.value.entityType == abilityUser
+                            : properties.tile_enitity.value.entityType != Entity.EntityType.PLAYER))
                         {
                             targets.Add(coord);
                         }
@@ -76,7 +90,10 @@ public class Ability : ScriptableObject
                     }
                 case AbilityTarget.BUILDING:
                     {
-                        // check if type is a building
+                        if(MetaGeneratorHelper.typeIsSpecial(MapManager.GetMap().GetTileObject(coord)))
+                        {
+                            targets.Add(coord);
+                        }
                         break;
                     }
             }

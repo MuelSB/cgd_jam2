@@ -25,7 +25,7 @@ public struct Node
 public static class Pathfinding
 {
 
-    public static List<MapCoordinate> FindRoute(MapCoordinate target, MapCoordinate origin)
+    public static List<MapCoordinate> FindRoute(MapCoordinate target, MapCoordinate origin, bool canPassDestroyedTiles)
     {
         List<MapCoordinate> result = new List<MapCoordinate>();
 
@@ -35,7 +35,7 @@ public static class Pathfinding
         int widthTo, heightTo;
         MapManager.GetAbsoluteTileCountTo(target, origin, out widthTo, out heightTo);
 
-        openList.Add(new Node(target, widthTo + heightTo, 0, new Maybe<Node>()));
+        openList.Add(new Node(origin, widthTo + heightTo, 0, new Maybe<Node>()));
         Node currentBest = openList[0];
         int bestScore = openList[0].score;
         bool foundPath = false;
@@ -46,9 +46,20 @@ public static class Pathfinding
             openList.Remove(currentBest);
             closedList.Add(currentBest);
             List<MapCoordinate> bestNeighbours = MapManager.GetMap().GetTileNeighbors(currentBest.coordinates);
-            foreach(MapCoordinate newCoord in bestNeighbours)
+
+            //Giving a quick shuffle so it's not biased to always going down, then across
+            for (int i = 0; i < bestNeighbours.Count; i++)
             {
-                if(newCoord == origin)
+                MapCoordinate temp = bestNeighbours[i];
+                int randomIndex = Random.Range(i, bestNeighbours.Count);
+                bestNeighbours[i] = bestNeighbours[randomIndex];
+                bestNeighbours[randomIndex] = temp;
+            }
+            //In theory, anyway... I'm not sure this is proving enough to get more unpredictable movement.
+
+            foreach (MapCoordinate newCoord in bestNeighbours)
+            {
+                if(newCoord == target)
                 {
                     foundPath = true;
                     break;
@@ -56,8 +67,11 @@ public static class Pathfinding
 
                 bool inOpen = openList.Any(node => node.coordinates == newCoord);
                 bool inClosed = closedList.Any(node => node.coordinates == newCoord);
+                var mtp = MapManager.GetMap().GetTileProperties(newCoord);
+                bool isPassable = (mtp.tile_enitity.is_some == false
+                    && (canPassDestroyedTiles || mtp.Integrity > 0));
 
-                if (inOpen || inClosed) continue;
+                if (inOpen || inClosed || isPassable == false) continue;
 
                 int distance, cost;
                 MapManager.GetAbsoluteTileCountTo(origin, newCoord, out widthTo, out heightTo);
@@ -88,24 +102,21 @@ public static class Pathfinding
                 }
             }
         }
-
-        if(foundPath)
+        Node nextNode = currentBest;
+        while(nextNode.coordinates != target)
         {
-            Node nextNode = currentBest;
-            while(nextNode.coordinates != target)
+            result.Add(nextNode.coordinates);
+            if(nextNode.cameFrom.is_some)
             {
-                result.Add(nextNode.coordinates);
-                if(nextNode.cameFrom.is_some)
-                {
-                    nextNode = nextNode.cameFrom.value;
-                }
-                else
-                {
-                    throw new System.Exception("There was a null cameFrom in the path back from the pathfinding target! THIS SHOULD NOT HAPPEN");
-                }
+                nextNode = nextNode.cameFrom.value;
+                if (nextNode.coordinates == origin) break;
             }
-            result.Add(target);
+            else
+            {
+                throw new System.Exception("There was a null cameFrom in the path back from the pathfinding target! THIS SHOULD NOT HAPPEN");
+            }
         }
+
 
         return result;
     }

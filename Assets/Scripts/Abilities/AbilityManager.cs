@@ -90,7 +90,8 @@ public class AbilityManager : MonoBehaviour
 
             case EffectType.DAMAGE_TILE:
                 {
-                    MapManager.GetMap().GetTileProperties(targetTile).Integrity -= effect.damage;
+                    var mtp = MapManager.GetMap().GetTileProperties(targetTile);
+                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     break;
                 }
             case EffectType.DESTROY_TILE:
@@ -103,13 +104,19 @@ public class AbilityManager : MonoBehaviour
                     List<MapCoordinate> neighbours = MapManager.GetMap().GetTileNeighbors(targetTile);
                     foreach (MapCoordinate neighbour in neighbours)
                     {
-                        MapManager.GetMap().GetTileProperties(neighbour).Integrity -= effect.damage;
+                        var mtp = MapManager.GetMap().GetTileProperties(neighbour);
+                        MapManager.GetMap().GetTileProperties(neighbour).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     }
                     break;
                 }
             case EffectType.DESTROY_SPECIAL_TILE:
                 {
-                    // Remove special tile status
+                    MetaGeneratorHelper.destroyTile(MapManager.GetMap(), targetTile);
+                    break;
+                }
+            case EffectType.SPAWN_ENEMY:
+                {
+                    EnemyManager.Instance.CreateClone(EnemyManager.Instance.currentEnemyTurn);
                     break;
                 }
         }

@@ -15,7 +15,8 @@ public class EnemiesData : ScriptableObject
         TROLL,
         BAT,
         RAT,
-        WOLF
+        WOLF,
+        BOSS
     }
 
     [System.Serializable]
@@ -24,11 +25,13 @@ public class EnemiesData : ScriptableObject
         public EnemyType type;
         public int health;
         public int movement;
+        public bool canPassDestroyedTiles;
         public List<string> abilityNames;
         public List<MapTileProperties.TileType> validTileTypes;
     }
 
     public List<EnemyData> enemiesData;
+    public EnemyData bossData;
 
     private void OnEnable()
     {

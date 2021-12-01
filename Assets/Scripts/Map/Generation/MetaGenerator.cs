@@ -70,7 +70,7 @@ public static class MetaGeneratorHelper
     public static bool isPlayer (this GameObject _g) => _g.isOfEntityType(Entity.EntityType.PLAYER);
 
     //isOfEntityType: returns if a gameobject with a maptile component has the entity type provided.
-    public static bool isOfEntityType (this GameObject _g, Entity.EntityType _t ) => _g.GetComponent<MapTile>().GetProperties().tile_enitity.is_some ? _g.GetComponent<MapTile>().GetProperties().tile_enitity.value.type == _t : false;
+    public static bool isOfEntityType (this GameObject _g, Entity.EntityType _t ) => _g.GetComponent<MapTile>().GetProperties().tile_enitity.is_some ? _g.GetComponent<MapTile>().GetProperties().tile_enitity.value.entityType == _t : false;
 
     //doesEntityOfTypeExistOnGrid: returns if a specified entity type exists somewhere on the map.
     public static bool doesEntityOfTypeExistOnGrid(this List<GameObject> _grid, Entity.EntityType _t) => _grid.Where(_e => _e.GetComponent<MapTile>().GetProperties().tile_enitity.is_some).Where(_x => _x.isOfEntityType(_t)).ToList().Count() > 0;
