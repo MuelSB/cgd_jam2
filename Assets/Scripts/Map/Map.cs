@@ -14,11 +14,11 @@ public class Map
     //class used for generation of map information
     private MetaGenerator metaGenerator;
 
-    public Map(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig)
+    public Map(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig, Transform parentTransform)
     {
         Destroy();
         MakeMapMetaGenerator(metaGeneratorConfig);
-        Instantiate(createSettings);
+        Instantiate(createSettings, parentTransform);
     }
 
     //Should only need to be made once at the start, so it only makes it if it does not exist already.
@@ -152,7 +152,7 @@ public class Map
             mapCoordinate.y < mapDepthTileCount;
     }
 
-    private void Instantiate(MapCreateSettings createSettings)
+    private void Instantiate(MapCreateSettings createSettings, Transform parentTransform)
     {
         Assert.IsFalse(instantiated, "Attempting to instantiate the map without destroying existing map data.");
 
@@ -186,7 +186,8 @@ public class Map
                             Random.Range(createSettings.MinRandomRotationJitter.x, createSettings.MaxRandomRotationJitter.x),
                             Random.Range(createSettings.MinRandomRotationJitter.y, createSettings.MaxRandomRotationJitter.y),
                             Random.Range(createSettings.MinRandomRotationJitter.z, createSettings.MaxRandomRotationJitter.z))
-                            )
+                            ), 
+                        parentTransform
                         ).GetComponent<MapTile>().setLocation(new MapCoordinate(j,i)));
             }
         }

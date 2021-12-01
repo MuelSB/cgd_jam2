@@ -6,9 +6,9 @@ public static class MapManager
     // Class variables
     private static Map map;
 
-    public static void CreateMap(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig)
+    public static void CreateMap(MapCreateSettings createSettings, MetaGeneratorConfig metaGeneratorConfig, Transform parentTransform)
     {
-        map = new Map(createSettings, metaGeneratorConfig);
+        map = new Map(createSettings, metaGeneratorConfig, parentTransform);
     }
 
     public static void DestroyMap()
@@ -33,6 +33,8 @@ public static class MapManager
         depthCount = Mathf.Abs(depthCount);
     }
 
+    // This function is not correct. It treats map coordinate 0, 0 as the tile at the center of the map
+    // Map coordinate 0, 0 should be the bottom left tile
     public static Maybe<MapCoordinate> WorldSpaceToMapCoordinate(Vector3 worldSpacePosition)
     {
         var tileSize = map.GetTileSize();

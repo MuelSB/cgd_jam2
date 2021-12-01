@@ -175,7 +175,7 @@ public class LevelManager : MonoBehaviour
             tileYIntegrityFrequency, tileIntegrityDivider, tileDecrementRangeMaxMin, baseBiome, biome_max_min_strengths_dict, biomeQuantityMaxMin, debugMode, 
             includedStructures,TowerRangeMaxMin,type_to_decor);
 
-        MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig);
+        MapManager.CreateMap(mapCreateSettings, metaGeneratorConfig, transform);
         var map = MapManager.GetMap();
 
         var playerStartCoordinate = new MapCoordinate(0, 0);
