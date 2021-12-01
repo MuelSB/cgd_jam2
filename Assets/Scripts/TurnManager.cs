@@ -93,13 +93,13 @@ public class TurnManager : MonoBehaviour
     }
 
     private void StartTurn()
-    {
-        // invoke event
-        EventSystem.Invoke(Events.TurnStarted);
-        
+    {        
         // get actor
         var entity = _actors[_turn];
-        
+
+        // invoke event
+        EventSystem.Invoke<Entity>(Events.TurnStarted, entity);
+
         // skips if actor cant act
         if (entity == null)
         {

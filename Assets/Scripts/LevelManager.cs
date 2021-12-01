@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Core;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -15,6 +13,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Vector3 MinRandomRotationJitter = new Vector3(-5.0f, 0.0f, -5.0f);
     [SerializeField] private Vector3 MaxRandomRotationJitter = new Vector3(-5.0f, 0.0f, -5.0f);
 
+    [Header("Camera Manager")]
+    [SerializeField] private CameraManagerSettings cameraManagerSettings = new CameraManagerSettings();
 
     [Header("Meta Generation Data")]
     [SerializeField] private int seed = 1;
@@ -89,6 +89,11 @@ public class LevelManager : MonoBehaviour
         //StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
     }
 
+    private void Update()
+    {
+        CameraManager.UpdateMainCamera();
+    }
+
     private void CreateManagers()
     {
         if(turnManagerPrefabReference != null)
@@ -144,7 +149,7 @@ public class LevelManager : MonoBehaviour
 
 
         // Initialize camera manager
-        CameraManager.Initialize();
+        CameraManager.Initialize(cameraManagerSettings);
     }
 
 
@@ -198,6 +203,9 @@ public class LevelManager : MonoBehaviour
             newPosition.y += ((playerCollision.height * 0.5f) * playerObject.transform.localScale.y) + (tileCollision.size.y * 0.5f);
             playerObject.transform.position = newPosition;
             playerObject.GetComponent<Player>().SetCurrentTile(playerStartCoordinate);
+
+            // Move camera to player
+            CameraManager.SetMainCameraPosition(playerObject.transform.position);
         }
         else
         {

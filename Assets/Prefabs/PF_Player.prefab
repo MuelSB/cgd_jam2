@@ -119,7 +119,7 @@ MonoBehaviour:
   abilities:
   - {fileID: 11400000, guid: 943bbb10fcc37cd438164cd2f98d0007, type: 2}
   - {fileID: 11400000, guid: 73ed5ee26648ae7498ba771da2fc10aa, type: 2}
-  type: 0
+  entityType: 0
   movementRange: 5
   _input: {fileID: 3899498920114870380}
   _movement: {fileID: 4878822451781822695}
