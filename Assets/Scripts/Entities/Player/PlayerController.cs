@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
         controlledPlayer = new Maybe<Player>(targetPlayer);
 
         // Call the player's on controlled event
-        controlledPlayer.value.OnControlled();
+        //controlledPlayer.value.OnControlled();
     }
 
     public void UnControlPlayer()
@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
         if (!controlledPlayer.is_some) return;
 
         // Call the controlled player's on uncontrolled event
-        controlledPlayer.value.OnUnControlled();
+        //controlledPlayer.value.OnUnControlled();
     }
 
     private void Awake()

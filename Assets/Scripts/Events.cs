@@ -25,5 +25,7 @@ namespace Core
         public const string PlayerTurnEnded    = "PlayerTurnEnded";
         
         public const string AddAbility = "AddAbility";
+        public const string HighlightTiles = "HighlightTiles";
+        public const string DisableHighlights = "DisableHighlights";
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Core;
 using UnityEditor.SceneManagement;
@@ -37,9 +38,11 @@ public class Player : Entity
         
         // set the current ability
         _ability = ability;
-        
+
         // TODO : ADD SELECTION HIGHLIGHT
-        
+        var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
+        EventSystem.Invoke(Events.HighlightTiles, highlights);
+
         // hack in the movement
         _input.onSelected.AddListener( OnSelectMapTile );
     }
@@ -51,29 +54,24 @@ public class Player : Entity
         {
             // TODO : need to check if move is in range
             // start the move selection coroutine
+       
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
+            EventSystem.Invoke(Events.PlayerTurnEnded);
+            EndTurn(); // temp
             print("Move");
         }
         else
         {
-            // if ( ability can be used ( coord ) ) 
-            // use ability 
-            // clear input callbacks
+            // not fully implimented
+            //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
             print("Other Ability");
         }
         
         // stop input
         _input.onSelected.RemoveAllListeners();
-    }
-
-    public void OnControlled()
-    {
         
-    }
-
-    public void OnUnControlled()
-    {
-
+        // remove highlight
+        EventSystem.Invoke(Events.DisableHighlights);
     }
 
     public override void ProcessTurn()

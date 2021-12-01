@@ -79,14 +79,14 @@ public class LevelManager : MonoBehaviour
         CreateMap();
 
         enemyManager.CreateBoss();
-        //enemyManager.SpawnNewEnemies(false);
+        enemyManager.SpawnNewEnemies(false);
 
         // needs to be last in start
         EventSystem.Invoke(Events.LevelLoaded);
 
         // uncomment below to burn the world! (spooky!)
-        // System.Random rand = new System.Random(seed);
-        // StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
+        //System.Random rand = new System.Random(seed);
+        //StartCoroutine(burnTheWorld(MapManager.GetMap().GetTiles(),rand));
     }
 
     private void CreateManagers()
