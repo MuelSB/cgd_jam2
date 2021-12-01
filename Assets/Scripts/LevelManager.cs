@@ -141,6 +141,10 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogWarning("Enemy manager not initialized as enemyManagerPrefabReference was not set in the level manager.");
         }
+
+
+        // Initialize camera manager
+        CameraManager.Initialize();
     }
 
 
