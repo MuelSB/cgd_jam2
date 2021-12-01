@@ -8,12 +8,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject eventSystemObject = default; 
     [SerializeField] private RectTransform parent = default;
     [SerializeField] private GameObject prefab = default;
-
-    //private List<GameObject> _buttonList = new List<GameObject>();
     
     private void OnEnable()
     {
+        // add callbacks
         EventSystem.Subscribe<ButtonData>(Events.AddAbility, CreateButton);
+        
+        // disables ui events when not the players turn
         EventSystem.Subscribe(Events.PlayerTurnStarted, () => eventSystemObject.SetActive(true));
         EventSystem.Subscribe(Events.PlayerTurnEnded, () => eventSystemObject.SetActive(false));
     }
@@ -27,11 +28,8 @@ public class UIManager : MonoBehaviour
     
     private void CreateButton(ButtonData data)
     {
-        Debug.Log("CREATE BUTT");
-        
         // create the instance and add to a list 
         var obj = Instantiate(prefab, parent);
-        //_buttonList.Add(obj);
 
         // get the component and set up the button
         var script = obj.GetComponent<DynamicButton>();

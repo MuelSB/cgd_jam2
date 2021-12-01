@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3220079062944129415}
   - component: {fileID: 1758241993973354337}
   - component: {fileID: 850786171663018084}
+  - component: {fileID: 3899498920114870380}
+  - component: {fileID: 4878822451781822695}
   m_Layer: 0
   m_Name: PF_Player
   m_TagString: Untagged
@@ -119,3 +121,34 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 73ed5ee26648ae7498ba771da2fc10aa, type: 2}
   type: 0
   movementRange: 5
+  _input: {fileID: 3899498920114870380}
+  _movement: {fileID: 4878822451781822695}
+  AP: 2
+--- !u!114 &3899498920114870380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866463362989073637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8429b53500ce734c909e9aec6b5c2b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4878822451781822695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866463362989073637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cb4eeca230e4ff468b00c499983a6dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMoveSpeed: 0.5

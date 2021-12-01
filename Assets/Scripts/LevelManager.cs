@@ -62,8 +62,6 @@ public class LevelManager : MonoBehaviour
     private TurnManager turnManager;
 
     private GameObject playerObject; // Only one player currently implemented
-    private GameObject playerControllerObject; // Only one player controller currently implemented
-    private PlayerController playerController;
 
     private GameObject enemyManagerObject;
     private EnemyManager enemyManager;
@@ -155,7 +153,11 @@ public class LevelManager : MonoBehaviour
             MaxRandomRotationJitter = MaxRandomRotationJitter
         };
 
-        if (tileIntegrityDivider == 0) {tileIntegrityDivider = 1;} Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
+        if (tileIntegrityDivider == 0)
+        {
+            tileIntegrityDivider = 1;
+            Debug.LogWarning("tileIntegrityDivider was changed from zero to one to avoid divide by zero!");
+        } 
         
         Dictionary<MapTileProperties.TileType, Vector2Int> biome_max_min_strengths_dict = new Dictionary<MapTileProperties.TileType, Vector2Int>();
         foreach (MapTileProperties.TileType key in biomeMaxMinStrengths.Keys) {
@@ -188,13 +190,6 @@ public class LevelManager : MonoBehaviour
             var newPosition = playerStartTile.transform.position;
             newPosition.y += ((playerCollision.height * 0.5f) * playerObject.transform.localScale.y) + (tileCollision.size.y * 0.5f);
             playerObject.transform.position = newPosition;
-
-            // Spawn player controller
-            var playerControllerObject = new GameObject();
-            playerController = playerControllerObject.AddComponent<PlayerController>();
-
-            // Control player with player controller
-            playerController.ControlPlayer(playerObject.GetComponent<Player>());
             playerObject.GetComponent<Player>().SetCurrentTile(playerStartCoordinate);
         }
         else

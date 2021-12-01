@@ -9,9 +9,13 @@ namespace Core
         
         private static AudioSource _musicSource = default;
         private static AudioSource _effectSource = default;
+
+        private static bool isEnabled = false;
         
         private void OnEnable()
         {
+            isEnabled = true;
+            
             // get the audio sources
             var components = GetComponentsInChildren<AudioSource>();
             
@@ -29,6 +33,7 @@ namespace Core
 
         public static void PlayMusic(AudioClip clip)
         {
+            if (!isEnabled) return;
             if (_musicSource.isPlaying)
             {
                 _musicSource.Stop();
@@ -38,6 +43,7 @@ namespace Core
         
         public static void PlayEffect(AudioClip clip)
         {
+            if (!isEnabled) return;
             _effectSource.PlayOneShot(clip);
         }
 

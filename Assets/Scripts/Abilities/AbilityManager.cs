@@ -28,7 +28,7 @@ public class AbilityManager : MonoBehaviour
         abilities = new Dictionary<string, Ability>();
         foreach (AbilitiesData.AbilityData abilityData in abilitiesData.abilities)
         {
-            Ability newAbility = new Ability();
+            Ability newAbility = ScriptableObject.CreateInstance<Ability>();
             newAbility.range = abilityData.abilityRange;
             newAbility.targetType = abilityData.targetType;
             newAbility.cost = abilityData.cost;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,6 +45,12 @@ public class PlayerController : MonoBehaviour
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Select.performed += Select;
+    }
+
+    private void OnDisable()
+    {
+        playerInputActions.Player.Select.performed -= Select;
+
     }
 
     private void Select(InputAction.CallbackContext context)
