@@ -22,7 +22,7 @@ static public class CameraManager
     static public void UpdateMainCamera()
     {
         // Move the main camera's position to look at the target transform
-        if (lookTargetTransform.is_some)
+        if (lookTargetTransform.is_some && lookTargetTransform.value != null)
         {
             var newCameraPosition = Vector3.MoveTowards(
                     Camera.main.transform.position,
