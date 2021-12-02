@@ -123,7 +123,7 @@ public class AbilityManager : MonoBehaviour
                     Maybe<Entity> entity = MapManager.GetMap().GetTileProperties(targetTile).tile_enitity;
                     if (entity.is_some)
                     {
-                        ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponent<ParticleSystem>());
+                        ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                         entity.value.Damage(effect.damage);
                     }
                     break;
@@ -137,7 +137,7 @@ public class AbilityManager : MonoBehaviour
                         Maybe<Entity> occupant = MapManager.GetMap().GetTileProperties(neighbour).tile_enitity;
                         if (occupant.is_some)
                         {
-                            ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponent<ParticleSystem>());
+                            ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponentInChildren<ParticleSystem>());
                             occupant.value.Damage(effect.damage);
                         }
                     }
@@ -147,7 +147,7 @@ public class AbilityManager : MonoBehaviour
             case EffectType.DAMAGE_TILE:
                 {
                     color = Color.black;
-                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponent<ParticleSystem>());
+                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                     var mtp = MapManager.GetMap().GetTileProperties(targetTile);
                     MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     break;
@@ -155,7 +155,7 @@ public class AbilityManager : MonoBehaviour
             case EffectType.DESTROY_TILE:
                 {
                     color = Color.black;
-                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponent<ParticleSystem>());
+                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                     MapManager.GetMap().destroyTile(targetTile);
                     break;
                 }
@@ -165,7 +165,7 @@ public class AbilityManager : MonoBehaviour
                     List<MapCoordinate> neighbours = MapManager.GetMap().GetTileNeighbors(targetTile);
                     foreach (MapCoordinate neighbour in neighbours)
                     {
-                        ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponent<ParticleSystem>());
+                        ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponentInChildren<ParticleSystem>());
                         var mtp = MapManager.GetMap().GetTileProperties(neighbour);
                         MapManager.GetMap().GetTileProperties(neighbour).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     }
@@ -174,14 +174,14 @@ public class AbilityManager : MonoBehaviour
             case EffectType.DESTROY_SPECIAL_TILE:
                 {
                     color = new Color(1.0f, 1.0f, 0.0f);
-                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponent<ParticleSystem>());
+                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                     MetaGeneratorHelper.destroyTile(MapManager.GetMap(), targetTile);
                     break;
                 }
             case EffectType.SPAWN_ENEMY:
                 {
                     color = Color.cyan;
-                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponent<ParticleSystem>());
+                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                     EnemyManager.Instance.CreateClone(EnemyManager.Instance.currentEnemyTurn, targetTile);
                     break;
                 }
