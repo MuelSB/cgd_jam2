@@ -12,7 +12,8 @@ public class Ability : ScriptableObject
         ALLY,
         ENEMY,
         TILE,
-        BUILDING
+        BUILDING,
+        EMPTY_TILE,
     }
 
     public int range;
@@ -91,6 +92,14 @@ public class Ability : ScriptableObject
                 case AbilityTarget.BUILDING:
                     {
                         if(MetaGeneratorHelper.typeIsSpecial(MapManager.GetMap().GetTileObject(coord)))
+                        {
+                            targets.Add(coord);
+                        }
+                        break;
+                    }
+                case AbilityTarget.EMPTY_TILE:
+                    {
+                        if (properties.Integrity > 0 && properties.tile_enitity.is_some == false)
                         {
                             targets.Add(coord);
                         }
