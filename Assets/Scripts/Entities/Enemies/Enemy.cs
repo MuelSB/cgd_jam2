@@ -57,7 +57,7 @@ public class Enemy : Entity
             if(targets.Count > 0)
             {
                 MapCoordinate target = targets[Random.Range(0, targets.Count)];
-                yield return AbilityManager.Instance.ExecuteAbility(ability, target);
+                yield return AbilityManager.Instance.ExecuteAbility(ability, this, target);
                 apUsed += cost;
             }
 

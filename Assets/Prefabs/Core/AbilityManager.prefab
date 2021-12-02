@@ -43,4 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f083675d631b05249ae595d7290b2249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityBulletPrefab: {fileID: 6488410087119262048, guid: 6f27e6b50b9bb444b97c49917acb3f49, type: 3}
+  itemPoolSize: 10
+  bulletSpeed: 1
+  bulletHeight: 1.25
   abilitiesData: {fileID: 11400000, guid: d98183ee3ba99b941a0bfc8918b0ebe1, type: 2}

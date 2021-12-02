@@ -76,22 +76,16 @@ public class EnemyManager : MonoBehaviour
         return new MapCoordinate(spawnX, spawnY);
     }
 
-    public void CreateClone(Enemy enemy)
+    public void CreateClone(Enemy enemy, MapCoordinate targetTile)
     {
         foreach(EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
         {
             if(enemyData.type == enemy.enemyType)
             {
-                List<MapCoordinate> possibleTiles = MapManager.GetMap().GetTileNeighbors(enemy.currentTile);
-                List<MapCoordinate> emptyTiles = new List<MapCoordinate>();
-                foreach(MapCoordinate tile in possibleTiles)
+                if (MapManager.GetMap().GetTileProperties(targetTile).tile_enitity.is_some == false)
                 {
-                    if(MapManager.GetMap().GetTileProperties(tile).tile_enitity.is_some == false)
-                    {
-                        emptyTiles.Add(tile);
-                    }
+                    CreateEnemyOfType(targetTile, enemyData);
                 }
-                CreateEnemyOfType(emptyTiles[Random.Range(0, emptyTiles.Count)], enemyData);
             }
         }
     }
