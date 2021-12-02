@@ -18,7 +18,7 @@ public abstract class Entity : MonoBehaviour
     public EntityType entityType;
     public int movementRange;
 
-    public void Damage(float dmg)
+    public virtual void Damage(float dmg)
     {
         health -= dmg;
         if(health <= 0)
