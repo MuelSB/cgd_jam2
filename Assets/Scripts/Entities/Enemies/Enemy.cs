@@ -42,15 +42,20 @@ public class Enemy : Entity
 
     private List<MapCoordinate> GetDesiredMove()
     {
-        MapCoordinate playerTile = new MapCoordinate(1, 0);
+        Maybe<MapCoordinate> playerTile = new Maybe<MapCoordinate>();
+        Maybe<MapCoordinate> target = new Maybe<MapCoordinate>();
+        int widthTo = 0, heightTo = 0;
+        var player = MetaGeneratorHelper.getPlayerFromGrid(MapManager.GetMap().GetTiles());
+        if(player.is_some)
+        {
+            playerTile = new Maybe<MapCoordinate>(player.value);
+            target = playerTile;
 
-        MapCoordinate target = playerTile;
+            MapManager.GetAbsoluteTileCountTo(currentTile, playerTile.value, out widthTo, out heightTo);
+        }
 
-        int widthTo, heightTo;
-
-        MapManager.GetAbsoluteTileCountTo(currentTile, playerTile, out widthTo, out heightTo);
         
-        if(widthTo + heightTo > movementRange)
+        if((widthTo + heightTo > movementRange) || player.is_some == false)
         {
             foreach(Ability ability in abilities)
             {
@@ -59,13 +64,15 @@ public class Enemy : Entity
                     var potentialTargets = MetaGeneratorHelper.getClosestSpecialTiles(MapManager.GetMap().GetTiles(), currentTile);
                     if(potentialTargets.is_some)
                     {
-                        target = potentialTargets.value[Random.Range(0, potentialTargets.value.Count)];
+                        target = new Maybe<MapCoordinate>(potentialTargets.value[Random.Range(0, potentialTargets.value.Count)]);
                     }
                 }
             }
         }
 
-        List<MapCoordinate> path = Pathfinding.FindRoute(target, currentTile, canPassDestroyedTiles);
+        if (target.is_some == false) return new List<MapCoordinate>();
+
+        List<MapCoordinate> path = Pathfinding.FindRoute(target.value, currentTile, canPassDestroyedTiles);
 
         return path;
     }
@@ -119,8 +126,7 @@ public class Enemy : Entity
                     MapManager.GetMap().GetTileObject(pos).transform.position,
                     MapManager.GetMap().GetTileObject(step).transform.position,
                     t += (2f * Time.deltaTime)
-                    )
-                    + Vector3.up;
+                    );
                 yield return 0;
             }
             pos = step;
