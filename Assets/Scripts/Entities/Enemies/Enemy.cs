@@ -1,17 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Core;
 
 public class Enemy : Entity
 {
     public EnemiesData.EnemyType enemyType;
     public bool canPassDestroyedTiles = false;
+    public Canvas healthUICanvas;
+    public Image healthImage;
+
+    private float initialHealthWidth;
+    private float maxHealth;
+
+    private void Start()
+    {
+        maxHealth = health;
+        initialHealthWidth = healthImage.rectTransform.rect.width;
+        healthUICanvas.worldCamera = Camera.main.transform.GetChild(0).GetComponent<Camera>();
+    }
+
+    private void Update()
+    {
+        Camera camera = Camera.main;
+        healthUICanvas.transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward, camera.transform.rotation * Vector3.up);
+    }
 
     public override void ProcessTurn() 
     {
         EnemyManager.Instance.currentEnemyTurn = this;
         StartCoroutine(TurnCoroutine());
+    }
+
+    public override void Damage(float dmg)
+    {
+        base.Damage(dmg);
+        if (health < maxHealth) healthUICanvas.enabled = true;
+        healthImage.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (health / maxHealth) * initialHealthWidth);
     }
 
     private List<MapCoordinate> GetDesiredMove()
