@@ -56,8 +56,8 @@ MonoBehaviour:
     movement: 3
     canPassDestroyedTiles: 0
     abilityNames:
-    - SpawnClone
     - AttackAdjacent
+    - SpawnClone
     validTileTypes: 0400000002000000
   bossData:
     type: 6
