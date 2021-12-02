@@ -57,7 +57,6 @@ public class Player : Entity
        
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
             EventSystem.Invoke(Events.PlayerTurnEnded);
-            EndTurn(); // temp
             print("Move");
         }
         else
