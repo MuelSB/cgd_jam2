@@ -38,11 +38,11 @@ public class PlayerMovement : MonoBehaviour
         // Tile reached
         // Set the tile's entity to player
         var mapTile = tileObject.GetComponent<MapTile>();
-        mapTile.GetProperties().ContainsEntity = true;
-        mapTile.GetProperties().tile_enitity = new Maybe<Entity>(player);
+        player.ChangeCurrentTile(mapTile.getLocation());
         
         // set coroutine to null
         _movingCoroutine = null;
+        player.TestEndTurn();
         yield return null;
     }
 }
