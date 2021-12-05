@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -28,30 +29,31 @@ public class EnemyManager : MonoBehaviour
         
     }
 
-    public void SpawnNewEnemies(bool pauseForEach)
+    public void SpawnNewEnemies(int number, bool pauseForEach)
     {
-        int numToCreate = Random.Range(5, 10);
-        StartCoroutine(CreateNewEnemies(numToCreate, pauseForEach));
+        StartCoroutine(CreateNewEnemies(number, pauseForEach));
     }
 
     public IEnumerator CreateNewEnemies(int numEnemies, bool pauseForEach)
     {
         for (int i = 0; i < numEnemies; ++i)
         {
-            bool success = false;
-            while (success == false)
+            Maybe<Enemy> newEnemy = new Maybe<Enemy>();
+            while (newEnemy.is_some == false)
             {
                 var playerLoc = MetaGeneratorHelper.getPlayerFromGrid(MapManager.GetMap().GetTiles());
                 if (playerLoc.is_some)
                 {
-                    success = CreateMinionEnemy(FindEnemySpawnLocation(playerLoc.value));
+                    newEnemy = CreateMinionEnemy(FindEnemySpawnLocation(playerLoc.value));
                 }
             }
             if (pauseForEach)
             {
-                yield return 0;
+                CameraManager.SetMainCameraPosition(newEnemy.value.transform.position);
+                yield return new WaitForSeconds(1.5f);
             }
         }
+        EventSystem.Invoke("EnemiesSpawned");
         yield break;
     }
 
@@ -90,9 +92,9 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public bool CreateMinionEnemy(MapCoordinate location)
+    public Maybe<Enemy> CreateMinionEnemy(MapCoordinate location)
     {
-
+        Maybe<Enemy> newEnemy = new Maybe<Enemy>();
         MapTileProperties.TileType tileType = MapManager.GetMap().GetTileProperties(location).Type;
         List<EnemiesData.EnemyData> potentialSpawn = new List<EnemiesData.EnemyData>();
 
@@ -114,11 +116,12 @@ public class EnemyManager : MonoBehaviour
             int pickedEnemy = Random.Range(0, potentialSpawn.Count);
             EnemiesData.EnemyData enemyData = potentialSpawn[pickedEnemy];
 
-            minions.Add(CreateEnemyOfType(location, enemyData));
-            return true;
+            Enemy enemy = CreateEnemyOfType(location, enemyData);
+            minions.Add(enemy);
+            newEnemy = new Maybe<Enemy>(enemy);
         }
 
-        return false;
+        return newEnemy;
     }
 
     public bool CreateBoss()
