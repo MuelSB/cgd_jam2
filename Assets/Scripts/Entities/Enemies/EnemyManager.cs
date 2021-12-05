@@ -135,6 +135,7 @@ public class EnemyManager : MonoBehaviour
         GameObject newEnemyObject = Instantiate(enemyPrefab, transform);
         Enemy newEnemy = newEnemyObject.GetComponent<Enemy>();
         newEnemy.abilities = new List<Ability>();
+        newEnemy.abilityTimers = new List<int>();
         newEnemy.entityType = Entity.EntityType.MINION;
         newEnemy.enemyType = enemyData.type;
         newEnemy.canPassDestroyedTiles = enemyData.canPassDestroyedTiles;
@@ -149,6 +150,7 @@ public class EnemyManager : MonoBehaviour
             {
                 ability.value.baseDamage = abilityDamageData.baseDamage;
                 newEnemy.abilities.Add(ability.value);
+                newEnemy.abilityTimers.Add(1);
             }
         }
         newEnemy.movementRange = enemyData.movement;

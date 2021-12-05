@@ -14,6 +14,8 @@ public class Enemy : Entity
     private float initialHealthWidth;
     private float maxHealth;
 
+    public List<int> abilityTimers;
+
     private void Start()
     {
         maxHealth = health;
@@ -80,10 +82,11 @@ public class Enemy : Entity
     private IEnumerator UseAbilities()
     {
         int apUsed = 0;
-        foreach(Ability ability in abilities)
+        for(int i = 0; i < abilities.Count; ++i)
         {
+            Ability ability = abilities[i];
             int cost = ability.cost;
-            if (cost > 0 && apUsed > 0) continue;
+            if ((cost > 0 && apUsed > 0) || ability.turnsCooldown > abilityTimers[i]) continue;
 
 
             List<MapCoordinate> targets = ability.GetTargetableTiles(currentTile, entityType);
@@ -92,6 +95,7 @@ public class Enemy : Entity
                 MapCoordinate target = targets[Random.Range(0, targets.Count)];
                 yield return AbilityManager.Instance.ExecuteAbility(ability, this, target);
                 apUsed += cost;
+                abilityTimers[i] = 0;
             }
 
             yield return new WaitForSeconds(1.0f);
@@ -100,6 +104,7 @@ public class Enemy : Entity
 
     private IEnumerator TurnCoroutine()
     {
+        for (int i = 0; i < abilityTimers.Count; ++i) abilityTimers[i]++;
         var path = GetDesiredMove();
 
         if (path.Count > 0)
