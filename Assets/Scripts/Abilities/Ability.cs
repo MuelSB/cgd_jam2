@@ -26,6 +26,8 @@ public class Ability : ScriptableObject
     // AP cost of ability - this only applies to the player
     public int cost;
 
+    public float baseDamage;
+
     public List<AbilityEffect> abilityEffects;
 
     public List<MapCoordinate> GetTilesInRange(MapCoordinate currentTile)

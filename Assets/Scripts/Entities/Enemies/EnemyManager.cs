@@ -142,9 +142,14 @@ public class EnemyManager : MonoBehaviour
         newEnemy.transform.position = MapManager.GetMap().GetTileObject(newEnemy.currentTile).transform.position
                 + Vector3.up;
 
-        foreach (string abilityName in enemyData.abilityNames)
+        foreach (EnemiesData.AbilityDamage abilityDamageData in enemyData.abilities)
         {
-            newEnemy.abilities.Add(AbilityManager.abilities[abilityName]);
+            Maybe<Ability> ability = AbilityManager.Instance.CopyAbilityFrom(abilityDamageData.abilityName);
+            if(ability.is_some)
+            {
+                ability.value.baseDamage = abilityDamageData.baseDamage;
+                newEnemy.abilities.Add(ability.value);
+            }
         }
         newEnemy.movementRange = enemyData.movement;
         newEnemy.health = enemyData.health;

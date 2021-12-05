@@ -19,7 +19,7 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 1
     abilityEffects:
-    - damage: 2
+    - damageMultiplier: 1
       type: 0
   - abilityName: DestroyTile
     abilityRange: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 1
     abilityEffects:
-    - damage: 0
+    - damageMultiplier: 0
       type: 3
   - abilityName: AttackRanged
     abilityRange: 5
@@ -35,7 +35,7 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 1
     abilityEffects:
-    - damage: 1
+    - damageMultiplier: 1
       type: 0
   - abilityName: SpawnClone
     abilityRange: 1
@@ -43,7 +43,7 @@ MonoBehaviour:
     abilityCooldown: 3
     cost: 1
     abilityEffects:
-    - damage: 1
+    - damageMultiplier: 0
       type: 9
   - abilityName: DamageTile
     abilityRange: 1
@@ -51,7 +51,7 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 0
     abilityEffects:
-    - damage: 1
+    - damageMultiplier: 1
       type: 2
   - abilityName: DestroySpecial
     abilityRange: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 2
     abilityEffects:
-    - damage: 0
+    - damageMultiplier: 0
       type: 5
   - abilityName: DamageAdjacentTiles
     abilityRange: 0
@@ -67,5 +67,5 @@ MonoBehaviour:
     abilityCooldown: 1
     cost: 0
     abilityEffects:
-    - damage: 3
+    - damageMultiplier: 0
       type: 4
