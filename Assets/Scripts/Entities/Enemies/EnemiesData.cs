@@ -26,8 +26,15 @@ public class EnemiesData : ScriptableObject
         public int health;
         public int movement;
         public bool canPassDestroyedTiles;
-        public List<string> abilityNames;
+        public List<AbilityDamage> abilities;
         public List<MapTileProperties.TileType> validTileTypes;
+    }
+
+    [System.Serializable]
+    public struct AbilityDamage
+    {
+        public string abilityName;
+        public float baseDamage;
     }
 
     public List<EnemyData> enemiesData;
