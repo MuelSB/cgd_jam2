@@ -20,7 +20,7 @@ public static class MapManager
 
     public static void GetTileCountTo(MapCoordinate from, MapCoordinate to, out int widthCount, out int depthCount)
     {
-        Assert.IsTrue(map.IsValidCoordinate(from) && map.IsValidCoordinate(to) && from != to);
+        Assert.IsTrue(map.IsValidCoordinate(from) && map.IsValidCoordinate(to));
 
         widthCount = to.x - from.x;
         depthCount = to.y - from.y;

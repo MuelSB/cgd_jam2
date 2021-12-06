@@ -21,6 +21,8 @@ MonoBehaviour:
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 5
+    - abilityName: DestroySpecial
+      baseDamage: 0
     validTileTypes: 01000000
   - type: 1
     health: 2

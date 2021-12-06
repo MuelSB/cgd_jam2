@@ -227,6 +227,7 @@ MonoBehaviour:
   abilities: []
   entityType: 0
   movementRange: 0
+  targetableTiles: 03000000050000000b0000000a0000000c0000000d0000000e000000
   enemyType: 0
   canPassDestroyedTiles: 0
   healthUICanvas: {fileID: 4912024126208378371}
