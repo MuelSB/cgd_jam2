@@ -96,6 +96,8 @@ public class EnemyManager : MonoBehaviour
         MapTileProperties.TileType tileType = MapManager.GetMap().GetTileProperties(location).Type;
         List<EnemiesData.EnemyData> potentialSpawn = new List<EnemiesData.EnemyData>();
 
+        if (MapManager.GetMap().GetTileProperties(location).tile_enitity.is_some) return false;
+
         foreach (EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
         {
             foreach (MapTileProperties.TileType possibleTile in enemyData.validTileTypes)
