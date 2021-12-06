@@ -59,8 +59,16 @@ public static class Pathfinding
 
             foreach (MapCoordinate newCoord in bestNeighbours)
             {
-                if(newCoord == target)
+                int distance, cost;
+
+                if (newCoord == target)
                 {
+                    if (MapManager.GetMap().GetTileProperties(newCoord).tile_enitity.is_some == false)
+                    {
+                        CalculateScore(target, origin, newCoord, out distance, out cost);
+                        Node finalNode = new Node(newCoord, distance, cost, new Maybe<Node>(currentBest));
+                        currentBest = finalNode;
+                    }
                     foundPath = true;
                     break;
                 }
@@ -70,18 +78,13 @@ public static class Pathfinding
                 var mtp = MapManager.GetMap().GetTileProperties(newCoord);
                 bool isPassable = (mtp.tile_enitity.is_some == false
                     && (canPassDestroyedTiles || mtp.Integrity > 0));
-
                 if (inOpen || inClosed || isPassable == false) continue;
 
-                int distance, cost;
-                MapManager.GetAbsoluteTileCountTo(origin, newCoord, out widthTo, out heightTo);
-                distance = widthTo + heightTo;
-                MapManager.GetAbsoluteTileCountTo(newCoord, target, out widthTo, out heightTo);
-                cost = widthTo + heightTo;
+                CalculateScore(target, origin, newCoord, out distance, out cost);
 
                 Node newNode = new Node(newCoord, distance, cost, new Maybe<Node>(currentBest));
 
-                if(newNode.score < bestScore)
+                if (newNode.score < bestScore)
                 {
                     currentBest = newNode;
                     foundBetter = true;
@@ -103,13 +106,12 @@ public static class Pathfinding
             }
         }
         Node nextNode = currentBest;
-        while(nextNode.coordinates != target)
+        while(nextNode.coordinates != origin)
         {
             result.Add(nextNode.coordinates);
             if(nextNode.cameFrom.is_some)
             {
                 nextNode = nextNode.cameFrom.value;
-                if (nextNode.coordinates == origin) break;
             }
             else
             {
@@ -119,5 +121,14 @@ public static class Pathfinding
 
 
         return result;
+    }
+
+    private static void CalculateScore(MapCoordinate target, MapCoordinate origin, MapCoordinate tile, out int distance, out int cost)
+    {
+        int widthTo, heightTo;
+        MapManager.GetAbsoluteTileCountTo(origin, tile, out widthTo, out heightTo);
+        distance = widthTo + heightTo;
+        MapManager.GetAbsoluteTileCountTo(tile, target, out widthTo, out heightTo);
+        cost = widthTo + heightTo;
     }
 }

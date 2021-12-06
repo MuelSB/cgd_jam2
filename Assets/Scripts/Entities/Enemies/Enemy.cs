@@ -6,6 +6,8 @@ using Core;
 
 public class Enemy : Entity
 {
+    public List<MapTileProperties.TileType> targetableTiles;
+
     public EnemiesData.EnemyType enemyType;
     public bool canPassDestroyedTiles = false;
     public Canvas healthUICanvas;
@@ -63,7 +65,7 @@ public class Enemy : Entity
             {
                 if(ability.targetType == Ability.AbilityTarget.BUILDING)
                 {
-                    var potentialTargets = MetaGeneratorHelper.getClosestSpecialTiles(MapManager.GetMap().GetTiles(), currentTile);
+                    var potentialTargets = MetaGeneratorHelper.getClosestTiles(MapManager.GetMap().GetTiles(), currentTile, targetableTiles);
                     if(potentialTargets.is_some)
                     {
                         target = new Maybe<MapCoordinate>(potentialTargets.value[Random.Range(0, potentialTargets.value.Count)]);

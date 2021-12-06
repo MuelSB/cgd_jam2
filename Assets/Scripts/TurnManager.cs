@@ -89,7 +89,7 @@ public class TurnManager : MonoBehaviour
 
         foreach(GameObject go in MapManager.GetMap().GetTiles())
         {
-            go.GetComponent<MapTile>().Decay(new System.Random());
+            go.GetComponent<MapTile>().Decay(MapManager.GetMap().getMetaSeededRandom());
         }
         
         // increment and start new round
