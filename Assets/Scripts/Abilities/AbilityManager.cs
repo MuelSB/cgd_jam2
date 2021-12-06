@@ -70,7 +70,7 @@ public class AbilityManager : MonoBehaviour
             {
                 AbilityEffect effect = new AbilityEffect();
                 effect.effectType = effectData.type;
-                effect.damage = effectData.damage;
+                effect.damageMultiplier = effectData.damageMultiplier;
                 newAbility.abilityEffects.Add(effect);
             }
             abilities.Add(abilityData.abilityName, newAbility);
@@ -80,6 +80,25 @@ public class AbilityManager : MonoBehaviour
     public void HighlightTargets()
     {
 
+    }
+
+    public Maybe<Ability> CopyAbilityFrom(string abilityName)
+    {
+        Maybe<Ability> newAbility = new Maybe<Ability>();
+        if (abilities.ContainsKey(abilityName) == false) return newAbility;
+        Ability referenceAbility = abilities[abilityName];
+        Ability ability = new Ability();
+
+        ability.cost = referenceAbility.cost;
+        ability.image = referenceAbility.image;
+        ability.range = referenceAbility.range;
+        ability.targetType = referenceAbility.targetType;
+        ability.turnsCooldown = referenceAbility.turnsCooldown;
+        ability.abilityEffects = referenceAbility.abilityEffects;
+
+        newAbility = new Maybe<Ability>(ability);
+
+        return newAbility;
     }
 
     public IEnumerator ExecuteAbility(Ability ability, Entity source, MapCoordinate targetTile)
@@ -104,14 +123,14 @@ public class AbilityManager : MonoBehaviour
         }
         foreach (AbilityEffect effect in ability.abilityEffects)
         {
-            ProcessEffect(effect, targetTile);
+            ProcessEffect(effect, ability.baseDamage, targetTile);
             yield return 0;
         }
 
     }
 
 
-    private void ProcessEffect(AbilityEffect effect, MapCoordinate targetTile)
+    private void ProcessEffect(AbilityEffect effect, float baseDamage, MapCoordinate targetTile)
     {
         List<ParticleSystem> ps = new List<ParticleSystem>();
         Color color = new Color();
@@ -124,7 +143,7 @@ public class AbilityManager : MonoBehaviour
                     if (entity.is_some)
                     {
                         ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
-                        entity.value.Damage(effect.damage);
+                        entity.value.Damage(baseDamage * effect.damageMultiplier);
                     }
                     break;
                 }
@@ -138,7 +157,7 @@ public class AbilityManager : MonoBehaviour
                         if (occupant.is_some)
                         {
                             ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponentInChildren<ParticleSystem>());
-                            occupant.value.Damage(effect.damage);
+                            occupant.value.Damage(baseDamage * effect.damageMultiplier);
                         }
                     }
                     break;
@@ -149,7 +168,7 @@ public class AbilityManager : MonoBehaviour
                     color = Color.black;
                     ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
                     var mtp = MapManager.GetMap().GetTileProperties(targetTile);
-                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
+                    MapManager.GetMap().GetTileProperties(targetTile).setIntegrity(mtp.Integrity - (baseDamage * effect.damageMultiplier), mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     break;
                 }
             case EffectType.DESTROY_TILE:
@@ -167,7 +186,7 @@ public class AbilityManager : MonoBehaviour
                     {
                         ps.Add(MapManager.GetMap().GetTileObject(neighbour).GetComponentInChildren<ParticleSystem>());
                         var mtp = MapManager.GetMap().GetTileProperties(neighbour);
-                        MapManager.GetMap().GetTileProperties(neighbour).setIntegrity(mtp.Integrity - effect.damage, mtp.IntegrityDivider, mtp.IntegrityErosionRange);
+                        MapManager.GetMap().GetTileProperties(neighbour).setIntegrity(mtp.Integrity - (baseDamage * effect.damageMultiplier), mtp.IntegrityDivider, mtp.IntegrityErosionRange);
                     }
                     break;
                 }

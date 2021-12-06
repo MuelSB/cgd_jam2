@@ -62,6 +62,8 @@ namespace Core
 
         private async void LoadScene(string str, GameState state)
         {
+            Debug.Log("LOADING SCENE");
+
             // start the fade and wait for 1 second
             EventSystem.Invoke(Events.LoadTransition);
             // without making the event system more complex or introducing 

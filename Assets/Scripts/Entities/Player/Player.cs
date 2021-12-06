@@ -11,6 +11,8 @@ public class Player : Entity
     [SerializeField] private PlayerMovement _movement = default;
     
     [SerializeField] private int AP = 2;
+
+    [SerializeField] private float HP = 10.0f;
     
     private Ability _ability = null;
     
@@ -18,6 +20,9 @@ public class Player : Entity
     {
         // tell the UI about the player abilities
         foreach (var ability in abilities) OnNewAbility(ability);
+
+        // Set the player's starting health value based on HP
+        health = HP;
     }
 
     public void OnNewAbility(Ability ability)
@@ -26,10 +31,10 @@ public class Player : Entity
         EventSystem.Invoke<ButtonData>(Events.AddAbility, data);    
     }
     
-    public void TakeDamage(int damage)
-    {
-        health -= damage;
-    }
+    //public void TakeDamage(int damage)
+    //{
+    //    health -= damage;
+    //}
 
     private void AbilitySelected(Ability ability)
     {

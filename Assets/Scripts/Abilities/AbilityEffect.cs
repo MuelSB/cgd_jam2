@@ -8,7 +8,7 @@ public struct AbilityEffect
     [System.Serializable]
     public struct AbilityEffectData
     {
-        public int damage;
+        public float damageMultiplier;
         public EffectType type;
     };
 
@@ -26,6 +26,6 @@ public struct AbilityEffect
         SPAWN_ENEMY,
     };
 
-    public int damage;
+    public float damageMultiplier;
     public EffectType effectType;
 }

@@ -185,7 +185,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 87
+    m_Bits: 32
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -434,8 +434,32 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: MapDepthTileCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: MapWidthTileCount
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: cameraManagerSettings.cameraZOffset
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: cameraManagerSettings.cameraYPosition
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: cameraManagerSettings.enemyTurnZOffset
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
       propertyPath: tileTypesToDecorPrefabs.list.Array.size
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
+      propertyPath: cameraManagerSettings.enemyTurnYPosition
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
       propertyPath: tileTypesToDecorPrefabs.list.Array.data[0].Key

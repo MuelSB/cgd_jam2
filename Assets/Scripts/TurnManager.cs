@@ -86,6 +86,11 @@ public class TurnManager : MonoBehaviour
     {
         // invoke event
         EventSystem.Invoke(Events.RoundEnded);
+
+        foreach(GameObject go in MapManager.GetMap().GetTiles())
+        {
+            go.GetComponent<MapTile>().Decay(new System.Random());
+        }
         
         // increment and start new round
         _round++;

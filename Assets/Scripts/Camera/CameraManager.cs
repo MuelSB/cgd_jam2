@@ -5,6 +5,7 @@ static public class CameraManager
 {
     // Class variables
     static private Maybe<Transform> lookTargetTransform = new Maybe<Transform>();
+    static private bool lookingAtPlayer = true;
     static private CameraManagerSettings settings = new CameraManagerSettings();
 
     static public void Initialize(CameraManagerSettings managerSettings)
@@ -29,12 +30,12 @@ static public class CameraManager
                     new Vector3(
                             lookTargetTransform.value.position.x,
                             lookTargetTransform.value.position.y,
-                            lookTargetTransform.value.position.z + settings.cameraZOffset
+                            lookTargetTransform.value.position.z + (lookingAtPlayer ? settings.cameraZOffset : settings.enemyTurnZOffset)
                         ),
                     Time.deltaTime * settings.cameraLerpSpeed
                 );
 
-            newCameraPosition.y = settings.cameraYPosition;
+            newCameraPosition.y = (lookingAtPlayer ? settings.cameraYPosition : settings.enemyTurnYPosition);
 
             Camera.main.transform.position = newCameraPosition;
         }
@@ -56,6 +57,8 @@ static public class CameraManager
         }
         else
         {
+            lookingAtPlayer = false;
+
             // Set the entity's transform as the main camera's target transform
             lookTargetTransform = new Maybe<Transform>(entity.transform);
         }
@@ -63,6 +66,8 @@ static public class CameraManager
 
     static private void OnPlayerTurnStarted(Player player)
     {
+        lookingAtPlayer = true;
+
         // Set the main camera's target transform as the player's transform
         lookTargetTransform = new Maybe<Transform>(player.transform);
     }

@@ -21,7 +21,13 @@ public abstract class Entity : MonoBehaviour
     public virtual void Damage(float dmg)
     {
         health -= dmg;
-        if(health <= 0)
+
+        if(entityType == EntityType.PLAYER)
+        {
+            Debug.Log("Player health: " + health.ToString());
+        }
+
+        if (health <= 0)
         {
             Die();
         }
@@ -29,7 +35,25 @@ public abstract class Entity : MonoBehaviour
 
     public virtual void Die()
     {
-        Destroy(gameObject);
+        // If the entity is the player
+        if (entityType == EntityType.PLAYER)
+        {
+            StopAllCoroutines();
+            Debug.Log("Player dead");
+
+            // Load the lose scene
+            EventSystem.Invoke(Events.LoadLose);
+        }
+        else if(entityType == EntityType.BOSS)
+        {
+            StopAllCoroutines();
+            // Load the win scene
+            EventSystem.Invoke(Events.LoadWin);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // adds and removes entities to list on creation and destruction

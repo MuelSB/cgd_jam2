@@ -96,6 +96,8 @@ public class EnemyManager : MonoBehaviour
         MapTileProperties.TileType tileType = MapManager.GetMap().GetTileProperties(location).Type;
         List<EnemiesData.EnemyData> potentialSpawn = new List<EnemiesData.EnemyData>();
 
+        if (MapManager.GetMap().GetTileProperties(location).tile_enitity.is_some) return false;
+
         foreach (EnemiesData.EnemyData enemyData in enemiesData.enemiesData)
         {
             foreach (MapTileProperties.TileType possibleTile in enemyData.validTileTypes)
@@ -135,6 +137,7 @@ public class EnemyManager : MonoBehaviour
         GameObject newEnemyObject = Instantiate(enemyPrefab, transform);
         Enemy newEnemy = newEnemyObject.GetComponent<Enemy>();
         newEnemy.abilities = new List<Ability>();
+        newEnemy.abilityTimers = new List<int>();
         newEnemy.entityType = Entity.EntityType.MINION;
         newEnemy.enemyType = enemyData.type;
         newEnemy.canPassDestroyedTiles = enemyData.canPassDestroyedTiles;
@@ -142,9 +145,17 @@ public class EnemyManager : MonoBehaviour
         newEnemy.transform.position = MapManager.GetMap().GetTileObject(newEnemy.currentTile).transform.position
                 + Vector3.up;
 
-        foreach (string abilityName in enemyData.abilityNames)
+        Instantiate(enemyData.model, newEnemy.transform);
+
+        foreach (EnemiesData.AbilityDamage abilityDamageData in enemyData.abilities)
         {
-            newEnemy.abilities.Add(AbilityManager.abilities[abilityName]);
+            Maybe<Ability> ability = AbilityManager.Instance.CopyAbilityFrom(abilityDamageData.abilityName);
+            if(ability.is_some)
+            {
+                ability.value.baseDamage = abilityDamageData.baseDamage;
+                newEnemy.abilities.Add(ability.value);
+                newEnemy.abilityTimers.Add(1);
+            }
         }
         newEnemy.movementRange = enemyData.movement;
         newEnemy.health = enemyData.health;
