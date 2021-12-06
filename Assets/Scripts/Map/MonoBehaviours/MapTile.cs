@@ -12,7 +12,7 @@ public class MapTile : MonoBehaviour
     private Rigidbody tileRigidbody;
     private Renderer objectRenderer;
 
-    private GameObject decorChild;
+    private Maybe<GameObject> decorChild = new Maybe<GameObject>();
     private List<Renderer> decorChildRenderers = new List<Renderer>();
 
     [SerializeField] private MapCoordinate mapLocation;
@@ -129,8 +129,14 @@ public class MapTile : MonoBehaviour
         return false;
     }
 
+    public void removeDecor() {
+        if (decorChild.is_some) {
+            Destroy(decorChild.value);
+        }
+    }
     public void spawnDecor(GameObject _decor) {
-        decorChild = Instantiate(_decor,gameObject.transform);
-        decorChildRenderers = decorChild.GetComponentsInChildren<Renderer>().ToList();
+        removeDecor();
+        decorChild = new Maybe<GameObject>(Instantiate(_decor,gameObject.transform));
+        decorChildRenderers = decorChild.value.GetComponentsInChildren<Renderer>().ToList();
     }
 }

@@ -205,4 +205,10 @@ public class Map
     public int GetWidthTileCount() { return mapWidthTileCount; }
     public int GetDepthTileCount() { return mapDepthTileCount; }
     public int GetTotalTileCount() { return mapWidthTileCount * mapDepthTileCount; }
+
+    //get the seeded random used for generation.
+    public System.Random getMetaSeededRandom() => metaGenerator.random;
+
+    //gets the dictionary containing all the decorations used for tiles.
+    public Dictionary<MapTileProperties.TileType,List<GameObject>> getDecor() => metaGenerator.config.map_type_to_decor_list; 
 }

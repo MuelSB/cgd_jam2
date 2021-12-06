@@ -166,11 +166,15 @@ public static class MetaGeneratorHelper
         if (targets.Count < 1) { return new Maybe<List<MapCoordinate>>();}
         int smallest_length = 100000;
         Dictionary<int,List<GameObject>> length_to_gameobjects = new Dictionary<int, List<GameObject>>();
-        targets.ForEach(_e => { Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,(_e.GetComponent<MapTile>().getLocation()-_center).y);
+        targets.ForEach(_e => { 
+            Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,
+                                            (_e.GetComponent<MapTile>().getLocation()-_center).y);
+            loc.x = Mathf.Abs(loc.x); loc.y = Mathf.Abs(loc.y);
             int current_length = loc.x+loc.y; if (current_length < smallest_length) {smallest_length = current_length;} 
             if (!length_to_gameobjects.Keys.ToList().Contains(current_length)) {length_to_gameobjects[current_length] = new List<GameObject>();} length_to_gameobjects[current_length].Add(_e);
         });
         return new Maybe<List<MapCoordinate>>(targets.Where(_e => {Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,(_e.GetComponent<MapTile>().getLocation()-_center).y);
+            loc.x = Mathf.Abs(loc.x); loc.y = Mathf.Abs(loc.y);
             return loc.x+loc.y == smallest_length;
         }).Select(_p => _p.GetComponent<MapTile>().getLocation()).ToList());
     }
@@ -275,7 +279,7 @@ public class MetaGenerator
     private Map map_reference;
     private Dictionary<Vector2Int,MapTileProperties> tile_data;
 
-    private System.Random random;
+    public System.Random random {get; private set;} 
     private int integrity_offset;
     
     //All of this is seeded using the seed in the config, so you can re-make the levels you generate if you save a seed!
@@ -564,10 +568,12 @@ public class MetaGenerator
             }
         }
 
-        // Maybe<List<MapCoordinate>> closest_forest_town = applied_list.getClosestSpecialTiles(new MapCoordinate(0,0));
-        // if (closest_forest_town.is_some) {
-        //     MapCoordinate town = closest_forest_town.value[0];
+        /// Random function testing:
+        // Maybe<List<MapCoordinate>> special_tile = applied_list.getClosestSpecialTiles(new MapCoordinate(20,20));
+        // if (special_tile.is_some) {
+        //     MapCoordinate town = special_tile.value[0];
         // }
+        //_tile_list.Where(_e=>_e.getTileType() == MapTileProperties.TileType.Lighthouse).ToList()[0].DestroySpecialTile(config.map_type_to_decor_list,random);
 
         return applied_list;
     }
