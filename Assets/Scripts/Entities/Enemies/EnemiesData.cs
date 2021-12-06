@@ -26,6 +26,7 @@ public class EnemiesData : ScriptableObject
         public int health;
         public int movement;
         public bool canPassDestroyedTiles;
+        public GameObject model;
         public List<AbilityDamage> abilities;
         public List<MapTileProperties.TileType> validTileTypes;
     }
