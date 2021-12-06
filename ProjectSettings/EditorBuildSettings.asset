@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BuildScenes/UIPlayerScene.unity
     guid: 392cbd194ca84b54bb5eb7476f96a2cb
+  - enabled: 1
+    path: Assets/Scenes/BuildScenes/LoseScene.unity
+    guid: f6c6c72b313fec946b53cccee583b593
+  - enabled: 1
+    path: Assets/Scenes/BuildScenes/WinScene.unity
+    guid: bbc445a48e373cf419ef8b1282ca5480
   m_configObjects: {}
