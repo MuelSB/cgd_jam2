@@ -10,4 +10,6 @@ public class CameraManagerSettings
     public float cameraLerpSpeed = 100.0f;
     public float cameraYPosition = 40.0f;
     public float cameraZOffset = -20.0f;
+    public float enemyTurnYPosition = 30.0f;
+    public float enemyTurnZOffset = -10.0f;
 }
