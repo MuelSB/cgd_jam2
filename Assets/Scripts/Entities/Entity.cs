@@ -44,6 +44,12 @@ public abstract class Entity : MonoBehaviour
             // Load the lose scene
             EventSystem.Invoke(Events.LoadLose);
         }
+        else if(entityType == EntityType.BOSS)
+        {
+            StopAllCoroutines();
+            // Load the win scene
+            EventSystem.Invoke(Events.LoadWin);
+        }
         else
         {
             Destroy(gameObject);
