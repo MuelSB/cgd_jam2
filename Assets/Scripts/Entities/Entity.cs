@@ -33,6 +33,14 @@ public abstract class Entity : MonoBehaviour
         }
     }
 
+    public virtual void Heal(float hl) {
+        health += hl;
+        if(entityType == EntityType.PLAYER)
+        {
+            Debug.Log("Player health: " + health.ToString());
+        }
+    }
+
     public virtual void Die()
     {
         // If the entity is the player

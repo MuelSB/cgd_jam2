@@ -69,6 +69,10 @@ public static class MetaGeneratorHelper
     //isPlayer: returns if a gameobject with a maptile component has the entity type of player.
     public static bool isPlayer (this GameObject _g) => _g.isOfEntityType(Entity.EntityType.PLAYER);
 
+    //isBoss: returns if a gameobject with a maptile component has the entity type of boss.
+    public static bool isBoss (this GameObject _g) => _g.isOfEntityType(Entity.EntityType.BOSS);
+
+
     //isOfEntityType: returns if a gameobject with a maptile component has the entity type provided.
     public static bool isOfEntityType (this GameObject _g, Entity.EntityType _t ) => _g.GetComponent<MapTile>().GetProperties().tile_enitity.is_some ? _g.GetComponent<MapTile>().GetProperties().tile_enitity.value.entityType == _t : false;
 
@@ -110,6 +114,10 @@ public static class MetaGeneratorHelper
     //getPlayerFromGrid: returns the position of the player if it exists, otherwise it returns an empty maybe.
     public static Maybe<MapCoordinate> getPlayerFromGrid(this List<GameObject> _grid) => _grid.doesEntityOfTypeExistOnGrid(Entity.EntityType.PLAYER) ? 
         new Maybe<MapCoordinate>(_grid.Where(_e => _e.GetComponent<MapTile>().GetProperties().tile_enitity.is_some).Where(_x => _x.isPlayer()).ToList()[0].GetComponent<MapTile>().getLocation()) : new Maybe<MapCoordinate>();
+
+    //getBossFromGrid: returns the position of the boss if it exists, otherwise it returns an empty maybe.
+    public static Maybe<MapCoordinate> getBossFromGrid(this List<GameObject> _grid) => _grid.doesEntityOfTypeExistOnGrid(Entity.EntityType.BOSS) ? 
+        new Maybe<MapCoordinate>(_grid.Where(_e => _e.GetComponent<MapTile>().GetProperties().tile_enitity.is_some).Where(_x => _x.isBoss()).ToList()[0].GetComponent<MapTile>().getLocation()) : new Maybe<MapCoordinate>();
 
     //getClosestTilesOfType: returns a list of positions of the closest position of a specified tile type from a given centre coordinate. 
     //list will have more than one entry if a tiles of the given type are equidistant to the given centre. will return an empty maybe if there is no tile of that type found.
@@ -269,6 +277,24 @@ public static class MetaGeneratorHelper
             new Vector2Int(_center.x-1,_center.y+2), new Vector2Int(_center.x,_center.y+2), new Vector2Int(_center.x+1,_center.y+2), new Vector2Int(_center.x+2,_center.y+2),
         };
         return check_points.Where(_e => {if (_center == _e) {return false;} if (_e.x > -1 && _e.x < _max_width) {if (_e.y > -1 && _e.y < _max_height) {return true;}}return false;}).ToList();
+    }
+
+    public static Maybe<List<MapCoordinate>> findClosestSpawnPoint(this List<GameObject> _tiles, MapCoordinate _center) {
+        List<GameObject> empty_tiles = _tiles.Where(_t => !_t.GetComponent<MapTile>().GetProperties().ContainsEntity).ToList();
+        if (empty_tiles.Count < 1) { return new Maybe<List<MapCoordinate>>(); }
+        int smallest_length = 100000;
+        Dictionary<int,List<GameObject>> length_to_gameobjects = new Dictionary<int, List<GameObject>>();
+        empty_tiles.ForEach(_e => { 
+            Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,
+                                            (_e.GetComponent<MapTile>().getLocation()-_center).y);
+            loc.x = Mathf.Abs(loc.x); loc.y = Mathf.Abs(loc.y);
+            int current_length = loc.x+loc.y; if (current_length < smallest_length) {smallest_length = current_length;} 
+            if (!length_to_gameobjects.Keys.ToList().Contains(current_length)) {length_to_gameobjects[current_length] = new List<GameObject>();} length_to_gameobjects[current_length].Add(_e);
+        });
+        return new Maybe<List<MapCoordinate>>(empty_tiles.Where(_e => {Vector2Int loc = new Vector2Int((_e.GetComponent<MapTile>().getLocation()-_center).x,(_e.GetComponent<MapTile>().getLocation()-_center).y);
+            loc.x = Mathf.Abs(loc.x); loc.y = Mathf.Abs(loc.y);
+            return loc.x+loc.y == smallest_length;
+        }).Select(_p => _p.GetComponent<MapTile>().getLocation()).ToList());
     }
 }
 

@@ -132,7 +132,7 @@ public class EnemyManager : MonoBehaviour
         return true;
     }
 
-    private Enemy CreateEnemyOfType(MapCoordinate location, EnemiesData.EnemyData enemyData)
+    public Enemy CreateEnemyOfType(MapCoordinate location, EnemiesData.EnemyData enemyData)
     {
         GameObject newEnemyObject = Instantiate(enemyPrefab, transform);
         Enemy newEnemy = newEnemyObject.GetComponent<Enemy>();
