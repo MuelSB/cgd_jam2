@@ -17,6 +17,7 @@ MonoBehaviour:
     health: 4
     movement: 3
     canPassDestroyedTiles: 0
+    model: {fileID: 919132149155446097, guid: 727d9d2c3a63a79429fda3eb5dddcb1f, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 5
@@ -25,6 +26,7 @@ MonoBehaviour:
     health: 2
     movement: 2
     canPassDestroyedTiles: 0
+    model: {fileID: 919132149155446097, guid: 0446a5fbc10ada043a9198e563bcc3a2, type: 3}
     abilities:
     - abilityName: AttackRanged
       baseDamage: 3
@@ -33,6 +35,7 @@ MonoBehaviour:
     health: 8
     movement: 1
     canPassDestroyedTiles: 0
+    model: {fileID: 919132149155446097, guid: 47e2f136af3348e4ba1cb2de27c8baae, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 7
@@ -41,6 +44,7 @@ MonoBehaviour:
     health: 1
     movement: 7
     canPassDestroyedTiles: 1
+    model: {fileID: 919132149155446097, guid: dc2fe1408be68b54ca7d689effb2bc48, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 2
@@ -49,6 +53,7 @@ MonoBehaviour:
     health: 1
     movement: 3
     canPassDestroyedTiles: 0
+    model: {fileID: 919132149155446097, guid: 424198e50a5159342b6306319dbbfe98, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 3
@@ -57,6 +62,7 @@ MonoBehaviour:
     health: 3
     movement: 3
     canPassDestroyedTiles: 0
+    model: {fileID: 919132149155446097, guid: c524f2c83d2825b49b1b9c2d2f2c96eb, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 4
@@ -68,6 +74,7 @@ MonoBehaviour:
     health: 50
     movement: 1
     canPassDestroyedTiles: 1
+    model: {fileID: 919132149155446097, guid: 91fedc8fd3010654d9736a349fed740c, type: 3}
     abilities:
     - abilityName: AttackAdjacent
       baseDamage: 10
