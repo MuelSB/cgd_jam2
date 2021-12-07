@@ -9,11 +9,13 @@ public class Player : Entity
     [Header("Player Components")]
     [SerializeField] private PlayerInput _input = default;
     [SerializeField] private PlayerMovement _movement = default;
+    [SerializeField] private PlayerAttack _skills = default;
 
     [SerializeField] private int averageEnemyExp = 3;
 
     [SerializeField] private int APPerLevel = 1;
     [SerializeField] private int AP = 2;
+    [SerializeField] private int MAX_AP = 2;
 
     [SerializeField] private float healthPerLevel = 10;
     [SerializeField] private float HP = 10.0f;
@@ -28,8 +30,9 @@ public class Player : Entity
         // tell the UI about the player abilities
         foreach (var ability in abilities) OnNewAbility(ability);
 
-        // Set the player's starting health value based on HP
+        // Set the player's starting health value based on HP, AP based on MAX_AP
         health = HP;
+        AP = MAX_AP;
     }
 
     public void OnNewAbility(Ability ability)
@@ -64,29 +67,72 @@ public class Player : Entity
         // hack in move stuff
         if (_ability.name == "Move")
         {
+            if (AP - _ability.cost < 0)
+            {
+                Debug.Log("Not enough AP!");
+                return;
+            }
+            else
+            {
+                AP -= _ability.cost;
+            }
+
             // TODO : need to check if move is in range
             // start the move selection coroutine
-       
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
-            EventSystem.Invoke(Events.PlayerTurnEnded);
             print("Move");
+
+            if (AP == 0)
+            {
+                Debug.Log("Player endturn is called");
+                EventSystem.Invoke(Events.PlayerTurnEnded);
+            }
         }
         else
         {
             // not fully implimented
             //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
+            if (AP - _ability.cost < 0)
+            {
+                Debug.Log("Not enough AP!");
+                return;
+            }
+            else
+            {
+                AP -= _ability.cost;
+            }
             print("Other Ability");
+            if (AP == 0)
+            {
+                EventSystem.Invoke(Events.PlayerTurnEnded);
+            }
         }
-        
-        // stop input
-        _input.onSelected.RemoveAllListeners();
-        
+
+        /*
+        if (AP == 0)
+        {
+            //Ends Player Turn
+            EventSystem.Invoke(Events.PlayerTurnEnded);
+            // stop input
+            _input.onSelected.RemoveAllListeners();
+            // remove highlight
+            EventSystem.Invoke(Events.DisableHighlights);
+        }*/
+        //An Attempt to delay event system from invoking anything to pause ProcessTurn failed.
+
+        if (AP == 0)
+        {
+            // stop input
+            _input.onSelected.RemoveAllListeners();
+        }
+       
         // remove highlight
         EventSystem.Invoke(Events.DisableHighlights);
     }
 
     public override void ProcessTurn()
     {
+        AP = MAX_AP;
         EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
         EventSystem.Invoke(Events.PlayerTurnStarted);
     }
@@ -94,7 +140,13 @@ public class Player : Entity
     [ContextMenu("End Turn")]
     public void TestEndTurn()
     {
-        EndTurn();
+        if (AP == 0)
+            EndTurn();
+    }
+
+    public void setMaxAP(int max_ap)
+    {
+        AP = max_ap;
     }
     
     protected override void EndTurn()
