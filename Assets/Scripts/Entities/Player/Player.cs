@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Core;
@@ -64,18 +65,26 @@ public class Player : Entity
         // set the current ability
         _ability = ability;
 
-        // Send highlight into to the UI
-        var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
-        EventSystem.Invoke(Events.AbilitySelected, highlights);
+        UpdateUI();
 
         // hack in the movement
         _input.onSelected.AddListener( OnSelectMapTile );
     }
 
+    private void UpdateUI()
+    {
+        // Send highlight into to the UI
+        var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
+        EventSystem.Invoke(Events.AbilitySelected, highlights);
+    }
+
     private void OnActionComplete()
     {
-        print("Complete");
-        if (ap > 0) return;
+        if (ap > 0)
+        {
+            UpdateUI();
+            return;
+        }
         _input.onSelected.RemoveAllListeners();
         EventSystem.Invoke(Events.PlayerTurnEnded);
         EndTurn();
@@ -96,12 +105,20 @@ public class Player : Entity
         }
         else
         {
-            _abilityCoroutine = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability,this, coord));
+            _abilityCoroutine = StartCoroutine(UseAbility(coord));
         }
         
         // remove highlight
         EventSystem.Invoke(Events.AbilityDeselected);
     }
+
+    private IEnumerator UseAbility(MapCoordinate coord)
+    {
+        yield return AbilityManager.Instance.ExecuteAbility(_ability, this, coord);
+        _abilityCoroutine = null;
+        yield return null;
+    }
+
 
     private bool InRange(MapCoordinate target)
     {
