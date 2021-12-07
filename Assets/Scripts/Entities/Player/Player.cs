@@ -12,6 +12,8 @@ public class Player : Entity
     
     [SerializeField] private int AP = 2;
 
+    [SerializeField] private int MAX_AP = 2;
+
     [SerializeField] private float HP = 10.0f;
     
     private Ability _ability = null;
@@ -21,8 +23,9 @@ public class Player : Entity
         // tell the UI about the player abilities
         foreach (var ability in abilities) OnNewAbility(ability);
 
-        // Set the player's starting health value based on HP
+        // Set the player's starting health value based on HP, AP based on MAX_AP
         health = HP;
+        AP = MAX_AP;
     }
 
     public void OnNewAbility(Ability ability)
@@ -61,31 +64,62 @@ public class Player : Entity
             // start the move selection coroutine
        
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
-            EventSystem.Invoke(Events.PlayerTurnEnded);
+            //Ends Player Turn
+            //            Debug.Log("Remaining AP: " + AP.ToString());
+            AP--;
+            if (AP == 0)
+            {
+                Debug.Log("Player endturn is called");
+                EventSystem.Invoke(Events.PlayerTurnEnded);
+            }
             print("Move");
         }
         else
         {
             // not fully implimented
             //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
+            AP--;
+            EventSystem.Invoke(Events.PlayerTurnEnded);
             print("Other Ability");
         }
-        
-        // stop input
-        _input.onSelected.RemoveAllListeners();
-        
+
+        /*
+        if (AP == 0)
+        {
+            //Ends Player Turn
+            EventSystem.Invoke(Events.PlayerTurnEnded);
+            // stop input
+            _input.onSelected.RemoveAllListeners();
+            // remove highlight
+            EventSystem.Invoke(Events.DisableHighlights);
+        }*/
+        //An Attempt to delay event system from invoking anything to pause ProcessTurn failed.
+
+        if (AP == 0)
+        {
+            // stop input
+            _input.onSelected.RemoveAllListeners();
+        }
+       
         // remove highlight
         EventSystem.Invoke(Events.DisableHighlights);
     }
 
     public override void ProcessTurn()
     {
+        AP = MAX_AP;
         EventSystem.Invoke(Events.PlayerTurnStarted);
     }
 
     [ContextMenu("End Turn")]
     public void TestEndTurn()
     {
-        EndTurn();
+        if (AP == 0)
+            EndTurn();
+    }
+
+    public void setMaxAP(int max_ap)
+    {
+        AP = max_ap;
     }
 }
