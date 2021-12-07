@@ -33,7 +33,7 @@ MonoBehaviour:
     model: {fileID: 919132149155446097, guid: 0446a5fbc10ada043a9198e563bcc3a2, type: 3}
     abilities:
     - abilityName: AttackRanged
-      baseDamage: 3
+      baseDamage: 2
     validTileTypes: 01000000
   - type: 2
     health: 8

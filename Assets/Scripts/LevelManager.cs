@@ -73,6 +73,8 @@ public class LevelManager : MonoBehaviour
     
     private void Start()
     {
+
+        if(seed == 0) seed = Random.Range(0, int.MaxValue);
         CreateManagers();
 
         // create the map

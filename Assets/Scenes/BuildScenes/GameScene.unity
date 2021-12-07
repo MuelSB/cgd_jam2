@@ -431,7 +431,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
       propertyPath: seed
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7231124094532040192, guid: 13aeded7af908bc4f8f2ac59412712af, type: 3}
       propertyPath: MapDepthTileCount

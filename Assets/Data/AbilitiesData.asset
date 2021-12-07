@@ -30,7 +30,7 @@ MonoBehaviour:
     - damageMultiplier: 0
       type: 3
   - abilityName: AttackRanged
-    abilityRange: 5
+    abilityRange: 3
     targetType: 1
     abilityCooldown: 1
     cost: 1

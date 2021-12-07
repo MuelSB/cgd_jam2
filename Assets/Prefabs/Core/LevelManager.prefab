@@ -62,7 +62,14 @@ MonoBehaviour:
   MapDepthTileCount: 30
   MinRandomRotationJitter: {x: -5, y: 0, z: -5}
   MaxRandomRotationJitter: {x: 5, y: 0, z: 5}
-  seed: 1
+  cameraManagerSettings:
+    CameraEulerRotation: {x: 54, y: 0, z: 0}
+    cameraLerpSpeed: 100
+    cameraYPosition: 40
+    cameraZOffset: -20
+    enemyTurnYPosition: 30
+    enemyTurnZOffset: -10
+  seed: 0
   maxTileIntegrity: 100
   minTileIntegrity: 20
   tileXIntegrityFrequency: 3
@@ -70,9 +77,20 @@ MonoBehaviour:
   tileIntegrityDivider: 10
   tileDecrementRangeMaxMin: {x: 5, y: 3}
   baseBiome: 2
+  biomeMaxMinStrengths:
+    list:
+    - Key: 1
+      Value: {x: 20, y: 10}
+    - Key: 4
+      Value: {x: 25, y: 10}
+    - Key: 6
+      Value: {x: 8, y: 3}
   biomeQuantityMaxMin: {x: 20, y: 15}
   debugMode: 3
   includedStructures: 03000000050000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f00000010000000
+  TowerRangeMaxMin: {x: 5, y: 3}
+  tileTypesToDecorPrefabs:
+    list: []
   turnManagerPrefabReference: {fileID: 7950683779407874785, guid: 8f0b7dfe13f9873478a6b37b34a4f55e, type: 3}
   playerPrefabReference: {fileID: 1866463362989073637, guid: 3bb8b8d4fc2e823438c77b5282fd9a83, type: 3}
   enemyManagerPrefabReference: {fileID: 8105258443489465668, guid: 929be26ca11ea624ab8d88babfb4d96c, type: 3}
