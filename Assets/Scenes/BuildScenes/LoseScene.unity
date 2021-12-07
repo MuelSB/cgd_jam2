@@ -695,7 +695,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: You have defeated the boss.
+  m_Text: You have been defeated.
 --- !u!222 &1519777153
 CanvasRenderer:
   m_ObjectHideFlags: 0
