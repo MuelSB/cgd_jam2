@@ -1,14 +1,14 @@
 using System.Linq;
 using UnityEngine;
 using Core;
+using Unity.VisualScripting;
 
 
 public class Player : Entity
 {
     [Header("Player Components")]
-    [SerializeField] private PlayerInput input = default;
-    [SerializeField] private PlayerMovement movement = default;
-    [SerializeField] private PlayerAttack skills = default;
+    [SerializeField] private PlayerInput _input = default;
+    [SerializeField] private PlayerMovement _movement = default;
 
     [SerializeField] private int averageEnemyExp = 3;
 
@@ -28,14 +28,14 @@ public class Player : Entity
     private new void OnEnable()
     {
         EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
-        movement._moveComplete.AddListener(OnActionComplete);
+        _movement._moveComplete.AddListener(OnActionComplete);
         base.OnEnable();
     }
 
     private new void OnDisable()
     {
         EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
-        movement._moveComplete.AddListener(OnActionComplete);
+        _movement._moveComplete.AddListener(OnActionComplete);
         base.OnDisable();
     }
     
@@ -58,7 +58,7 @@ public class Player : Entity
     private void AbilitySelected(Ability ability)
     {
         // do nada while moving
-        if (movement.IsMoving) return;
+        if (_movement.IsMoving) return;
         if (_abilityCoroutine != null) return;
 
         // set the current ability
@@ -69,13 +69,14 @@ public class Player : Entity
         EventSystem.Invoke(Events.AbilitySelected, highlights);
 
         // hack in the movement
-        input.onSelected.AddListener( OnSelectMapTile );
+        _input.onSelected.AddListener( OnSelectMapTile );
     }
 
     private void OnActionComplete()
     {
+        print("Complete");
         if (ap > 0) return;
-        input.onSelected.RemoveAllListeners();
+        _input.onSelected.RemoveAllListeners();
         EventSystem.Invoke(Events.PlayerTurnEnded);
         EndTurn();
     }
@@ -91,7 +92,7 @@ public class Player : Entity
         // hack in move stuff
         if (_ability.name == "Move")
         {
-            movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
+            _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
         }
         else
         {
