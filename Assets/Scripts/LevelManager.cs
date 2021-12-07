@@ -221,4 +221,9 @@ public class LevelManager : MonoBehaviour
             yield return new WaitForSeconds(5);
         }
     }
+
+    private void OnDestroy()
+    {
+        CameraManager.CleanUp();
+    }
 }

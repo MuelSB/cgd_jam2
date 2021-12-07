@@ -20,6 +20,11 @@ static public class CameraManager
         EventSystem.Subscribe<Entity>(Events.TurnStarted, OnTurnStarted);
     }
 
+    static public void CleanUp()
+    {
+        EventSystem.Unsubscribe<Entity>(Events.TurnStarted, OnTurnStarted);
+    }
+
     static public void UpdateMainCamera()
     {
         // Move the main camera's position to look at the target transform

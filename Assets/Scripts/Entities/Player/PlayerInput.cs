@@ -27,6 +27,7 @@ public class PlayerInput : MonoBehaviour
 
     private void OnDisable()
     {
+        _input.Player.Disable();
         // clean up your events
         EventSystem.Unsubscribe(Events.PlayerTurnStarted, () => _input.Player.Select.performed += OnSelect);
         EventSystem.Unsubscribe(Events.PlayerTurnEnded, () => _input.Player.Select.performed -= OnSelect);
