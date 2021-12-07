@@ -63,7 +63,7 @@ public class LevelManager : MonoBehaviour
     private GameObject turnManagerObject;
     private TurnManager turnManager;
 
-    private GameObject playerObject; // Only one player currently implemented
+    private GameObject playerObject;
 
     private GameObject enemyManagerObject;
     private EnemyManager enemyManager;
@@ -194,7 +194,7 @@ public class LevelManager : MonoBehaviour
         if(playerPrefabReference != null)
         {
             // Spawn player
-            playerObject = Instantiate(playerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+            playerObject = Instantiate(playerPrefabReference, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity, transform);
 
             // Move player onto starting tile
             var playerCollision = playerObject.GetComponent<CapsuleCollider>();
