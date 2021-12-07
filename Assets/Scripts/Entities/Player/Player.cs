@@ -72,7 +72,7 @@ public class Player : Entity
 
     private void OnActionComplete()
     {
-        if (AP >= 1) return;
+        if (AP > 0) return;
         EventSystem.Invoke(Events.PlayerTurnEnded);
         EndTurn();
     }

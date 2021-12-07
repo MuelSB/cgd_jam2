@@ -50,6 +50,9 @@ static public class CameraManager
 
     static private void OnTurnStarted(Entity entity)
     {
+        // need a null check here
+        if (entity == null) return;
+        
         // Call the player's turn started event if the turn's entity is the player
         if (entity.entityType == Entity.EntityType.PLAYER)
         {
