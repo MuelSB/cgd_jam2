@@ -9,6 +9,7 @@ public class Player : Entity
     [Header("Player Components")]
     [SerializeField] private PlayerInput _input = default;
     [SerializeField] private PlayerMovement _movement = default;
+    [SerializeField] private PlayerAttack _skills = default;
 
     [SerializeField] private int averageEnemyExp = 3;
 
@@ -85,7 +86,10 @@ public class Player : Entity
             // not fully implimented
             //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
             AP--;
-            EventSystem.Invoke(Events.PlayerTurnEnded);
+            if (AP == 0)
+            {
+                EventSystem.Invoke(Events.PlayerTurnEnded);
+            }
             print("Other Ability");
         }
 
