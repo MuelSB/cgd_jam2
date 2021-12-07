@@ -1,29 +1,43 @@
-using System;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Core;
-using UnityEditor.SceneManagement;
+
 
 public class Player : Entity
 {
     [Header("Player Components")]
-    [SerializeField] private PlayerInput _input = default;
-    [SerializeField] private PlayerMovement _movement = default;
-    [SerializeField] private PlayerAttack _skills = default;
+    [SerializeField] private PlayerInput input = default;
+    [SerializeField] private PlayerMovement movement = default;
+    [SerializeField] private PlayerAttack skills = default;
 
     [SerializeField] private int averageEnemyExp = 3;
 
-    [SerializeField] private int APPerLevel = 1;
-    [SerializeField] private int AP = 2;
-    [SerializeField] private int MAX_AP = 2;
+    [SerializeField] private int apPerLevel = 1;
+    [SerializeField] private int ap = 2;
+    [SerializeField] private int maxAP = 2;
 
     [SerializeField] private float healthPerLevel = 10;
-    [SerializeField] private float HP = 10.0f;
+    [SerializeField] private float hp = 10.0f;
 
-    private int experience = 0;
-    private int level = 1;
+    private int _experience = 0;
+    private int _level = 1;
 
     private Ability _ability = null;
+    private Coroutine _abilityCoroutine = null;
+
+    private new void OnEnable()
+    {
+        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        movement._moveComplete.AddListener(OnActionComplete);
+        base.OnEnable();
+    }
+
+    private new void OnDisable()
+    {
+        EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        movement._moveComplete.AddListener(OnActionComplete);
+        base.OnDisable();
+    }
     
     private void Start()
     {
@@ -31,8 +45,8 @@ public class Player : Entity
         foreach (var ability in abilities) OnNewAbility(ability);
 
         // Set the player's starting health value based on HP, AP based on MAX_AP
-        health = HP;
-        AP = MAX_AP;
+        health = hp;
+        ap = maxAP;
     }
 
     public void OnNewAbility(Ability ability)
@@ -41,118 +55,70 @@ public class Player : Entity
         EventSystem.Invoke<ButtonData>(Events.AddAbility, data);    
     }
     
-    //public void TakeDamage(int damage)
-    //{
-    //    health -= damage;
-    //}
-
     private void AbilitySelected(Ability ability)
     {
         // do nada while moving
-        if (_movement.IsMoving) return;
-        
+        if (movement.IsMoving) return;
+        if (_abilityCoroutine != null) return;
+
         // set the current ability
         _ability = ability;
 
-        // TODO : ADD SELECTION HIGHLIGHT
+        // Send highlight into to the UI
         var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
-        EventSystem.Invoke(Events.HighlightTiles, highlights);
+        EventSystem.Invoke(Events.AbilitySelected, highlights);
 
         // hack in the movement
-        _input.onSelected.AddListener( OnSelectMapTile );
+        input.onSelected.AddListener( OnSelectMapTile );
     }
 
-    public void OnSelectMapTile(MapCoordinate coord)
+    private void OnActionComplete()
     {
+        if (ap > 0) return;
+        input.onSelected.RemoveAllListeners();
+        EventSystem.Invoke(Events.PlayerTurnEnded);
+        EndTurn();
+    }
+    
+    private void OnSelectMapTile(MapCoordinate coord)
+    {
+        // quit if range invalid
+        if (!InRange(coord)) return;
+        
+        // minus AP
+        ap -= _ability.cost;
+        
         // hack in move stuff
         if (_ability.name == "Move")
         {
-            if (AP - _ability.cost < 0)
-            {
-                Debug.Log("Not enough AP!");
-                return;
-            }
-            else
-            {
-                AP -= _ability.cost;
-            }
-
-            // TODO : need to check if move is in range
-            // start the move selection coroutine
-            _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
-            print("Move");
-
-            if (AP == 0)
-            {
-                Debug.Log("Player endturn is called");
-                EventSystem.Invoke(Events.PlayerTurnEnded);
-            }
+            movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
         }
         else
         {
-            // not fully implimented
-            //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
-            if (AP - _ability.cost < 0)
-            {
-                Debug.Log("Not enough AP!");
-                return;
-            }
-            else
-            {
-                AP -= _ability.cost;
-            }
-            print("Other Ability");
-            if (AP == 0)
-            {
-                EventSystem.Invoke(Events.PlayerTurnEnded);
-            }
+            _abilityCoroutine = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability,this, coord));
         }
-
-        /*
-        if (AP == 0)
-        {
-            //Ends Player Turn
-            EventSystem.Invoke(Events.PlayerTurnEnded);
-            // stop input
-            _input.onSelected.RemoveAllListeners();
-            // remove highlight
-            EventSystem.Invoke(Events.DisableHighlights);
-        }*/
-        //An Attempt to delay event system from invoking anything to pause ProcessTurn failed.
-
-        if (AP == 0)
-        {
-            // stop input
-            _input.onSelected.RemoveAllListeners();
-        }
-       
+        
         // remove highlight
-        EventSystem.Invoke(Events.DisableHighlights);
+        EventSystem.Invoke(Events.AbilityDeselected);
     }
 
-    public override void ProcessTurn()
+    private bool InRange(MapCoordinate target)
     {
-        AP = MAX_AP;
-        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
-        EventSystem.Invoke(Events.PlayerTurnStarted);
-    }
+        var validTiles = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
+        var result = false;
 
-    [ContextMenu("End Turn")]
-    public void TestEndTurn()
-    {
-        if (AP == 0)
-            EndTurn();
-    }
-
-    public void setMaxAP(int max_ap)
-    {
-        AP = max_ap;
+        foreach (var t in validTiles.Where(t => t.x == target.x && t.y == target.y))
+        {
+            result = true;
+        }
+        
+        return result;
     }
     
-    protected override void EndTurn()
+    public override void ProcessTurn()
     {
-        EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
-        base.EndTurn();
+        ap = 1 + _level;
+        EventSystem.Invoke(Events.PlayerTurnStarted);
     }
 
     private void OnKilledEnemy(Enemy enemy)
@@ -162,8 +128,8 @@ public class Player : Entity
 
     public void GainExperience(int exp)
     {
-        experience += exp;
-        while(experience >= Mathf.CeilToInt(2 * (Mathf.Pow(level, 1.5f))) * averageEnemyExp)
+        _experience += exp;
+        while(_experience >= Mathf.CeilToInt(2 * (Mathf.Pow(_level, 1.5f))) * averageEnemyExp)
         {
             LevelUp();
         }
@@ -171,8 +137,8 @@ public class Player : Entity
 
     private void LevelUp()
     {
-        level++;
-        AP += APPerLevel;
+        _level++;
+        ap += apPerLevel;
         health += healthPerLevel;
     }
 }

@@ -26,7 +26,8 @@ namespace Core
         
         public const string AddAbility = "AddAbility";
         public const string HighlightTiles = "HighlightTiles";
-        public const string DisableHighlights = "DisableHighlights";
+        public const string AbilitySelected = "AbilitySelected";
+        public const string AbilityDeselected = "AbilityDeselected";
 
         public const string EntityKilled = "EntityKilled";
     }
