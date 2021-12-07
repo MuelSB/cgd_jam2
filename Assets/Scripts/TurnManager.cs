@@ -46,7 +46,6 @@ public class TurnManager : MonoBehaviour
 
     private void StartRound()
     {
-        EventSystem.Unsubscribe("EnemiesSpawned", StartRound);
 
         // invoke event
         EventSystem.Invoke(Events.RoundStarted);
@@ -95,12 +94,11 @@ public class TurnManager : MonoBehaviour
             go.GetComponent<MapTile>().Decay(MapManager.GetMap().getMetaSeededRandom());
         }
 
-        EnemyManager.Instance.SpawnNewEnemies(Random.Range(1, Mathf.Min(5, _round)), true);
+        EnemyManager.Instance.SpawnNewEnemies(Random.Range(1, Mathf.Min(5, _round)), false);
         
         // increment and start new round
         _round++;
-        EventSystem.Subscribe("EnemiesSpawned", StartRound);
-
+        StartRound();
     }
 
     private void StartTurn()
