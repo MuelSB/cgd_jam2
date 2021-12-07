@@ -17,7 +17,7 @@ MonoBehaviour:
   targetType: 0
   turnsCooldown: 0
   cost: 1
-  baseDamage: 0
+  baseDamage: 2
   abilityEffects:
   - damageMultiplier: 1
     effectType: 0

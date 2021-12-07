@@ -4,6 +4,12 @@ using UnityEngine;
 using Core;
 using UnityEditor.SceneManagement;
 
+public struct APpackage
+{
+    public int CurrentAP;
+    public int APToReduce;
+}
+
 public class Player : Entity
 {
     [Header("Player Components")]
@@ -20,6 +26,8 @@ public class Player : Entity
     [SerializeField] private float healthPerLevel = 10;
     [SerializeField] private float HP = 10.0f;
 
+    [SerializeField] private Sprite APSprite;
+
     private int experience = 0;
     private int level = 1;
 
@@ -29,7 +37,10 @@ public class Player : Entity
     {
         // tell the UI about the player abilities
         foreach (var ability in abilities) OnNewAbility(ability);
-
+        for (int i = 0; i < AP; i++)
+        {
+            newAPSprite(APSprite);
+        }
         // Set the player's starting health value based on HP, AP based on MAX_AP
         health = HP;
         AP = MAX_AP;
@@ -39,6 +50,11 @@ public class Player : Entity
     {
         var data = new ButtonData { Ability = ability, Callback = () => AbilitySelected(ability) };
         EventSystem.Invoke<ButtonData>(Events.AddAbility, data);    
+    }
+    public void newAPSprite(Sprite sprite)
+    {
+        var data = new UIData { image_src = sprite };
+        EventSystem.Invoke<UIData>(Events.AddAP, data);
     }
     
     //public void TakeDamage(int damage)
@@ -67,6 +83,8 @@ public class Player : Entity
         // hack in move stuff
         if (_ability.name == "Move")
         {
+
+            //Checks if Ability Costs exceeds current AP
             if (AP - _ability.cost < 0)
             {
                 Debug.Log("Not enough AP!");
@@ -74,7 +92,12 @@ public class Player : Entity
             }
             else
             {
+                //Takes away AP from the cost of the ability
                 AP -= _ability.cost;
+
+                //Invokes Event to update UIManager to reduce AP
+                var pck = new APpackage { CurrentAP = AP, APToReduce = _ability.cost };
+                EventSystem.Invoke(Events.ReduceAP, pck);
             }
 
             // TODO : need to check if move is in range
@@ -100,6 +123,8 @@ public class Player : Entity
             else
             {
                 AP -= _ability.cost;
+                var pck = new APpackage { CurrentAP = AP, APToReduce = _ability.cost };
+                EventSystem.Invoke(Events.ReduceAP, pck);
             }
             print("Other Ability");
             if (AP == 0)
@@ -133,6 +158,7 @@ public class Player : Entity
     public override void ProcessTurn()
     {
         AP = MAX_AP;
+        EventSystem.Invoke(Events.ResetAP);
         EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
         EventSystem.Invoke(Events.PlayerTurnStarted);
     }
