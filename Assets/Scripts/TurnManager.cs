@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Core;
 
 public class TurnManager : MonoBehaviour
@@ -21,7 +22,11 @@ public class TurnManager : MonoBehaviour
 
     private int _round = 0;
     private int _turn = 0;
-    
+
+    // This should be in the UI manager but I cannot find a way of checking which event is active
+    private Text turnText = default;
+    private Image turnImage = default;
+
     private void OnLevelLoaded()
     {
         // reset tracked values
@@ -33,6 +38,9 @@ public class TurnManager : MonoBehaviour
             Debug.LogWarning("There are no valid Entities", this);
             return;
         }
+
+        turnText = GameObject.Find("Turn Text").GetComponent<Text>();
+        turnImage = GameObject.Find("Turn Border").GetComponent<Image>();
         
         // start the first round
         StartRound();
@@ -115,6 +123,19 @@ public class TurnManager : MonoBehaviour
             Debug.Log("not a valid entity");
             EventSystem.Invoke(Events.TurnEnded);
             return;
+        }
+
+        // Updates UI text and Image based on entity
+        if (entity.entityType == Entity.EntityType.PLAYER)
+        {
+            turnImage.color = new Color(0, 64, 255, turnImage.color.a); // Light Blue
+            turnText.text = "Player Turn";
+        }
+
+        if (entity.entityType == Entity.EntityType.BOSS || entity.entityType == Entity.EntityType.MINION)
+        {
+            turnImage.color = new Color(255, 0, 0, turnImage.color.a); // Red
+            turnText.text = "Enemy Turn";
         }
 
         // start the actors turn
