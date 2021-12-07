@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 public struct APpackage
 {
     public int CurrentAP;
-    public int APToReduce;
+    public int APChange;
 }
 
 public class Player : Entity
@@ -116,7 +116,7 @@ public class Player : Entity
                 ap -= _ability.cost;
 
                 //Invokes Event to update UIManager to reduce AP
-                var pck = new APpackage { CurrentAP = ap, APToReduce = _ability.cost };
+                var pck = new APpackage { CurrentAP = ap, APChange = -_ability.cost };
                 EventSystem.Invoke(Events.ReduceAP, pck);
             }
 
@@ -136,7 +136,7 @@ public class Player : Entity
             else
             {
                 ap -= _ability.cost;
-                var pck = new APpackage { CurrentAP = ap, APToReduce = _ability.cost };
+                var pck = new APpackage { CurrentAP = ap, APChange = -_ability.cost };
                 EventSystem.Invoke(Events.ReduceAP, pck);
             }
             print("Other Ability");
@@ -192,6 +192,7 @@ public class Player : Entity
     {
         level++;
         ap += apPerLevel;
+        newAPSprite(APSprite);
         health += healthPerLevel;
     }
 }

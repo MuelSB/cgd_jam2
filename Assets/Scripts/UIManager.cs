@@ -56,7 +56,7 @@ public class UIManager : MonoBehaviour
         {
             apParent.transform.GetChild(i).gameObject.SetActive(false);
         }
-        var APLeft = aPackage.CurrentAP - aPackage.APToReduce;
+        var APLeft = aPackage.CurrentAP + aPackage.APChange;
         for (int i = 0; i < APLeft+1; i++)
         {
             apParent.transform.GetChild(i).gameObject.SetActive(true);
