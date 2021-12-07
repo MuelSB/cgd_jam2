@@ -135,9 +135,21 @@ public class Player : Entity
         }
         else
         {
-            _abilityCoroutine = StartCoroutine(UseAbility(coord));
+            if (ap - _ability.cost < 0)
+            {
+                Debug.Log("Not Enough AP!");
+                return;
+            }
+            else
+            {
+                _abilityCoroutine = StartCoroutine(UseAbility(coord));
+                ap -= _ability.cost;
+
+                //Invokes Event to update UIManager to reduce AP
+                var pck = new APpackage { CurrentAP = ap, APChange = -_ability.cost };
+                EventSystem.Invoke(Events.ReduceAP, pck);
+            }
         }
-        
         // remove highlight
         EventSystem.Invoke(Events.AbilityDeselected);
     }
