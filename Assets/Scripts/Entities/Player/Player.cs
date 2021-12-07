@@ -9,13 +9,19 @@ public class Player : Entity
     [Header("Player Components")]
     [SerializeField] private PlayerInput _input = default;
     [SerializeField] private PlayerMovement _movement = default;
-    
-    [SerializeField] private int AP = 2;
 
+    [SerializeField] private int averageEnemyExp = 3;
+
+    [SerializeField] private int APPerLevel = 1;
+    [SerializeField] private int AP = 2;
     [SerializeField] private int MAX_AP = 2;
 
+    [SerializeField] private float healthPerLevel = 10;
     [SerializeField] private float HP = 10.0f;
-    
+
+    private int experience = 0;
+    private int level = 1;
+
     private Ability _ability = null;
     
     private void Start()
@@ -108,6 +114,7 @@ public class Player : Entity
     public override void ProcessTurn()
     {
         AP = MAX_AP;
+        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
         EventSystem.Invoke(Events.PlayerTurnStarted);
     }
 
@@ -121,5 +128,32 @@ public class Player : Entity
     public void setMaxAP(int max_ap)
     {
         AP = max_ap;
+    }
+    
+    protected override void EndTurn()
+    {
+        EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        base.EndTurn();
+    }
+
+    private void OnKilledEnemy(Enemy enemy)
+    {
+        GainExperience(enemy.expValue);
+    }
+
+    public void GainExperience(int exp)
+    {
+        experience += exp;
+        while(experience >= Mathf.CeilToInt(2 * (Mathf.Pow(level, 1.5f))) * averageEnemyExp)
+        {
+            LevelUp();
+        }
+    }
+
+    private void LevelUp()
+    {
+        level++;
+        AP += APPerLevel;
+        health += healthPerLevel;
     }
 }
