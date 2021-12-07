@@ -232,6 +232,7 @@ MonoBehaviour:
   canPassDestroyedTiles: 0
   healthUICanvas: {fileID: 4912024126208378371}
   healthImage: {fileID: 2622735962636536761}
+  expValue: 0
   abilityTimers: 
 --- !u!1 &8298385444575216094
 GameObject:

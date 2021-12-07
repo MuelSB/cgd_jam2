@@ -73,8 +73,15 @@ namespace Core
             // unload current scene
             if (_state != GameState.None)
             {
-                var current = _state != GameState.InGame ? Scenes.MenuScene : Scenes.GameScene;
-                SceneManager.UnloadSceneAsync(current);
+                switch(_state)
+                {
+                    case GameState.InGame: SceneManager.UnloadSceneAsync(Scenes.GameScene); break;
+                    case GameState.InLose: SceneManager.UnloadSceneAsync(Scenes.LoseScene); break;
+                    case GameState.InMenu: SceneManager.UnloadSceneAsync(Scenes.MenuScene); break;
+                    case GameState.InWin: SceneManager.UnloadSceneAsync(Scenes.WinScene); break;
+                    case GameState.InBossSelect: SceneManager.UnloadSceneAsync(Scenes.BossScene); break;
+                    default: Debug.LogError("Unloading undefined game state."); break;
+                }
             }
                 
             // load scene async
@@ -86,7 +93,7 @@ namespace Core
             
             // wait until load is finished 
             while (scene.progress < 0.9f) { /*this could be used for a loading bar*/ }
-            
+            Debug.Log("Exiting transition");
             // exit transition FX
             _state = state;
             scene.allowSceneActivation = true;
