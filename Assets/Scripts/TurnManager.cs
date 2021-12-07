@@ -121,15 +121,16 @@ public class TurnManager : MonoBehaviour
             return;
         }
 
+        // Updates UI text and Image based on entity
         if (entity.entityType == Entity.EntityType.PLAYER)
         {
-            turnImage.color = new Color(0, 64, 255);
+            turnImage.color = new Color(0, 64, 255); // Light Blue
             turnText.text = "Player Turn";
         }
 
         if (entity.entityType == Entity.EntityType.BOSS || entity.entityType == Entity.EntityType.MINION)
         {
-            turnImage.color = new Color(255, 0, 0);
+            turnImage.color = new Color(255, 0, 0); // Red
             turnText.text = "Enemy Turn";
         }
 

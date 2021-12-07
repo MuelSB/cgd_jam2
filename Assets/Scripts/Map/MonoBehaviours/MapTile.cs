@@ -118,6 +118,22 @@ public class MapTile : MonoBehaviour
         if (GetProperties().Alive()) {
             MapTileProperties properties = GetProperties();
             properties.Integrity -= _random.Next(properties.IntegrityErosionRange.y,properties.IntegrityErosionRange.x+1);
+
+            print("Tile integrity" + properties.Integrity);
+
+            // Update tile color based on Integrity
+            Color black = MetaGeneratorHelper.makeColour(0, 0, 0);
+            Color currentColor = objectRenderer.material.color;
+
+            // I'm guessing that integrity is mapped from 0-100. If it isn't then change / 100 to something else
+            Color new_c = Color.Lerp(currentColor, black, properties.Integrity / 100); 
+            objectRenderer.material.color = new_c;
+            if (decorChildRenderers.Count > 0)
+            {
+                decorChildRenderers.ForEach(_r => { _r.materials.ToList().ForEach(_m => { _m.color = new_c; }); });
+            }
+
+
             SetProperties(properties);
             if (properties.Integrity <= 0) {
                 StartCoroutine(TileDeath());
