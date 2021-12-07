@@ -140,6 +140,7 @@ public class EnemyManager : MonoBehaviour
         newEnemy.abilityTimers = new List<int>();
         newEnemy.entityType = Entity.EntityType.MINION;
         newEnemy.enemyType = enemyData.type;
+        newEnemy.expValue = enemyData.experience;
         newEnemy.canPassDestroyedTiles = enemyData.canPassDestroyedTiles;
         newEnemy.SetCurrentTile(location);
         newEnemy.transform.position = MapManager.GetMap().GetTileObject(newEnemy.currentTile).transform.position

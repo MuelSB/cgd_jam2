@@ -13,6 +13,8 @@ public class Enemy : Entity
     public Canvas healthUICanvas;
     public Image healthImage;
 
+    public int expValue;
+
     private float initialHealthWidth;
     private float maxHealth;
 
@@ -42,6 +44,12 @@ public class Enemy : Entity
         base.Damage(dmg);
         if (health < maxHealth) healthUICanvas.enabled = true;
         healthImage.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (health / maxHealth) * initialHealthWidth);
+    }
+
+    public override void Die()
+    {
+        EventSystem.Invoke<Enemy>(Events.EntityKilled, this);
+        base.Die();
     }
 
     private List<MapCoordinate> GetDesiredMove()

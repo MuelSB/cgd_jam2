@@ -27,5 +27,7 @@ namespace Core
         public const string AddAbility = "AddAbility";
         public const string HighlightTiles = "HighlightTiles";
         public const string DisableHighlights = "DisableHighlights";
+
+        public const string EntityKilled = "EntityKilled";
     }
 }
