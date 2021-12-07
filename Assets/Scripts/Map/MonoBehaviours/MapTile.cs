@@ -64,13 +64,15 @@ public class MapTile : MonoBehaviour
         objectRenderer = GetComponent<Renderer>();
     }
 
-    IEnumerator updatePostionFromInegrity() {
+    IEnumerator updatePostionFromInegrity()
+    {
         float target_y = GetProperties().getHeightFromIntegrity();
         float current_y = gameObject.transform.position.y;
         if (current_y == target_y) {yield break;}
         float e_time = 0f;
         float duration = 3f;
-        while (e_time < duration) {
+        while (e_time < duration)
+        {
             float new_y = Mathf.Lerp(current_y,target_y,(e_time/duration));
             gameObject.transform.position = new Vector3(gameObject.transform.position.x,new_y,gameObject.transform.position.z);
             e_time+=Time.deltaTime;
@@ -80,15 +82,18 @@ public class MapTile : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator TileDeath() {
+    public IEnumerator TileDeath()
+    {
         Color grey = MetaGeneratorHelper.makeColour(40,40,40);
         Color currentColor = objectRenderer.material.color;
         float e_time = 0f;
         float duration = 1f;
-        while (e_time < duration) {
+        while (e_time < duration)
+        {
             Color new_c = Color.Lerp(currentColor,grey,(e_time/duration));
             objectRenderer.material.color = new_c;
-            if (decorChildRenderers.Count > 0) {
+            if (decorChildRenderers.Count > 0)
+            {
                 decorChildRenderers.ForEach(_r => {_r.materials.ToList().ForEach(_m => {_m.color = new_c;});}); 
             }
             e_time+=Time.deltaTime;
@@ -117,7 +122,30 @@ public class MapTile : MonoBehaviour
     public bool Decay(System.Random _random) {
         if (GetProperties().Alive()) {
             MapTileProperties properties = GetProperties();
+
             properties.Integrity -= _random.Next(properties.IntegrityErosionRange.y,properties.IntegrityErosionRange.x+1);
+
+
+            float current_height = gameObject.transform.position.y;
+            float lerp_value = Mathf.Lerp(0.0f, current_height, 0.5f);
+            float bias = 0.6f;
+
+            // remaps the original lerp value between 0 and 1 with a bias.
+            lerp_value = lerp_value / 10.0f + bias;
+
+            // Make a new color
+            Color grey = MetaGeneratorHelper.makeColour(40, 40, 40);
+            Color currentColor = objectRenderer.material.color;
+
+            // Set the color
+            Color new_c = Color.Lerp(grey, currentColor, lerp_value);
+            objectRenderer.material.color = new_c;
+
+            //if (decorChildRenderers.Count > 0)
+            //{
+            //    decorChildRenderers.ForEach(_r => { _r.materials.ToList().ForEach(_m => { _m.color = new_c; }); });
+            //}
+
             SetProperties(properties);
             if (properties.Integrity <= 0) {
                 StartCoroutine(TileDeath());
