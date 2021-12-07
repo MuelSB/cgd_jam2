@@ -87,7 +87,7 @@ public class AbilityManager : MonoBehaviour
         Maybe<Ability> newAbility = new Maybe<Ability>();
         if (abilities.ContainsKey(abilityName) == false) return newAbility;
         Ability referenceAbility = abilities[abilityName];
-        Ability ability = new Ability();
+        Ability ability = ScriptableObject.CreateInstance<Ability>();
 
         ability.cost = referenceAbility.cost;
         ability.image = referenceAbility.image;

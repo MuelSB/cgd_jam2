@@ -159,6 +159,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerMoveSpeed: 0.5
+  _moveComplete:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5389151067459499184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,3 +174,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c678b01296fcd3342abb167383d8fc8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsUsingSkill: 0

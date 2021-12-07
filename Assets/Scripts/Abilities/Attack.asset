@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 21300000, guid: e0db7f00f0f6f0a4e84ab5830e614e27, type: 3}
   range: 1
-  targetType: 0
+  targetType: 1
   turnsCooldown: 0
   cost: 1
-  baseDamage: 0
+  baseDamage: 1
   abilityEffects:
   - damageMultiplier: 1
     effectType: 0
