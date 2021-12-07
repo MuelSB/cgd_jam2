@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsMoving => _movingCoroutine != null;
 
     private Coroutine _movingCoroutine = null;
+    public UnityEvent _moveComplete = new UnityEvent();
     
     public void MovePlayer(Player player, GameObject tileObject)
     {
@@ -42,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
         
         // set coroutine to null
         _movingCoroutine = null;
-        player.TestEndTurn();
+        _moveComplete.Invoke();
         yield return null;
     }
 }

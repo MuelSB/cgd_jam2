@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Core;
+using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 
 public class Player : Entity
@@ -22,6 +24,20 @@ public class Player : Entity
     private int level = 1;
 
     private Ability _ability = null;
+
+    private new void OnEnable()
+    {
+        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        _movement._moveComplete.AddListener(OnActionComplete);
+        base.OnEnable();
+    }
+
+    private new void OnDisable()
+    {
+        EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        _movement._moveComplete.AddListener(OnActionComplete);
+        base.OnDisable();
+    }
     
     private void Start()
     {
@@ -38,11 +54,6 @@ public class Player : Entity
         EventSystem.Invoke<ButtonData>(Events.AddAbility, data);    
     }
     
-    //public void TakeDamage(int damage)
-    //{
-    //    health -= damage;
-    //}
-
     private void AbilitySelected(Ability ability)
     {
         // do nada while moving
@@ -51,56 +62,64 @@ public class Player : Entity
         // set the current ability
         _ability = ability;
 
-        // TODO : ADD SELECTION HIGHLIGHT
+        // Send highlight into to the UI
         var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
-        EventSystem.Invoke(Events.HighlightTiles, highlights);
+        EventSystem.Invoke(Events.AbilitySelected, highlights);
 
         // hack in the movement
         _input.onSelected.AddListener( OnSelectMapTile );
     }
 
-    public void OnSelectMapTile(MapCoordinate coord)
+    private void OnActionComplete()
     {
+        if (AP >= 1) return;
+        EventSystem.Invoke(Events.PlayerTurnEnded);
+        EndTurn();
+    }
+    
+    private void OnSelectMapTile(MapCoordinate coord)
+    {
+        // quit if range invalid
+        if (!InRange(coord)) return;
+        
+        // minus AP
+        AP -= _ability.cost;
+        
         // hack in move stuff
         if (_ability.name == "Move")
         {
-            // TODO : need to check if move is in range
-            // start the move selection coroutine
-       
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
-            EventSystem.Invoke(Events.PlayerTurnEnded);
-            print("Move");
         }
         else
         {
             // not fully implimented
-            //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
-            print("Other Ability");
+            var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability,this, coord));
         }
         
         // stop input
         _input.onSelected.RemoveAllListeners();
         
         // remove highlight
-        EventSystem.Invoke(Events.DisableHighlights);
+        EventSystem.Invoke(Events.AbilityDeselected);
+    }
+
+    private bool InRange(MapCoordinate target)
+    {
+        var validTiles = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
+        var result = false;
+
+        foreach (var t in validTiles.Where(t => t.x == target.x && t.y == target.y))
+        {
+            result = true;
+        }
+        
+        return result;
     }
 
     public override void ProcessTurn()
     {
-        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
+        AP = 1 + level;
         EventSystem.Invoke(Events.PlayerTurnStarted);
-    }
-
-    [ContextMenu("End Turn")]
-    public void TestEndTurn()
-    {
-        EndTurn();
-    }
-    
-    protected override void EndTurn()
-    {
-        EventSystem.Unsubscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
-        base.EndTurn();
     }
 
     private void OnKilledEnemy(Enemy enemy)
