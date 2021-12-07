@@ -67,30 +67,45 @@ public class Player : Entity
         // hack in move stuff
         if (_ability.name == "Move")
         {
+            if (AP - _ability.cost < 0)
+            {
+                Debug.Log("Not enough AP!");
+                return;
+            }
+            else
+            {
+                AP -= _ability.cost;
+            }
+
             // TODO : need to check if move is in range
             // start the move selection coroutine
-       
             _movement.MovePlayer(this, MapManager.GetMap().GetTileObject(coord));
-            //Ends Player Turn
-            //            Debug.Log("Remaining AP: " + AP.ToString());
-            AP--;
+            print("Move");
+
             if (AP == 0)
             {
                 Debug.Log("Player endturn is called");
                 EventSystem.Invoke(Events.PlayerTurnEnded);
             }
-            print("Move");
         }
         else
         {
             // not fully implimented
             //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
-            AP--;
+            if (AP - _ability.cost < 0)
+            {
+                Debug.Log("Not enough AP!");
+                return;
+            }
+            else
+            {
+                AP -= _ability.cost;
+            }
+            print("Other Ability");
             if (AP == 0)
             {
                 EventSystem.Invoke(Events.PlayerTurnEnded);
             }
-            print("Other Ability");
         }
 
         /*
