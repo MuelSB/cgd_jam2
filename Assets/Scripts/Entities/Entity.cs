@@ -73,6 +73,7 @@ public abstract class Entity : MonoBehaviour
     public abstract void ProcessTurn();
     protected virtual void EndTurn()
     {
+        Debug.Log("End Turn is called");
         EventSystem.Invoke(Events.TurnEnded);
     }
    

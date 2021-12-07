@@ -193,8 +193,9 @@ public class AbilityManager : MonoBehaviour
             case EffectType.DESTROY_SPECIAL_TILE:
                 {
                     color = new Color(1.0f, 1.0f, 0.0f);
-                    ps.Add(MapManager.GetMap().GetTileObject(targetTile).GetComponentInChildren<ParticleSystem>());
-                    MetaGeneratorHelper.destroyTile(MapManager.GetMap(), targetTile);
+                    GameObject go = MapManager.GetMap().GetTileObject(targetTile);
+                    ps.Add(go.GetComponentInChildren<ParticleSystem>());
+                    SpecialTileHelper.DestroySpecialTile(go, MapManager.GetMap().getDecor(), MapManager.GetMap().getMetaSeededRandom());
                     break;
                 }
             case EffectType.SPAWN_ENEMY:

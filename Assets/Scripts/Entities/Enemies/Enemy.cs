@@ -6,10 +6,14 @@ using Core;
 
 public class Enemy : Entity
 {
+    public List<MapTileProperties.TileType> targetableTiles;
+
     public EnemiesData.EnemyType enemyType;
     public bool canPassDestroyedTiles = false;
     public Canvas healthUICanvas;
     public Image healthImage;
+
+    public int expValue;
 
     private float initialHealthWidth;
     private float maxHealth;
@@ -42,6 +46,12 @@ public class Enemy : Entity
         healthImage.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (health / maxHealth) * initialHealthWidth);
     }
 
+    public override void Die()
+    {
+        EventSystem.Invoke<Enemy>(Events.EntityKilled, this);
+        base.Die();
+    }
+
     private List<MapCoordinate> GetDesiredMove()
     {
         Maybe<MapCoordinate> playerTile = new Maybe<MapCoordinate>();
@@ -63,7 +73,7 @@ public class Enemy : Entity
             {
                 if(ability.targetType == Ability.AbilityTarget.BUILDING)
                 {
-                    var potentialTargets = MetaGeneratorHelper.getClosestSpecialTiles(MapManager.GetMap().GetTiles(), currentTile);
+                    var potentialTargets = MetaGeneratorHelper.getClosestTiles(MapManager.GetMap().GetTiles(), currentTile, targetableTiles);
                     if(potentialTargets.is_some)
                     {
                         target = new Maybe<MapCoordinate>(potentialTargets.value[Random.Range(0, potentialTargets.value.Count)]);

@@ -97,7 +97,7 @@ public class TurnManager : MonoBehaviour
 
         foreach(GameObject go in MapManager.GetMap().GetTiles())
         {
-            go.GetComponent<MapTile>().Decay(new System.Random());
+            go.GetComponent<MapTile>().Decay(MapManager.GetMap().getMetaSeededRandom());
         }
         
         // increment and start new round
@@ -135,6 +135,7 @@ public class TurnManager : MonoBehaviour
         }
 
         // start the actors turn
+        Debug.Log("Processing " + entity.name + "'s Turn");
         entity.ProcessTurn();
     }
 
@@ -142,7 +143,8 @@ public class TurnManager : MonoBehaviour
     {
         // we purposefully do not invoke the event here
         // instead we subscribe OnTurnEnd() and call it from within the actor
-        
+
+        Debug.Log("Turn Ended for an entity");
         // increase current turn
         _turn++;
         

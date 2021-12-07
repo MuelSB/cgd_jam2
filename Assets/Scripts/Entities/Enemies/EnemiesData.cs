@@ -25,6 +25,7 @@ public class EnemiesData : ScriptableObject
         public EnemyType type;
         public int health;
         public int movement;
+        public int experience;
         public bool canPassDestroyedTiles;
         public GameObject model;
         public List<AbilityDamage> abilities;
