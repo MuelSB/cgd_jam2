@@ -293,6 +293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4844513529684194886}
   - component: {fileID: 4844513529684194887}
+  - component: {fileID: 7447586567069221772}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -333,6 +334,22 @@ MonoBehaviour:
   prefab: {fileID: 5376145333405430877, guid: c14e55cad152c01418c640bf4c24208f, type: 3}
   apParent: {fileID: 5139429720691866612}
   apImagePrefab: {fileID: 1031979755256188039, guid: 539449f8d6d39a842818599f1779d823, type: 3}
+--- !u!114 &7447586567069221772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4844513529684194889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a502629b1773e64cbc9461b3d08168d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 8763278919878846209, guid: c4444235dcee6014a8890b8cc6c2a91c, type: 3}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &4844513530082237872
 GameObject:
   m_ObjectHideFlags: 0

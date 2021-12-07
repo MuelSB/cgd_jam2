@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Core;
@@ -79,18 +80,26 @@ public class Player : Entity
         // set the current ability
         _ability = ability;
 
-        // Send highlight into to the UI
-        var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
-        EventSystem.Invoke(Events.AbilitySelected, highlights);
+        UpdateUI();
 
         // hack in the movement
         _input.onSelected.AddListener( OnSelectMapTile );
     }
 
+    private void UpdateUI()
+    {
+        // Send highlight into to the UI
+        var highlights = _ability.GetTargetableTiles(currentTile, EntityType.PLAYER);
+        EventSystem.Invoke(Events.AbilitySelected, highlights);
+    }
+
     private void OnActionComplete()
     {
-        print("Complete");
-        if (ap > 0) return;
+        if (ap > 0)
+        {
+            UpdateUI();
+            return;
+        }
         _input.onSelected.RemoveAllListeners();
         EventSystem.Invoke(Events.PlayerTurnEnded);
         EndTurn();
@@ -126,25 +135,7 @@ public class Player : Entity
         }
         else
         {
-            // not fully implimented
-            //var co = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability, coord));
-            if (ap - _ability.cost < 0)
-            {
-                Debug.Log("Not enough AP!");
-                return;
-            }
-            else
-            {
-                ap -= _ability.cost;
-                var pck = new APpackage { CurrentAP = ap, APChange = -_ability.cost };
-                EventSystem.Invoke(Events.ReduceAP, pck);
-            }
-            print("Other Ability");
-            if (ap == 0)
-            {
-                EventSystem.Invoke(Events.PlayerTurnEnded);
-            }
-            _abilityCoroutine = StartCoroutine(AbilityManager.Instance.ExecuteAbility(_ability,this, coord));
+            _abilityCoroutine = StartCoroutine(UseAbility(coord));
         }
         
         // remove highlight
@@ -154,11 +145,16 @@ public class Player : Entity
     public override void ProcessTurn()
     {
         ap = maxAP;
-        ap = 1 + level;
         EventSystem.Invoke(Events.ResetAP);
-        EventSystem.Subscribe<Enemy>(Events.EntityKilled, OnKilledEnemy);
         EventSystem.Invoke(Events.PlayerTurnStarted);
         EventSystem.Invoke(Events.AbilityDeselected);
+    }
+
+    private IEnumerator UseAbility(MapCoordinate coord)
+    {
+        yield return AbilityManager.Instance.ExecuteAbility(_ability, this, coord);
+        _abilityCoroutine = null;
+        yield return null;
     }
 
     private bool InRange(MapCoordinate target)
