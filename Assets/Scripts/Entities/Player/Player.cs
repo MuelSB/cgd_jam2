@@ -101,9 +101,6 @@ public class Player : Entity
         // quit if range invalid
         if (!InRange(coord)) return;
         
-        // minus AP
-        ap -= _ability.cost;
-        
         // hack in move stuff
         if (_ability.name == "Move")
         {
@@ -139,7 +136,7 @@ public class Player : Entity
             else
             {
                 ap -= _ability.cost;
-                var pck = new APpackage { CurrentAP = AP, APToReduce = _ability.cost };
+                var pck = new APpackage { CurrentAP = ap, APToReduce = _ability.cost };
                 EventSystem.Invoke(Events.ReduceAP, pck);
             }
             print("Other Ability");
@@ -151,7 +148,7 @@ public class Player : Entity
         }
         
         // remove highlight
-        EventSystem.Invoke(Events.DisableHighlights);
+        EventSystem.Invoke(Events.AbilityDeselected);
     }
 
     public override void ProcessTurn()
